@@ -1,0 +1,3 @@
+rm out? comou*
+(make && ./ess -r AA && 
+/home/alberto/mbin/mcnp/x/v27e/build/bin/mcnpx ip i=AA1.x x=xsdir-xs)

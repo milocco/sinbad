@@ -1,0 +1,733 @@
+commit 562897a12d3f63ca83b019a0c8f80ca0be9b3358
+Author: Stuart Ansell <xansell@gmail.com>
+Date:   Thu Jun 26 13:21:12 2014 +0000
+
+    Addition of xml parser for functions:
+    
+    	  From XML write : type="function" in the variable xml tag.
+    		Also the variable (name = "xxx") needs to exist. If you want
+    		to add a new variable, add it first with its main type and then
+    		add the function.
+
+commit 650e7f1b3b9c8556b91d553ff4bb7273d5bba459
+Author: Stuart Ansell <xansell@gmail.com>
+Date:   Wed Jun 25 15:18:54 2014 +0000
+
+    Multi-Commit : Too many things:
+    
+    	  Improved General shutter [TS1/TS2]
+    		Modified target system [allow modify objects]
+    		Wedge system for objects [grooves/cuts etc]
+    		Vec3D maths operators for the variable system
+        SupplyPipe improvements
+    		TS1Upgrade changes.
+
+commit 20469893471e4f193b55d8884f5b074ef7f7dbe4
+Author: Stuart Ansell <xansell@gmail.com>
+Date:   Thu May 15 16:17:38 2014 +0000
+
+    Main changes to the system for upgrade MarkV system.
+    -- This has bug fixes for stuff.
+    -- Beamline transport upgrade [not variance reduction -- that is
+    separate]
+    -- Tally modifications
+
+commit f36bd492113c8480608e716b7220b0030219aed9
+Author: Stuart Ansell <xansell@gmail.com>
+Date:   Thu May 8 15:50:20 2014 +0000
+
+    Merge of a non-commercial upgrade
+      These are all the code elements that allow the building
+    	of a delft update. But do not contain any of the details.
+    	It allow the standard [existing] model to be built.
+
+commit 02aeee085cc9c887f4c4acbd192ef3307477d797
+Author: Stuart Ansell <xansell@gmail.com>
+Date:   Fri May 2 16:22:16 2014 +0000
+
+    Modifications for delft upgrade without the delft
+    reactor design
+
+commit ab81a14d3f8e7d9ba081cea256b2c8c96af3316b
+Author: Stuart Ansell <xansell@gmail.com>
+Date:   Sat Apr 19 15:28:21 2014 +0100
+
+    Beamline branch : for doing background simulation on beamlines
+      quickly.
+      Specific changes:
+           FixedGroup :: This is a group of FixedComp similar to
+                         ContainedGroup.
+    
+           Beamline   :: Stuff for producing a fast beamline. similar to
+                        pipeline but a standard component (for
+    		    linkage/tallies etc)
+
+commit d957ac10d06287780aba6afe71c3a51f0bd20fcb
+Author: Stuart Ansell <xansell@gmail.com>
+Date:   Wed Apr 2 19:20:58 2014 +0100
+
+    Start of the default configurations modules:
+      -- current only option is defaultConfig TS1MarkIV
+
+commit 0206d011df9b72668e67676b1c2102684eade454
+Author: Stuart Ansell <xansell@gmail.com>
+Date:   Fri Mar 28 17:12:38 2014 +0000
+
+    Final update for muBeam :
+    
+       The is the merge of Goran Skoro's muon beamline system. This is an
+       excellent example of how to build a quick component type model.
+
+commit 2fe4eb7a0777655b66d915261d1a11372f9c0419
+Author: Stuart Ansell <xansell@gmail.com>
+Date:   Wed Mar 26 11:23:24 2014 +0000
+
+    Removal of redundent code
+
+commit eef30b4ab80bb4e8125c6a44c582f7f535ff01c3
+Author: Stuart Ansell <xansell@gmail.com>
+Date:   Wed Mar 26 00:28:50 2014 +0000
+
+    Merge of the physics card items
+      -- this is just because I am going to forget when I back merge
+
+commit e06d018e0225a2fe0d8eafff12b405acc2991df8
+Author: Stuart Ansell <xansell@gmail.com>
+Date:   Wed Mar 26 00:25:28 2014 +0000
+
+    Updated the muon beamline build:
+      -- Added a attachSyste control based on intersecting linkpts
+      MODE Problem remains
+      Added a debugMethod object that can trun debug output on
+      in the same way as RegMethod.
+
+commit e11a3b00a6e8e04f3996e87f6e26b2e006332a78
+Author: Stuart Ansell <xansell@gmail.com>
+Date:   Tue Mar 25 14:30:00 2014 +0000
+
+    Put back the PhysicsCard fix from Kbat.
+    
+      It was deleted in the grat big Vec3D bug hunt over the weekend
+      [23March] as I regressed back  versions to find out what I had done to
+      break trackline and I didn't correctly merge forward.
+      -- Now checking other items that I may well have missed.
+
+commit ab6165040acecc6401f425540eb538a2519a78e7
+Author: Stuart Ansell <xansell@gmail.com>
+Date:   Sun Mar 23 23:58:22 2014 +0000
+
+    Major BUG fix : Error with geometry tracking:
+    
+       This is a major fix to the method of tracking "neutrons" through the
+       simulation. The function trackCell has been re-written to use only
+       isDirectionValid rather than pairValid.
+    
+       For the time being pairValid and all the accompaning bagage has been
+       left BUT that hopefully isnt for long.
+    
+       The new code is much faster. It seems robust relative to simple
+       checks on pipeline code [ts1 target/ess/chipIR] but could easily have
+       a few problems.
+    
+       Further : There was an error with EllipticCyl that allowed neutrons
+       to escape. [Fixed Line::intersect and EllipticCyl::setSurface]
+    
+       Additionally, to make life easier when intersecting projected
+       objects, two additional functions have been added to Vec3D. They are
+       cutComponent and Component. The functions calculate the Vec3D that is
+       in the direction of the test vector. This work means that a complete
+       rebuild is necessary.
+    
+       Additional work on exploring the TS1 upgrade has taken place.
+
+commit dac6e8e0c3bf45b6b948e371a0b4cbdd642640f3
+Author: Stuart Ansell <xansell@gmail.com>
+Date:   Tue Mar 18 14:21:45 2014 +0000
+
+    Simple commit of a merge of the prdmp access modification
+      -- added test to prevent an empty invalid string being written.
+    	-- Access route via PhysicsCard
+
+commit aa8420d3e9d0e6b4657d2e25a69102c41ee33a6f
+Merge: 4a29751 30e68f1
+Author: Stuart Ansell <xansell@gmail.com>
+Date:   Tue Mar 18 14:18:10 2014 +0000
+
+    Merge remote-tracking branch 'upstream/master'
+       -- Merge with KBst upstream master for prdmp
+
+commit 4a29751a4c89dfc083c528dad4420854ded2d09e
+Author: Stuart Ansell <xansell@gmail.com>
+Date:   Tue Mar 18 14:13:37 2014 +0000
+
+    Added sinbad build
+
+commit 153fdd247625169c2d96012755a9c2fc6abe6f1e
+Author: Stuart Ansell <xansell@gmail.com>
+Date:   Tue Mar 18 14:05:17 2014 +0000
+
+    Triangle moderator update
+      -- The triangle moderator can now be any shape.
+    	-- It can also have as many cutouts are required
+    	-- Test case is with 2 cut outs and double concave design
+
+commit 30e68f1fd7a0720e1a34b8fa253e1790770e6efc
+Author: Konstantin Batkov <kbat.github@lizardie.com>
+Date:   Mon Mar 17 13:46:44 2014 +0100
+
+    prdmp setter added
+
+commit 5970fd95eeeba47febd3a780f2708e724b681322
+Author: Stuart Ansell <xansell@gmail.com>
+Date:   Fri Mar 7 14:19:37 2014 +0000
+
+    Triangle Mod fix:
+      -- Slight error with createInnerObjects fixed [DOES NOT work]
+
+commit e6c6115d37afee79237b483ee99e6b6222833610
+Author: Stuart Ansell <xansell@gmail.com>
+Date:   Fri Mar 7 13:55:02 2014 +0000
+
+    Added sinbad source to master
+
+commit 0b47e80a513abacec77f7b679a71d0234ab34e81
+Author: Stuart Ansell <xansell@gmail.com>
+Date:   Fri Mar 7 13:47:23 2014 +0000
+
+    Coverity fixes / Adjustment to way flightline works / OpenTarget
+    Triangle moderator
+    
+    --  Far to big a mod - adds fix for flightlines -- this still needs
+    simplifying
+    --  Covertity fixes
+    -- ESS BeRef fixes to make a lot quicker and more stable.
+    -- Addition of a open W block target
+    -- Partial update of triangle moderator to be non-triangle like if
+    needed
+
+commit 6cb0ed05c7599ff51b25232309389c3f68d93578
+Author: Stuart Ansell <xansell@gmail.com>
+Date:   Thu Feb 27 01:11:56 2014 +0000
+
+    Modifications to Fix Coverity errors
+      -- Mostly little memory use on error type problmes.
+         The kind of thing that makes a mess of a debug statement.
+      -- Additional fixes to get rid of type-warnings.
+
+commit ce9871e52f26f136c453317197de012115176d01
+Author: Stuart Ansell <xansell@gmail.com>
+Date:   Thu Feb 20 22:32:48 2014 +0000
+
+    Makefile update : Improvement to the makefile ssystem.
+        This updates the makefile to correctly build when
+        just building one project.
+
+commit ddaf512ee58b9dde8fe6663c8e430e82123c4144
+Author: Stuart Ansell <xansell@gmail.com>
+Date:   Thu Feb 20 22:19:37 2014 +0000
+
+    More coverity bugs and fixes
+     -- nothing too scary in this list only real bug wsa in
+        SymUnit. the rest were copy constructor issues/unused stuff etc
+
+commit 4f8f87118b9af1309ba35a02ab1c543e5587c811
+Author: Stuart Ansell <xansell@gmail.com>
+Date:   Wed Feb 19 03:12:45 2014 +0000
+
+    Fixing of the link error bug and numerous little things from
+    the coverity pass.
+
+commit f97b6971cc3dca43d0ac7570b5ae20b4eddc5032
+Author: Stuart Ansell <xansell@gmail.com>
+Date:   Mon Feb 17 23:18:47 2014 +0000
+
+    Coverity fix part 1:
+       -- Have a coverity scan of CombLayer, it has produced one serious but
+          in makeCNF [not fixed yet].
+       -- a number of little annoyances and missed a couple of
+    things I think it REALLY should have got but in looking in the vacinity I found.
+    
+    This patch's main feature is in HeadRule.getSurfaceNumbers().  The error was
+    within the creation of the surface number and it could not see the second number
+    regardless of the addition because I typed:
+    
+    SP=dynamic_cast<const SurfPoint*>(HeadNode)
+    
+    and it should have been headPtr not HeadNode!!
+    
+    That error was repeated in two other places [less common : getSurfaces()
+    and getOppositeSurfaces [should now not be called].
+
+commit aff55a017b4445886668d93e2b83a5531db1208d
+Author: Stuart Ansell <xansell@gmail.com>
+Date:   Sat Feb 15 10:14:11 2014 +0000
+
+    Issue #4 Test Failures:
+       -- This fixes some (but not all) of the tests.
+          Main fixes are from the tests not correctly using
+          newer interfaces or other such things.
+    
+      -- Additional fix because I wanted to display the bilbau model
+         and added that to the main list along with fixing the materials
+         naming issue by changing "Aluminium6061" to "Aluminium".
+    
+      -- Started adjusting the position of the pipes in the ESS moderator
+         sample.
+
+commit 6aa91e851031a52711db2ddb635a326a447f148c
+Author: Stuart Ansell <xansell@gmail.com>
+Date:   Wed Feb 12 22:24:38 2014 +0000
+
+    Removal of excessive screen output from Object/SupplyPipe
+       Debug statements were added in fixing the populated problem
+       and the statements were not removed.
+
+commit ca1b32fa328091c09e1b7fb19b62b17f559f258e
+Author: Stuart Ansell <xansell@gmail.com>
+Date:   Wed Feb 12 22:03:04 2014 +0000
+
+    Bug fix: populated not set in the string version of Object::setObject
+       -- Bug was the reason that testObject failed.
+          Not sure what else it effects.
+    
+       Tidied up LineTrack includes
+       Fixed issue with passing size_t to SrcItem from Source
+
+commit e67800f65fab7c9c7486b3ce313057a3143f8c9c
+Author: Stuart Ansell <xansell@gmail.com>
+Date:   Wed Feb 12 01:37:51 2014 +0000
+
+    Reorganization of essBuild to use ts1System CylMod.
+      -- This takes advantage of the conics and other stuff from Japan
+
+commit 499b8fff1b8dcec51ce2b272a119aa8c0f0f1016
+Merge: 0eb2266 745fc19
+Author: Stuart Ansell <xansell@gmail.com>
+Date:   Tue Feb 11 23:57:44 2014 +0000
+
+    Merge branch 'master' of https://github.com/SAnsell/CombLayer
+    Fixed issue with block size
+    
+    Conflicts:
+    	essBuild/essVariables.cxx
+
+commit 745fc19f33b3da0ac00624e849490d028207e0f0
+Author: Stuart Ansell <xansell@gmail.com>
+Date:   Mon Feb 10 15:32:08 2014 +0000
+
+    Updates to the testing system :
+      -- Fixed issue with Cone side
+    Updates to the PipeLine :
+      -- allows the number of segments in a pipe track to be set
+    	   This allows a quick dirty fixing of issues were just the outside
+    		 edge of a pipe clips an object
+    Update tally system:
+      -- Allow standard [non-beamline] tallies to have view back tracking
+    	set. Also slightly improve the uniformity of beamlinetally and
+    	pointtally (using same functions)
+
+commit 0eb22668692d6de108ec392f00d8f810b528dd33
+Author: Stuart Ansell <xansell@gmail.com>
+Date:   Sat Feb 8 12:16:29 2014 +0000
+
+    Minor commit to update the tests
+      -- Only thing of consequence was that Cone could return
+         the incorrect value in the method side.
+         surfRegister has a reset function added. Mainly to aid testing
+
+commit 0ec259d34aba43918d5c83da1f71e6d9d3969d92
+Author: Stuart Ansell <xansell@gmail.com>
+Date:   Wed Feb 5 22:48:02 2014 +0000
+
+    Update of flightline system to allow extended pre-mods.
+      -- additional fixing to the whole of the FixedComp system
+         to deal with common rules and main rules. This separation
+         allows a LinkUnit to be used in complement form without
+         a divider being affected. E.g if a cylinder + a plane divider
+         are complemented only the cylinder changes sign.
+    
+         Updates from Goran for a better TS1.
+    
+         Modifications to SrcData/DSTerm and SourceCreate. Some are Goran's
+         and some are Alberto's for sinbad.
+
+commit 12d94654cfc87fc23eae3be28b1568693f7e334f
+Author: Stuart Ansell <xansell@gmail.com>
+Date:   Tue Feb 4 10:38:53 2014 +0000
+
+    Removing unnecessary include files from files
+
+commit c5af6d4d98ddbd687c62e8ede645364e6b985b62
+Author: Stuart Ansell <xansell@gmail.com>
+Date:   Mon Feb 3 03:39:03 2014 +0000
+
+    Bridge rule for FixedComp / SupplyPipe update / LayerComp update
+    
+    Bridge rule : These are surfaces or rules that do not change under
+    some complementary operations. E.g. a divider surface. This has been
+    added to FixedComp. A few uses have been added in.
+    
+    LayerComp now tracks the number of layers. This involves a change to the
+    constructor and a number of locations have been updated.
+    
+    SupplyPipe [ess model] has been improved and made slightly more
+    relistic.
+
+commit d114d7f89b2890ee4ebcbafd7d854c7289e9b1fe
+Merge: 3e396a1 aa75419
+Author: Stuart Ansell <xansell@gmail.com>
+Date:   Fri Jan 31 11:12:01 2014 +0000
+
+    Merge
+    
+    Merge branch 'master' of https://github.com/SAnsell/CombLayer into HEAD
+
+commit 3e396a1255dd217821ea88badcf8f4a107e3c9cf
+Author: Stuart Ansell <xansell@gmail.com>
+Date:   Thu Jan 30 16:37:24 2014 +0000
+
+    Modification to fix but with beamTally not calling correct
+    tally/tallyRenumber
+
+commit aa7541952c88504e218b1900e79e4849d6d4908c
+Author: Stuart Ansell <xansell@gmail.com>
+Date:   Thu Jan 30 16:37:24 2014 +0000
+
+    Modification to fix but with beamTally not calling correct
+    tally/tallyRenumber
+
+commit a1e961649a5e117fe3ffc7401a26d17604c06229
+Author: Stuart Ansell <xansell@gmail.com>
+Date:   Thu Jan 30 16:35:22 2014 +0000
+
+    Added New protonTube object
+
+commit af8f9c0b381aa07a749d4d1178e3dc155daf3a26
+Author: Stuart Ansell <xansell@gmail.com>
+Date:   Thu Jan 30 16:32:29 2014 +0000
+
+    Removal of these items as they just shouldn't be there
+
+commit b7735cae1b07deddfd0d2199bdc7375e4e3794d4
+Author: Stuart Ansell <xansell@gmail.com>
+Date:   Thu Jan 30 16:29:52 2014 +0000
+
+    Large change of too much:
+      Log system imrpovements -- endDebug requires DebugStatus
+      Addition of BNCT system
+      Tracking of lines within ContainedComponent
+      Checking if ContainedComp intersects objects
+      ESS proton tube [not finished]
+      XML error reading materials
+
+commit 526bbd8d7a8935488d8dfa4c88f535c7b14e7fe0
+Merge: 8c42f12 5f0de28
+Author: Stuart Ansell <xansell@gmail.com>
+Date:   Wed Jan 29 13:30:11 2014 +0000
+
+    Merge branch 'TriangleModOrigin'
+
+commit 5f0de2804b1c283459e2efe7aaf9d45c462482dd
+Author: Stuart Ansell <xansell@gmail.com>
+Date:   Wed Jan 29 13:28:58 2014 +0000
+
+    Fixing the Triangle Moderators axis set
+
+commit 8c42f12b64c569e2d64c3b7ad32181b6c724bf77
+Merge: 472d851 8b83cba
+Author: Stuart Ansell <xansell@gmail.com>
+Date:   Wed Jan 29 13:23:32 2014 +0000
+
+    Merge branch 'master' of https://github.com/SAnsell/CombLayer
+
+commit 8b26a9d5fd909af7a53f2cada278c8d010337e0c
+Author: Stuart Ansell <xansell@gmail.com>
+Date:   Thu Jan 16 21:23:01 2014 +0000
+
+    Getting t1Base/t1MarkII to build good models
+
+commit 8b83cba76f6d708933616fa4f7e3d9d96eeb9cc6
+Author: Stuart Ansell <xansell@gmail.com>
+Date:   Thu Jan 16 02:26:15 2014 +0000
+
+    Materials being merged to make fractional compounds.
+    -- Incomplete functionallity
+
+commit de265571b11cd34c6b6f513efb7ccf2741505dc2
+Author: Stuart Ansell <xansell@gmail.com>
+Date:   Wed Jan 15 12:30:39 2014 +0000
+
+    Materials are now all string names:
+       This commit has tried to convert all the materials to
+       string names. This has been done throughout the code
+       [Except test]. This avoids the problem of inconsistent
+       material names.
+    
+       Secondly a small start has been made on having fractional materials
+
+commit 472d851a7b384f0770874ed59ed29bdfeece6af8
+Merge: c5067a1 e2d2b6d
+Author: Stuart Ansell <xansell@gmail.com>
+Date:   Tue Jan 14 16:03:29 2014 +0000
+
+    Cross merge
+    Merge branch 'master' of https://github.com/SAnsell/CombLayer
+
+commit e2d2b6de139d02eabe62b12c8da16274fd66a8c7
+Author: Stuart Ansell <xansell@gmail.com>
+Date:   Tue Jan 14 15:59:06 2014 +0000
+
+    Removing redundent TS1 variables
+
+commit c5067a1074ffd9e6452ab7f9ea67e2cc140ca866
+Merge: 4dc6af1 cb50434
+Author: Stuart Ansell <xansell@gmail.com>
+Date:   Tue Jan 14 15:43:18 2014 +0000
+
+    Merge branch 'master' of https://github.com/SAnsell/CombLayer
+
+commit cb50434b85ba848c98cc02a362bb1606b95bf2c7
+Author: Stuart Ansell <xansell@gmail.com>
+Date:   Mon Jan 13 00:03:19 2014 +0000
+
+    Fixing gcc compatibility bug with cycIterator +
+      Fixing issues with newer material names in ess stuff.
+    
+    Still to do : Merge from Alberto ESS model.
+                : Merge from Goran.
+
+commit 13e381336cb213803010d60c5974a544aa85d375
+Author: Stuart Ansell <xansell@gmail.com>
+Date:   Thu Jan 9 21:43:49 2014 +0000
+
+    Documentations + minor additions to files/materials etc
+
+commit 4dc6af1745c69c0ee68429fbca23706d1d9fc9a6
+Author: Stuart Ansell <xansell@gmail.com>
+Date:   Mon Jan 6 11:14:56 2014 +0000
+
+    Name change of front to outer
+
+commit 5d78c46c73243ff52aec22def09364588703fa87
+Author: Stuart Ansell <xansell@gmail.com>
+Date:   Wed Dec 18 17:10:38 2013 +0000
+
+    Simple commit to add vaned poisoning to the TS1 water moderators.
+    
+    Corrected small error in spelling in DBMaterial
+
+commit 796576d3a05c8eec3d25710a51eec345f0238f92
+Merge: fddbe83 d40a004
+Author: Stuart Ansell <xansell@gmail.com>
+Date:   Mon Dec 16 10:05:23 2013 +0000
+
+    Merge branch 'master' of https://github.com/SAnsell/CombLayer
+    
+    Conflicts:
+    	Main/muBeam.cxx
+    	Main/sns.cxx
+    	snsBuild/SNSVariables.cxx
+    	snsBuild/makeSNS.cxx
+    	snsBuildInc/makeSNS.h
+
+commit fddbe8392f77a99dd83383e543365916b15ee86a
+Author: Stuart Ansell <xansell@gmail.com>
+Date:   Mon Dec 16 09:51:37 2013 +0000
+
+    Update with two new models Muon and SNS combined.
+     -- The muon model is a complex muon beamline model done by Goran Skoro
+     -- The SNS model is just the proto-shell to start building the SNS
+     model. Not actually enough to be called a model really.
+    
+     Additionally, removal of removeDeadCell and AlterSurfBase as they are
+     not used.
+
+commit d40a004a77bd5015cc9e296674a74353dace115a
+Author: Stuart Ansell <xansell@gmail.com>
+Date:   Tue Dec 10 22:27:13 2013 +0000
+
+    Muon beamline working -- errors in merge from previous version fixed.
+    
+    Despite Goran provided me we a working verion, the previous version has
+    a mis-merge error. The new string-materials system now works and the linkage within
+    the getMk also has been fixed.
+
+commit 847d17fb7f4df2bf799df59d9f496272bf5c8470
+Author: Stuart Ansell <xansell@gmail.com>
+Date:   Tue Dec 10 20:47:08 2013 +0000
+
+    Muon beamline added to the master -- branch point for SNS/Muons
+    
+    The muon beamlines model for TS1 has been added.
+    The start but virtually no code/construction has been done for
+    the SNS model.
+    
+    Sources have been updated a bit to allow the TS1 proton beam to be
+    modeled at an position down the EPB.
+
+commit 988f2bdfb3910208c4a360340c76f0d6f7abc852
+Author: Stuart Ansell <xansell@gmail.com>
+Date:   Fri Nov 29 15:16:41 2013 +0000
+
+    Error with depreciated include in makeTS1Real
+
+commit 121830bdc807d39ce4f18dece4cb8207fea4f46e
+Author: Stuart Ansell <xansell@gmail.com>
+Date:   Thu Nov 28 23:03:41 2013 +0000
+
+    Removed stupid debug comments that just mess up the output txt.
+
+commit 73909948c7abc3bcd684470def639a76227330c3
+Author: Stuart Ansell <xansell@gmail.com>
+Date:   Thu Nov 28 22:40:01 2013 +0000
+
+    Variables are only written to the MCNPX file if actually used
+    
+       - horrible use of const_cast in FItem but couldn't think of a
+       better way.
+
+commit a6e190485c1a917a75951d78441b9b2df8443157
+Merge: d423203 659e278
+Author: Stuart Ansell <xansell@gmail.com>
+Date:   Wed Nov 27 22:25:03 2013 +0000
+
+    Merge branch 'MaterialString' of https://github.com/SAnsell/CombLayer into MaterialString
+
+commit d423203567df6c27d0a4bb00457c4a0e9a233b10
+Merge: 0876a41 d4f193e
+Author: Stuart Ansell <xansell@gmail.com>
+Date:   Wed Nov 27 22:04:12 2013 +0000
+
+    Merge https://github.com/SAnsell/CombLayer into MaterialString
+
+commit 659e278b329ec5fffb022a6c8bb32c1c5fb99bd6
+Author: Stuart Ansell <xansell@gmail.com>
+Date:   Wed Nov 27 13:48:50 2013 +0000
+
+    Futher improvements to fix tiny issues with the material as a string
+    -- bug that allows a 0 material to be written
+    -- plate variables
+
+commit 0876a417afb79bb36cd0e521d694c685be179740
+Author: Stuart Ansell <xansell@gmail.com>
+Date:   Tue Nov 26 23:01:29 2013 +0000
+
+    Material as a string
+    
+    This is a big change to almost all the build files to deal with
+    materials as a string, instead of a number. That needs two things, first
+    that I have added MaterialSupport.h and MaterialSupport.cxx, that give a
+    complementary function EvalMat which is similar to EvalVar.
+    
+    Second every use of EvalVar<int> to get a material or similar needed to
+    be changed.
+    
+    Note I have not actually started putting many of the materials in as
+    names. [Just a couple in ess and ts1 to test.]
+
+commit d4f193e4733982f886dcb46b548aa79712eb3894
+Author: Stuart Ansell <xansell@gmail.com>
+Date:   Tue Nov 26 22:56:24 2013 +0000
+
+    Deleted useless files
+
+commit 72c96ef931785d6255b6b696e2a2ed7d9272cd03
+Author: Stuart Ansell <xansell@gmail.com>
+Date:   Mon Nov 25 23:54:02 2013 +0000
+
+    Modifications to the main build object to use named materials
+    
+      Addition of MaterialSupport to create a EvalMat template
+    
+        -- this can be added to almost any file that previously used
+           control.EvalVar<int> to get a material number, and now it can
+           get either a name or a number.
+
+commit a7f85e12db86ebc6a8377f7cb9fb089d992ef64b
+Author: Stuart Ansell <xansell@gmail.com>
+Date:   Mon Nov 25 23:31:35 2013 +0000
+
+    Simple removal of dead/empty files
+      Lh2Moderator has been replaced by H2Moderator
+      CylFluxTrap is empty, and a cylindrical flux trap can be achieve
+         by using a simple cylindrical target
+
+commit 184504fe7475c23eb264aa0e210217f08c734ab4
+Author: Stuart Ansell <xansell@gmail.com>
+Date:   Mon Nov 25 00:15:02 2013 +0000
+
+    Initial modification to move materials from a number to a string
+    
+    The idea is that materials should be referenced by name and not
+    by number. The initial version of this code needs to do two thinks:
+    
+    - first it needs to allow variables that are strings
+    - second it needs to support named materials within the DBMaterials
+    date base.
+    
+    The version of the code seems to do both of those jobs.
+
+commit 75287619451570e0390c7efbe6c2cbd6dab00fb0
+Author: Stuart Ansell <xansell@gmail.com>
+Date:   Fri Nov 22 11:47:31 2013 +0000
+
+    This commit is to improve the way that PipeLines connect to objects.
+    
+    Previously, we had pipelines connects using points and then creating a
+    surface bound on that point and using the normal that is based on the
+    dividing direction of the two pipes, or for an end point used that
+    segment normal.
+    
+    This addition adds the possibility to add a surface boundary as the pipe
+    segment divider. The boundary allows curved surfaces etc to be attached.
+    This is done with the function:
+    
+    PipeLine::addSurfPoint(Point[Vec3D],SurfaceString,CommontString)
+    
+    The point (mid point) is still required to construct the axis. If a
+    number of pipe units link along with surfaces then it is ignored.
+    The SurfaceString is the link surface pointing OUTWARD. The CommonString
+    is the surface that all using of the SurfaceString obey.
+    
+    As a pipe is a linked line of units, the surface has to be complemented
+    to get the next section. This also caused a problem becasue divider
+    surface (e.g. a cylinder and a divider plane) do not need to be
+    complemented. That was dealt with by adding a common surface string to
+    the new function, this is not complemented.
+    
+    The example of this use is in the ESS model, in SupplyPipe. A lower pipe
+    is connected to the lower moderator using the cylindrical surfaces.
+    
+    In order to make the access to the common surface easier, an additional
+    funciton getCommonSurf was added to LayerComp.
+
+commit a6a01ced96533671557fba6bd4ef845eae4b45fc
+Author: Stuart Ansell <xansell@gmail.com>
+Date:   Tue Nov 19 12:11:22 2013 +0000
+
+    Update README.md
+
+commit 5138753d128e4a924fcc4f6d5e8263e3d049961f
+Merge: 0be55eb 9c1653f
+Author: Stuart Ansell <xansell@gmail.com>
+Date:   Mon Nov 18 23:10:10 2013 +0000
+
+    Merge https://github.com/SAnsell/CombLayer
+
+commit 0be55ebad58295ceded7b7a6a520b0492328535f
+Author: Stuart Ansell <xansell@gmail.com>
+Date:   Mon Nov 18 23:08:11 2013 +0000
+
+    Initial Commit
+
+commit cbb29d0cc5017362bf79a6937b59075c2ff34c79
+Author: Stuart Ansell <xansell@gmail.com>
+Date:   Mon Nov 18 22:44:06 2013 +0000
+
+    Initial commit
+
+commit 9c1653f17091b55bc26c8c0c5c41f774c1063b38
+Author: Stuart Ansell <xansell@gmail.com>
+Date:   Mon Nov 18 14:43:00 2013 -0800
+
+    Initial commit

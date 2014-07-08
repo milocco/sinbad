@@ -1,0 +1,62 @@
+BeRef                         1000000    ::     10000 (fixed) 0 0 0
+BeamMonitor                   1020000    ::     10000 (fixed) 0 0 0
+Bulk                          1150000    ::     10000 (fixed) 0 0 0
+BulkLAFlight                  1160000    ::     10000 (fixed) 0 0 0
+G1BLine1                      1230000    ::     10000 (fixed) 0 0 -18
+G1BLine10                     1320000    ::     10000 (fixed) 0 0 -18
+G1BLine11                     1330000    ::     10000 (fixed) 0 0 -18
+G1BLine12                     1340000    ::     10000 (fixed) 0 0 -18
+G1BLine2                      1240000    ::     10000 (fixed) 0 0 -18
+G1BLine3                      1250000    ::     10000 (fixed) 0 0 -18
+G1BLine4                      1260000    ::     10000 (fixed) 0 0 -18
+G1BLine5                      1270000    ::     10000 (fixed) 0 0 -18
+G1BLine6                      1280000    ::     10000 (fixed) 0 0 -18
+G1BLine7                      1290000    ::     10000 (fixed) 0 0 -18
+G1BLine8                      1300000    ::     10000 (fixed) 0 0 -18
+G1BLine9                      1310000    ::     10000 (fixed) 0 0 -18
+G2BLine1                      1360000    ::     10000 (fixed) 0 0 -18
+G2BLine10                     1450000    ::     10000 (fixed) 0 0 -18
+G2BLine11                     1460000    ::     10000 (fixed) 0 0 -18
+G2BLine12                     1470000    ::     10000 (fixed) 0 0 -18
+G2BLine2                      1370000    ::     10000 (fixed) 0 0 -18
+G2BLine3                      1380000    ::     10000 (fixed) 0 0 -18
+G2BLine4                      1390000    ::     10000 (fixed) 0 0 -18
+G2BLine5                      1400000    ::     10000 (fixed) 0 0 -18
+G2BLine6                      1410000    ::     10000 (fixed) 0 0 -18
+G2BLine7                      1420000    ::     10000 (fixed) 0 0 -18
+G2BLine8                      1430000    ::     10000 (fixed) 0 0 -18
+G2BLine9                      1440000    ::     10000 (fixed) 0 0 -18
+GuideBay1                     1220000    ::     10000 (void)
+GuideBay2                     1350000    ::     10000 (void)
+GuideBay3                     1480000    ::     10000 (void)
+GuideBay4                     1490000    ::     10000 (void)
+LReturn                       1090000    ::     10000 (void)
+LReturnCoAx1                  1570000    ::     10000 (void)
+LReturnCoAx2                  1580000    ::     10000 (void)
+LReturnCoAx3                  1590000    ::     10000 (void)
+LReturnCoAx4                  1600000    ::     10000 (void)
+LReturnCoAx5                  1610000    ::     10000 (void)
+LSupply                       1080000    ::     10000 (void)
+LSupplyCoAx1                  1500000    ::     10000 (void)
+LSupplyCoAx2                  1510000    ::     10000 (void)
+LSupplyCoAx3                  1520000    ::     10000 (void)
+LSupplyCoAx4                  1530000    ::     10000 (void)
+LSupplyCoAx5                  1540000    ::     10000 (void)
+LSupplyCoAx6                  1550000    ::     10000 (void)
+LSupplyCoAx7                  1560000    ::     10000 (void)
+LowAFlight                    1030000    ::     10000 (fixed) -8.99658 -8.41377 -18
+LowBFlight                    1040000    ::     10000 (fixed) 11.9903 4.16201 -18
+LowMod                        1190000    ::     10000 (fixed) 0 0 -18
+LowModWedge1                  1200000    ::     10000 (fixed) 0 0 -17
+LowPre                        1050000    ::     10000 (fixed) 0 0 -18
+LowPreABlock                  1060000    ::     10000 (fixed) -2.76596 -11.077 -18
+LowPreBBlock                  1070000    ::     10000 (fixed) 12.1787 -0.554222 -18
+ProtonTube                    1010000    ::     10000 (fixed) 0 33 0
+ShutterBay                    1170000    ::     10000 (fixed) 0 0 0
+TopAFlight                    1100000    ::     10000 (fixed) 0 0 0
+TopBFlight                    1110000    ::     10000 (fixed) 0 0 0
+TopMod                        1210000    ::     10000 (fixed) 0 0 18
+TopPre                        1120000    ::     10000 (fixed) 0 0 18
+TopPreABlock                  1130000    ::     10000 (fixed) -9.94429 1.86525 18
+TopPreBBlock                  1140000    ::     10000 (fixed) 5.62502 -8.84796 18
+Wheel                         1180000    ::     10000 (void)
