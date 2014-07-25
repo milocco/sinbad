@@ -55,7 +55,7 @@ namespace sinbadSystem
 
 sbadDetector::sbadDetector(const std::string& Key,const size_t ID) :
   attachSystem::ContainedComp(),
-  attachSystem::FixedComp(Key+StrFunc::makeString(ID),0),
+  attachSystem::FixedComp(Key+StrFunc::makeString(ID),6),
   baseName(Key),detID(ID),
   detIndex(ModelSupport::objectRegister::Instance().cell(keyName)),
   cellIndex(detIndex+1),active(0)
@@ -199,10 +199,25 @@ sbadDetector::createObjects(Simulation& System)
 
 void
 sbadDetector::createLinks()
-  /*!
+  /*
     Create all the links
   */
 {
+  ELog::RegMethod RegA("sbadDetector","createLinks");
+  
+  FixedComp::setLinkSurf(0,-SMap.realSurf(detIndex+1));
+  FixedComp::setLinkSurf(1,SMap.realSurf(detIndex+2));
+  FixedComp::setLinkSurf(2,SMap.realSurf(detIndex+7));
+  FixedComp::setLinkSurf(3,SMap.realSurf(detIndex+7));
+  FixedComp::setLinkSurf(4,SMap.realSurf(detIndex+7));
+  FixedComp::setLinkSurf(5,SMap.realSurf(detIndex+7));
+
+  FixedComp::setConnect(0,Origin-Y*(length/2.0),-Y);
+  FixedComp::setConnect(1,Origin+Y*(length/2.0),Y);
+  FixedComp::setConnect(2,Origin-X*(radius),-X);
+  FixedComp::setConnect(3,Origin-X*(radius),X);
+  FixedComp::setConnect(4,Origin-Z*(radius),-Z);
+  FixedComp::setConnect(5,Origin+Z*(radius),Z);
 
   return;
 }
@@ -222,6 +237,7 @@ sbadDetector::createAll(Simulation& System,
   createUnitVector(FC);
   createSurfaces();
   createObjects(System);
+  createLinks();
   insertObjects(System);
 
   return;

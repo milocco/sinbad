@@ -259,6 +259,36 @@ addToInsertControl(Simulation& System,
   return;
 }
 
+  // refuse from old function which was needed in Sinbadmake.
+
+void
+addToInsertControl(Simulation& System,
+		   const attachSystem::FixedComp& BaseFC,
+		   const attachSystem::FixedComp& FC,
+		   attachSystem::ContainedComp& CC)
+/*!
+  Adds this object to the containedComp to be inserted.
+  FC is the fixed object that is to be inserted -- linkpoints
+  must be set. It is tested against all the ojbect with
+  this object .
+  \param System :: Simulation to use
+  \param FC :: FixedComp with the points
+  \param CC :: ContainedComp object to add to this
+*/
+{
+  ELog::RegMethod RegA("AttachSupport","addToInsertControl");
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+  const int cellN=OR.getCell(BaseFC.getKeyName());
+  const int cellR=OR.getRange(BaseFC.getKeyName());
+  addToInsertControl(System,cellN,cellN+cellR,FC,CC);
+
+  return;
+}
+
+
+
+
 void
 addToInsertControl(Simulation& System,
 		   const std::string& OName,

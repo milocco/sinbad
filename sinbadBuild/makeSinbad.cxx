@@ -67,7 +67,7 @@ namespace sinbadSystem
 
 makeSinbad::makeSinbad(const std::string& pKey) :
   preName(pKey),
-  Primary(new LayerPlate("FPlate")),
+  Primary(new LayerPlate(pKey+"NestorSide")),
   Secondary(new LayerPlate(pKey+"Shield")),
   fPlate(new FissionPlate(pKey+"FissionPlate"))
   /*!
@@ -137,7 +137,10 @@ makeSinbad::buildDetectors(Simulation& System)
       detArray.push_back(detPtr);   
       detArray.back()->createAll(System,*Secondary);
       if (detArray.back()->isActive())
-	attachSystem::addToInsertSurfCtrl(System,*Secondary,*detPtr);
+	{
+	  ELog::EM<<"Active"<<ELog::endDiag;
+	  attachSystem::addToInsertControl(System,*Secondary,*detPtr,*detPtr);
+	}
     }
   return;
 }

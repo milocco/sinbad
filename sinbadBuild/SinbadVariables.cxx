@@ -28,6 +28,7 @@
 #include "varList.h"
 #include "FuncDataBase.h" 
 #include "variableSetup.h"
+#include "stringCombine.h"
 
 namespace setVariable
 {
@@ -40,9 +41,13 @@ SinbadVariables(FuncDataBase& Control)
     \param Control :: Function data base to add constants too
   */
 {
-  // Detectors
 
-  Control.addVariable("49DetectorPositionN",4);  
+  /////////////////////////////////////////////////////////////////////////////////
+  // EXPERIMENT 49 (ASPIS Neutron/Gamma-Ray Transport Through Water/Steel Arrays)
+  /////////////////////////////////////////////////////////////////////////////////
+
+
+  Control.addVariable("49DetectorPositionN",1);  
 
   Control.addVariable("49Detector0Active",1);   
   Control.addVariable("49Detector1Active",0);   
@@ -55,10 +60,12 @@ SinbadVariables(FuncDataBase& Control)
   Control.addVariable("49DetectorXYAngle",0.0);  
   Control.addVariable("49DetectorZAngle",0.0);  
   Control.addVariable("49DetectorMat","Rh");  
-  Control.addVariable("49DetectorRadius",1.27);   
-  Control.addVariable("49DetectorLength",0.1); 
+  Control.addVariable("49DetectorRadius",10.27);   
+  Control.addVariable("49DetectorLength",0.5); 
 
-  Control.addVariable("49DetectorYStep1",5.1);  
+  // Control.addVariable("49DetectorYStep1",5.1);  
+  Control.addVariable("49DetectorYStep1",3.1);  
+
   Control.addVariable("49DetectorYStep2",10.18);  
   Control.addVariable("49DetectorYStep3",15.96);  
   Control.addVariable("49DetectorYStep4",21.74);  
@@ -70,29 +77,195 @@ SinbadVariables(FuncDataBase& Control)
   Control.addVariable("49DetectorYStep9",32.94);  
   Control.addVariable("49DetectorYStep10",34.44);  
 
-  //FPlate side
+  /////////////////////////////////////////////////
+  // 49 NestorSide 
+  // (The part of the experimental array between Nestor reactor and fission plate)
 
-  Control.addVariable("FPlateXStep",91.45);  
-  Control.addVariable("FPlateYStep",-1.45);  
-  Control.addVariable("FPlateZStep",95.5);  
 
-  Control.addVariable("FPlateWidth",182.9);   
-  Control.addVariable("FPlateHeight",191.0);  
+  // Control.addVariable("49NestorSideXStep",91.45);  
+  // Control.addVariable("49NestorSideYStep",-1.45);  
+  // Control.addVariable("49NestorSideZStep",95.5);  
 
-  Control.addVariable("FPlateNSlab",6);
-  Control.addVariable("FPlateThick0",0.70); 
-  Control.addVariable("FPlateMat0","Void"); 
-  Control.addVariable("FPlateThick1",15.0); 
-  Control.addVariable("FPlateMat1","Graphite"); 
-  Control.addVariable("FPlateThick2",0.60); 
-  Control.addVariable("FPlateMat2","Void");  
-  Control.addVariable("FPlateThick3",5.08); 
-  Control.addVariable("FPlateMat3","sbadLead");  
-  Control.addVariable("FPlateThick4",0.70); 
-  Control.addVariable("FPlateMat4","Void");  
-  Control.addVariable("FPlateThick5",3.18); 
-  Control.addVariable("FPlateMat5","sbadMildSteel");  
-  Control.addVariable("FPlateAlWindowRadius",56.06); 
+  Control.addVariable("49NestorSideXStep",0);
+  // the Y step is set so that the fission plate centre is at the origin  
+  Control.addVariable("49NestorSideYStep",-26.71);  
+  Control.addVariable("49NestorSideZStep",0);  
+
+  Control.addVariable("49NestorSideXYAngle",0.0);  
+  Control.addVariable("49NestorSideZAngle",0.0);  
+
+  Control.addVariable("49NestorSideWidth",182.9);   
+  Control.addVariable("49NestorSideHeight",191.0);  
+
+  Control.addVariable("49NestorSideNSlab",6);
+
+  Control.addVariable("49NestorSideThick0",3.18); 
+  Control.addVariable("49NestorSideMat0","49MildSteel1");  
+  Control.addVariable("49NestorSideAlWindowRadius",56.06); 
+  Control.addVariable("49NestorSideThick1",0.70); 
+  Control.addVariable("49NestorSideMat1","Void");  
+  Control.addVariable("49NestorSideThick2",5.08); 
+  Control.addVariable("49NestorSideMat2","49Lead");  
+  Control.addVariable("49NestorSideThick3",0.60); 
+  Control.addVariable("49NestorSideMat3","Void");  
+  Control.addVariable("49NestorSideThick4",15.0); 
+  Control.addVariable("49NestorSideMat4","49Graphite"); 
+  Control.addVariable("49NestorSideThick5",0.70); 
+  Control.addVariable("49NestorSideMat5","Void"); 
+
+  ////////////////////////////////////////////////
+  // 49 Fission Plate
+
+  Control.addVariable("49FissionPlateXStep",0.0);  
+  Control.addVariable("49FissionPlateYStep",0.0);   
+  Control.addVariable("49FissionPlateZStep",0.0);   
+  Control.addVariable("49FissionPlateXYAngle",0.0);   
+  Control.addVariable("49FissionPlateZAngle",0.0);   
+
+// correct but to avoid geom error it is the same as other slabs
+  Control.addVariable("49FissionPlateHeight",191.1);  
+  Control.addVariable("49FissionPlateWidth",182.9);  
+  Control.addVariable("49FissionPlateNSlab",6);
+
+  Control.addVariable("49FissionPlateThick0",1.2);
+  Control.addVariable("49FissionPlateMat0","49Aluminium");   
+  Control.addVariable("49FissionPlateThick1",0.1); 
+  Control.addVariable("49FissionPlateMat1","Void");   
+  Control.addVariable("49FissionPlateThick2",0.1); 
+  Control.addVariable("49FissionPlateMat2","49Aluminium");   
+  Control.addVariable("49FissionPlateThick3",0.2); 
+  Control.addVariable("49FissionPlateMat3","49Fuel");   
+  Control.addVariable("49FissionPlateThick4",0.1); 
+  Control.addVariable("49FissionPlateMat4","49Aluminium");   
+  Control.addVariable("49FissionPlateThick5",1.2); 
+  Control.addVariable("49FissionPlateMat5","49Aluminium");   
+
+
+  Control.addVariable("49FissionPlateDivIndex0",3);   
+
+  // Control.addVariable("49FissionPlateDivIndex1",4);   
+
+  // Control.addVariable("49FissionPlateNXSpace",5);   
+  // Control.addVariable("49FissionPlateNZSpace",5);   
+  
+
+  // Control.addVariable("49FissionPlateXPt0",-30.0);   
+  // Control.addVariable("49FissionPlateXPt1",-10.0);   
+  // Control.addVariable("49FissionPlateXPt2",0.0);   
+  // Control.addVariable("49FissionPlateXPt3",10.0);   
+  // Control.addVariable("49FissionPlateXPt4",-30.0);
+
+  // Control.addVariable("49FissionPlateZPt0",-30.0);   
+  // Control.addVariable("49FissionPlateZPt1",-10.0);   
+  // Control.addVariable("49FissionPlateZPt2",0.0);   
+  // Control.addVariable("49FissionPlateZPt3",10.0);   
+  // Control.addVariable("49FissionPlateZPt4",-30.0);
+  // Control.addVariable("49FissionPlateZPt0",-30.0);   
+
+  double  Xarray[16]={ -49.75, -46.58, -43.32, -37.08, -33.92, -27.58, -11.75, -2.25,  7.25, 16.75, 32.58, 38.92, 42.08, 48.42, 51.58, 54.75 };
+
+  double Zarray[16]={ -51.44, -47.63, -40.64, -35.56, -31.75, -19.69, -15.88,  -5.29,  5.29, 15.88, 19.69, 31.75, 35.56, 40.64, 47.63, 51.44};
+
+
+  int nx=sizeof(Xarray)/sizeof(double);
+  int nz=sizeof(Zarray)/sizeof(double);
+
+  Control.addVariable("49FissionPlateNXSpace",nx);   
+  Control.addVariable("49FissionPlateNZSpace",nz);   
+
+  for(int i=0;i<nx;i++)
+    {
+      const std::string baseKey=
+  	StrFunc::makeString("49FissionPlateXPt",i);
+      // BeamLine in guide bay
+      Control.addVariable(baseKey,Xarray[i]);  
+    }
+
+  for(int i=0;i<nz;i++)
+    {
+      const std::string baseKey=
+  	StrFunc::makeString("49FissionPlateZPt",i);
+      // BeamLine in guide bay
+      Control.addVariable(baseKey,Zarray[i]);  
+    }
+
+
+  double fissionSource49 [15] [15] = {
+ {    0  ,    0  ,    0  ,    0  ,    0  ,    0  , 2.935, 2.967, 2.861,   0  ,   0  ,   0  ,   0  ,   0  ,   0   },
+ {    0  ,    0  ,    0  ,    0  ,    0  ,  3.222, 3.529, 3.567, 3.446, 3.023,   0  ,   0  ,   0  ,   0  ,   0	 },
+ {    0  ,    0  ,    0  ,    0  ,  3.228,  3.782, 4.152, 4.208, 4.082, 3.615, 2.959,   0  ,   0  ,   0  ,   0	 },
+ {    0  ,    0  ,    0  ,  3.234,  3.566,  4.164, 4.575, 4.648, 4.523, 4.025, 3.317, 2.915,   0  ,   0  ,   0	 },
+ {    0  ,    0  ,  3.350,  3.745,  4.099,  4.750, 5.220, 5.325, 5.205, 4.658, 3.867, 3.423, 2.916,   0  ,   0	 },
+ {    0  ,  3.300,  3.756,  4.168,  4.538,  5.226, 5.743, 5.874, 5.760, 5.174, 4.315, 3.838, 3.305, 2.738,   0	 },
+ {  3.172,  3.522,  3.990,  4.412,  4.790,  5.499, 6.042, 6.186, 6.076, 5.466, 4.569, 4.073, 3.526, 2.951, 2.558 },
+ {  3.281,  3.641,  4.119,  4.546,  4.928,  5.645, 6.199, 6.350, 6.239, 5.613, 4.690, 4.184, 3.631, 3.056, 2.670 },
+ {  3.145,  3.500,  3.967,  4.382,  4.750,  5.440, 5.972, 6.117, 6.003, 5.379, 4.466, 3.970, 3.433, 2.883, 2.519 },
+ {    0  ,  3.275,  3.721,  4.114,  4.461,  5.109, 5.611, 5.746, 5.632, 5.021, 4.132, 3.654, 3.142, 2.625,   0	 },
+ {    0  ,    0  ,  3.294,  3.645,  3.954,  4.535, 4.990, 5.113, 5.003, 4.421, 3.583, 3.139, 2.674,   0  ,   0	 },
+ {    0  ,    0  ,    0  ,  3.052,  3.317,  3.824, 4.229, 4.340, 4.236, 3.699, 2.937, 2.541,   0  ,   0  ,   0	 },
+ {    0  ,    0  ,    0  ,    0  ,  2.888,  3.359, 3.739, 3.841, 3.742, 3.244, 2.545,   0  ,   0  ,   0  ,   0	 },
+ {    0  ,    0  ,    0  ,    0  ,    0  ,  2.681, 3.036, 3.124, 3.032, 2.607,   0  ,   0  ,   0  ,   0  ,   0	 },
+ {    0  ,    0  ,    0  ,    0  ,    0  ,    0  , 2.399, 2.470, 2.382,   0  ,   0  ,   0  ,   0  ,   0  ,   0	 }
+ } ; 
+
+
+
+  int ny=10;
+// sizeof(Zarray)/sizeof(double);
+
+  // for(int i=0;i<ny;i++)
+  //   {
+  //     const std::string baseKey=
+  // 	StrFunc::makeString("49FissionPlateYPt",i);
+  //     // BeamLine in guide bay
+  //     Control.addVariable(baseKey,Xarray[i]);  
+  //   }
+
+  int i(0);
+
+  for(size_t ix=0;ix<nx-1;ix++)
+
+    for(size_t iz=0;iz<nz-1;iz++)
+
+
+     {
+ 
+      const std::string baseKey=
+  	StrFunc::makeString("49FissionPlateYPt",i);
+
+        Control.addVariable(baseKey,fissionSource49[iz][ix]);
+      i+=1;
+
+
+	// ELog::EM<<" ix "<<ix<<" iz "<<iz<<" i "<<i<<" 49FissionPlateYpt "<<baseKey<<" fissionSource49[ix][iz]) "<<fissionSource49[ix][iz]<<ELog::endWarn;
+ 
+
+   }
+
+
+  //     const std::string baseKeyxz=
+  // 	StrFunc::makeString(ix,iz);
+  //     // BeamLine in guide bay
+  //     const std::string baseKey=
+  // 	StrFunc::makeString("49FissionPlatePt",ix,iz);
+
+  //     Control.addVariable(baseKey,fissionSource49[ix][iz]);  
+
+
+
+
+  Control.addVariable("49FissionPlateMatInL0","49Fuel");   
+  Control.addVariable("49FissionPlateMatOutL0","49Aluminium");   
+
+  Control.addVariable("49FissionPlateMatTempL0",300.0);   
+
+  // Control.addVariable("49FissionPlateMatL1","Aluminium");   
+  // Control.addVariable("49FissionPlateMatTempL1",300.0);   
+
+
+
+
+  // 49 Shield array
 
   // define centre
   Control.addVariable("49ShieldXStep",0.0);  
@@ -113,15 +286,15 @@ SinbadVariables(FuncDataBase& Control)
   Control.addVariable("49ShieldThick2",0.0015);
   Control.addVariable("49ShieldMat2","Void");  
   Control.addVariable("49ShieldThick3",5.08); 
-  Control.addVariable("49ShieldMat3","sbadMildSteel");  
+  Control.addVariable("49ShieldMat3","49MildSteel1");  
   Control.addVariable("49ShieldThick4",0.70); 
   Control.addVariable("49ShieldMat4","Void");  
   Control.addVariable("49ShieldThick5",5.08); 
-  Control.addVariable("49ShieldMat5","sbadMildSteel");  
+  Control.addVariable("49ShieldMat5","49MildSteel1");  
   Control.addVariable("49ShieldThick6",0.70); 
   Control.addVariable("49ShieldMat6","Void");  
   Control.addVariable("49ShieldThick7",5.08); 
-  Control.addVariable("49ShieldMat7","sbadMildSteel");  
+  Control.addVariable("49ShieldMat7","49MildSteel1");  
   Control.addVariable("49ShieldThick8",0.70); 
   Control.addVariable("49ShieldMat8","Void");  
   Control.addVariable("49ShieldThick9",3.00); 
@@ -133,11 +306,11 @@ SinbadVariables(FuncDataBase& Control)
   Control.addVariable("49ShieldThick12",0.70); 
   Control.addVariable("49ShieldMat12","Void");  
   Control.addVariable("49ShieldThick13",5.08); 
-  Control.addVariable("49ShieldMat13","sbadMildSteel");  
+  Control.addVariable("49ShieldMat13","49MildSteel1");  
   Control.addVariable("49ShieldThick14",0.70); 
   Control.addVariable("49ShieldMat14","Void");  
   Control.addVariable("49ShieldThick15",2.50); 
-  Control.addVariable("49ShieldMat15","sbadSulphurSteel");
+  Control.addVariable("49ShieldMat15","Void");
   Control.addVariable("49ShieldThick16",19.80); 
   Control.addVariable("49ShieldMat16","H2O");  
   Control.addVariable("49ShieldThick17",2.50); 
@@ -145,11 +318,11 @@ SinbadVariables(FuncDataBase& Control)
   Control.addVariable("49ShieldThick18",0.70); 
   Control.addVariable("49ShieldMat18","Void");  
   Control.addVariable("49ShieldThick19",5.08); 
-  Control.addVariable("49ShieldMat19","sbadMildSteel");  
+  Control.addVariable("49ShieldMat19","49MildSteel1");  
   Control.addVariable("49ShieldThick20",0.70); 
   Control.addVariable("49ShieldMat20","Void");  
   Control.addVariable("49ShieldThick21",5.08); 
-  Control.addVariable("49ShieldMat21","sbadMildSteel");  
+  Control.addVariable("49ShieldMat21","49MildSteel1");  
   Control.addVariable("49ShieldThick22",30.70); 
   Control.addVariable("49ShieldMat22","Void");  
   Control.addVariable("49ShieldThick23",15.24); 
@@ -161,83 +334,45 @@ SinbadVariables(FuncDataBase& Control)
 
 
 
-  //FPlate side
+  //49NestorSide side
 
-  Control.addVariable("FPlateXStep",91.45);  
-  Control.addVariable("FPlateYStep",-1.45);  
-  Control.addVariable("FPlateZStep",95.5);  
-  Control.addVariable("FPlateXYAngle",0.0);  
-  Control.addVariable("FPlateZAngle",0.0);  
+  // Control.addVariable("49NestorSideXStep",91.45);  
+  // Control.addVariable("49NestorSideYStep",-1.45);  
+  // Control.addVariable("49NestorSideZStep",95.5);  
 
-  Control.addVariable("FPlateWidth",182.9);   
-  Control.addVariable("FPlateHeight",191.0);  
-
-  Control.addVariable("FPlateNSlab",6);
-  Control.addVariable("FPlateThick0",0.70); 
-  Control.addVariable("FPlateMat0","Void"); 
-  Control.addVariable("FPlateThick1",15.0); 
-  Control.addVariable("FPlateMat1","Graphite"); 
-  Control.addVariable("FPlateThick2",0.60); 
-  Control.addVariable("FPlateMat2","Void");  
-  Control.addVariable("FPlateThick3",5.08); 
-  Control.addVariable("FPlateMat3","sbadLead");  
-  Control.addVariable("FPlateThick4",0.70); 
-  Control.addVariable("FPlateMat4","Void");  
-  Control.addVariable("FPlateThick5",3.18); 
-  Control.addVariable("FPlateMat5","sbadMildSteel");  
-  Control.addVariable("FPlateAlWindowRadius",56.06); 
+  // Control.addVariable("49NestorSideXStep",0);  
+  // Control.addVariable("49NestorSideYStep",0);  
+  // Control.addVariable("49NestorSideZStep",0);  
 
 
-  // Fission Plate
 
-  Control.addVariable("49FissionPlateXStep",0.0);  
-  Control.addVariable("49FissionPlateYStep",0.0);   
-  Control.addVariable("49FissionPlateZStep",0.0);   
-  Control.addVariable("49FissionPlateXYAngle",0.0);   
-  Control.addVariable("49FissionPlateZAngle",0.0);   
+  // Control.addVariable("49NestorSideXYAngle",0.0);  
+  // Control.addVariable("49NestorSideZAngle",0.0);  
 
-  Control.addVariable("49FissionPlateHeight",102.1);  
-  Control.addVariable("49FissionPlateWidth",119.0);  
-  Control.addVariable("49FissionPlateNSlab",6);
+  // Control.addVariable("49NestorSideWidth",182.9);   
+  // Control.addVariable("49NestorSideHeight",191.0);  
 
-  Control.addVariable("49FissionPlateThick0",1.2); 
-  Control.addVariable("49FissionPlateThick1",0.1); 
-  Control.addVariable("49FissionPlateThick2",0.1); 
-  Control.addVariable("49FissionPlateThick3",0.2); 
-  Control.addVariable("49FissionPlateThick4",0.1); 
-  Control.addVariable("49FissionPlateThick5",1.2); 
+  // Control.addVariable("49NestorSideNSlab",6);
+  // Control.addVariable("49NestorSideThick0",0.70); 
+  // Control.addVariable("49NestorSideMat0","Void"); 
+  // Control.addVariable("49NestorSideThick1",15.0); 
+  // Control.addVariable("49NestorSideMat1","Graphite"); 
+  // Control.addVariable("49NestorSideThick2",0.60); 
+  // Control.addVariable("49NestorSideMat2","Void");  
+  // Control.addVariable("49NestorSideThick3",5.08); 
+  // Control.addVariable("49NestorSideMat3","sbadLead");  
+  // Control.addVariable("49NestorSideThick4",0.70); 
+  // Control.addVariable("49NestorSideMat4","Void");  
+  // Control.addVariable("49NestorSideThick5",3.18); 
+  // Control.addVariable("49NestorSideMat5","49MildSteel1");  
+  // Control.addVariable("49NestorSideAlWindowRadius",56.06); 
 
-  Control.addVariable("49FissionPlateMat0","sbadMildSteel");   
-  Control.addVariable("49FissionPlateMat1","Void");   
-  Control.addVariable("49FissionPlateMat2","sbadMildSteel");   
-  Control.addVariable("49FissionPlateMat3","Uranium");   
-  Control.addVariable("49FissionPlateMat4","Void");   
-  Control.addVariable("49FissionPlateMat5","sbadMildSteel");   
-
-  Control.addVariable("49FissionPlateDivIndex0",3);   
-  Control.addVariable("49FissionPlateNXSpace",5);   
-  Control.addVariable("49FissionPlateNZSpace",5);   
-  
-  Control.addVariable("49FissionPlateXPt0",-30.0);   
-  Control.addVariable("49FissionPlateXPt1",-10.0);   
-  Control.addVariable("49FissionPlateXPt2",0.0);   
-  Control.addVariable("49FissionPlateXPt3",10.0);   
-  Control.addVariable("49FissionPlateXPt4",-30.0);
-
-  Control.addVariable("49FissionPlateZPt0",-30.0);   
-  Control.addVariable("49FissionPlateZPt1",-10.0);   
-  Control.addVariable("49FissionPlateZPt2",0.0);   
-  Control.addVariable("49FissionPlateZPt3",10.0);   
-  Control.addVariable("49FissionPlateZPt4",-30.0);
-
-  Control.addVariable("49FissionPlateMatL0","Uranium");   
-  Control.addVariable("49FissionPlateMatTempL0",300.0);   
 
 
 
   Control.addVariable("49Detector0Active",1);   
   Control.addVariable("49DetectorXStep",2.5);  
-  Control.addVariable("49DetectorYStep",5.1);  
+  Control.addVariable("49DetectorYStep",50.3);  
   Control.addVariable("49DetectorZStepZ1",-6.6);  
 
   Control.addVariable("49DetectorActive1",1);   
@@ -355,8 +490,8 @@ SinbadVariables(FuncDataBase& Control)
   Control.addVariable("49DetectorLayerN",1);
 
  // Rh
-  Control.addVariable("49DetectorDiameterLayer0",1.27);   
-  Control.addVariable("49DetectorWidthLayer0",0.0015); 
+  Control.addVariable("49DetectorDiameterLayer0",10.27);   
+  Control.addVariable("49DetectorWidthLayer0",10.0015); 
   Control.addVariable("49DetectorMaterialLayer0","Rh");   
 
 
@@ -399,9 +534,11 @@ SinbadVariables(FuncDataBase& Control)
   Control.addVariable("49DetectorWidthLayerX",0.241); 
   Control.addVariable("49DetectorMateriaLayerX","Rh");   
 
+  /////////////////////////////////////////////////////////////
+  // EXPERIMENT 75 
+  ////////////////////////////////////////////////////////////
 
-
-  //FPlate side
+  //NestorSide
 
   Control.addVariable("75CaveOffSetX",0.0);  
   Control.addVariable("75CaveOffSetY",0.0);  

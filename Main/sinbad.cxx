@@ -103,10 +103,7 @@ main(int argc,char* argv[])
 
 	  SimPtr->resetAll();
 
-	  const std::string preName=
-	    IParam.getValue<std::string>("preName");
-
-	  sinbadSystem::makeSinbad SinbadObj(preName);
+	  sinbadSystem::makeSinbad SinbadObj("49");
 	  World::createOuterObjects(*SimPtr);
 
 	  SinbadObj.build(SimPtr,IParam);

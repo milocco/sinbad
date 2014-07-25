@@ -202,9 +202,9 @@ LayerPlate::populate(const FuncDataBase& Control)
   zAngle=Control.EvalVar<double>(keyName+"ZAngle");
 
   height=Control.EvalVar<double>(keyName+"Height");
+
   width=Control.EvalVar<double>(keyName+"Width");
   radiusWindow=Control.EvalDefVar<double>(keyName+"AlWindowRadius",0.0);
-
   nSlab=Control.EvalVar<size_t>(keyName+"NSlab");
 
   double Len,Tmp;
@@ -307,15 +307,31 @@ LayerPlate::createObjects(Simulation& System,
   std::string Out;
 
   // Front one uses FC/sideIndex 
-  Out=FSurf+ModelSupport::getComposite(SMap,slabIndex," -11 3 -4 5 -6");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,mat[0],matTemp[0],Out)); 
-  
+  // Out=FSurf+ModelSupport::getComposite(SMap,slabIndex," -11 3 -4 5 -6");
+  // System.addCell(MonteCarlo::Qhull(cellIndex++,mat[0],matTemp[0],Out)); 
+
+     if(keyName=="49NestorSide")
+       {
+	// al window-outside
+        Out=FSurf+ModelSupport::getComposite(SMap,slabIndex," -11 3 -4 5 -6 7");
+        System.addCell(MonteCarlo::Qhull(cellIndex++,mat[0],matTemp[0],Out)); 
+	// al window-inside
+        Out=FSurf+ModelSupport::getComposite(SMap,slabIndex," -11  -7");
+        System.addCell(MonteCarlo::Qhull(cellIndex++,0,matTemp[0],Out));
+       } 
+     else
+       {
+        Out=FSurf+ModelSupport::getComposite(SMap,slabIndex," -11 3 -4 5 -6");
+        System.addCell(MonteCarlo::Qhull(cellIndex++,mat[0],matTemp[0],Out)); 
+       }
+
+ 
   int SI(slabIndex);
   for(size_t i=1;i<nSlab;i++)
    {
-     SI+=10;
-     Out=ModelSupport::getComposite(SMap,slabIndex,SI,"1M -11M 3 -4 5 -6");
-     System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],matTemp[i],Out)); 
+    SI+=10;
+    Out=ModelSupport::getComposite(SMap,slabIndex,SI,"1M -11M 3 -4 5 -6");
+    System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],matTemp[i],Out)); 
    }
   
   Out=ModelSupport::getComposite(SMap,slabIndex,SI," -11M 3 -4 5 -6");
