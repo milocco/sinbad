@@ -1093,6 +1093,49 @@ DBMaterial::initMXUnits()
   return;
 }
 
+
+void
+DBMaterial::initMXUnitsEss()
+  /*!
+    Initialize the MX options
+  */
+{
+  ELog::RegMethod RegA("DBMaterialEss","initMXUnits");
+
+  typedef boost::tuple<int,int,char,std::string,
+		       std::string> MXTYPE;
+  std::vector<MXTYPE> mxVec;
+
+  mxVec.push_back(MXTYPE(8018,70,'c',"h","model"));
+  mxVec.push_back(MXTYPE(6000,70,'c',"h","06012"));
+  mxVec.push_back(MXTYPE(6000,71,'c',"h","06012"));
+  mxVec.push_back(MXTYPE(4009,70,'c',"h","model"));
+  mxVec.push_back(MXTYPE(4009,80,'c',"h","4009.80h"));
+  mxVec.push_back(MXTYPE(4010,80,'c',"h","4010.80h"));
+  mxVec.push_back(MXTYPE(78190,80,'c',"h","78190.80h"));
+  mxVec.push_back(MXTYPE(78192,80,'c',"h","78192.80h"));
+  mxVec.push_back(MXTYPE(78194,80,'c',"h","78194.80h"));
+  mxVec.push_back(MXTYPE(78195,80,'c',"h","78195.80h"));
+  mxVec.push_back(MXTYPE(78196,80,'c',"h","78196.80h"));
+  mxVec.push_back(MXTYPE(78198,80,'c',"h","78198.80h"));
+
+
+  // NOTE : u is an illegal particle so how does MX work here??
+  //  mxVec.push_back(MXTYPE(6000,70,'c',"u","6012.70u"));
+  
+  std::vector<MXTYPE>::const_iterator vc;
+  for(vc=mxVec.begin();vc!=mxVec.end();vc++)
+    {
+      MTYPE::iterator mc;  
+      for(mc=MStore.begin();mc!=MStore.end();mc++)
+	mc->second.setMXitem(vc->get<0>(),vc->get<1>(),vc->get<2>(),
+			     vc->get<3>(),vc->get<4>());
+    }
+  return;
+}
+
+
+
 const MonteCarlo::Material&
 DBMaterial::getMaterial(const int MIndex) const
   /*!

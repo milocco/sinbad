@@ -134,6 +134,9 @@ ProtonTube::createUnitVector(const attachSystem::FixedComp& FC,
   ELog::RegMethod RegA("ProtonTube","createUnitVector");
 
   attachSystem::FixedComp::createUnitVector(FC,sideIndex);
+  ELog::EM<<"Y == "<<Y<<ELog::endDebug;
+  ELog::EM<<"Orging == "<<Origin<<ELog::endDebug;
+  ELog::EM<<" Proton Tube insert "<<ELog::endTrace;
 
   applyAngleRotate(xyAngle,zAngle);
   applyShift(xStep,yStep,zStep);
@@ -157,6 +160,9 @@ ProtonTube::createSurfaces()
      ModelSupport::buildCylinder(SMap,PT+17,Origin,Y,radius[i]+thick[i]); 
 
      ModelSupport::buildPlane(SMap,PT+2,Origin+Y*length[i],Y);  
+     if(i==nSec-1)
+       ModelSupport::buildPlane(SMap,ptIndex+8,Origin+Y*(length[2]+5),Y);  
+
      if (zCut[i]>0.0)
        {
 	 ModelSupport::buildPlane(SMap,PT+5,Origin-Z*(radius[i]-zCut[i]),Z);
@@ -187,10 +193,14 @@ ProtonTube::createObjects(Simulation& System,
     {
       const std::string SName=StrFunc::makeString("Sector",i);
       FrontCap=(!i) ? TargetSurfBoundary : ModelSupport::getComposite(SMap,PT-100, " 2 ");
+      if(i==nSec-1) FrontCap=ModelSupport::getComposite(SMap,ptIndex, " 8 ");
+
       EndCap=(i+1 == nSec) ? outerSurfBoundary : ModelSupport::getComposite(SMap,PT, " -2 ");
+
       Out=ModelSupport::getSetComposite(SMap,PT, " -7 5 -6 ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,inMat[i],0.0,Out+FrontCap+EndCap));
       Out=ModelSupport::getSetComposite(SMap,PT, " 7 -17 5 -6");
+      if(i>1)
       System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat[i],0.0,Out+FrontCap+EndCap));
 
       Out=ModelSupport::getSetComposite(SMap,PT, " -17 5 -6 ");
@@ -212,13 +222,15 @@ ProtonTube::createLinks()
 { 
   ELog::RegMethod RegA("ProtonTube","createLinks");
   
-  FixedComp::setNConnect(nSec+2);
+  // FixedComp.setNConnect(nSec+2);
+   FixedComp::setNConnect(nSec+2);
+
   int PT(ptIndex);
   for(size_t i=0;i<nSec;i++)
     {
       FixedComp::setConnect(i+2,Origin+Y*length[i]/2.0,-X);
       FixedComp::setLinkSurf(i+2,-SMap.realSurf(PT+7));
-      PT+=100;
+      PT+100;
     } 
   return;
 }
@@ -250,20 +262,23 @@ ProtonTube::createAll(Simulation& System,
     {
       TSurf=(tIndex>0) ? 
 	TargetFC.getLinkString(static_cast<size_t>(tIndex-1)) : 
-	TargetFC.getBridgeComplement(static_cast<size_t>(-(tIndex+1)));
+	TargetFC.getLinkComplement(static_cast<size_t>(-(tIndex+1)));
       if (tIndex<0)
-	FixedComp::setLinkComponent(0,TargetFC,
-				    static_cast<size_t>(-(tIndex-1)));
+	FixedComp::setLinkComponent(0,TargetFC,static_cast<size_t>(-(tIndex-1)));
       else
 	FixedComp::setLinkComponent(0,TargetFC,static_cast<size_t>(tIndex-1));	
     }
   if (bIndex)
     {
-      const size_t lIndex(static_cast<size_t>(abs(bIndex))-1);
-      BSurf=(bIndex>0) ?
-	BulkFC.getLinkString(lIndex) : BulkFC.getBridgeComplement(lIndex) ;
-      FixedComp::setLinkComponent(0,BulkFC,lIndex);
+      BSurf=(bIndex<0) ?
+	BulkFC.getLinkComplement(static_cast<size_t>(-(bIndex+1))) :
+	BulkFC.getLinkString(static_cast<size_t>(bIndex-1));
+      if (bIndex<0)
+	FixedComp::setLinkComponent(0,BulkFC,static_cast<size_t>(-(bIndex-1)));
+      else
+	FixedComp::setLinkComponent(0,BulkFC,static_cast<size_t>(bIndex-1));
     }
+
   createObjects(System,TSurf,BSurf);
   createLinks();
   insertObjects(System); 

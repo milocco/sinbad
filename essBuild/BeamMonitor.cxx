@@ -72,6 +72,87 @@ BeamMonitor::BeamMonitor(const std::string& Key) :
   */
 {}
 
+BeamMonitor::BeamMonitor(const BeamMonitor& A) :
+  attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
+  monIndex(A.monIndex),cellIndex(A.cellIndex),
+  // xStep(A.xStep),yStep(A.yStep),zStep(A.zStep),
+  // xyAngle(A.xyAngle),zAngle(A.zAngle),nSecT(A.nSecT),
+  // radiusT(A.radiusT),lengthT(A.lengthT),cutT(A.cutT),
+  // thickT(A.thickT),inMatT(A.inMatT),wallMatT(A.wallMatT),
+  // XsetW(A.XsetW),YsetW(A.YsetW),ZsetW(A.ZsetW),sideW(A.sideW),
+  // nSecW(A.nSecW),radiusW(A.radiusW), thickW(A.thickW),
+  matW(A.matW)
+  // ,
+  // frameSide(A.frameSide),frameHeightA(A.frameHeightA),
+  // frameHeightB(A.frameHeightB),frameHeightC(A.frameHeightC),
+  // frameHeightD(A.frameHeightD),  
+  // frameWidthA(A.frameWidthA),frameWidthB(A.frameWidthB),
+  // frameWidthC(A.frameWidthC),frameThickA(A.frameThickA),
+  // frameThickB(A.frameThickB),frameThickC(A.frameThickC),
+  // tubeN(A.tubeN),tubeRadius(A.tubeRadius),tubeThick(A.tubeThick),
+  // tubeHe(A.tubeHe),tubeAl(A.tubeAl),extTubeHe(A.extTubeHe),
+  // mainPBeamACell(A.mainPBeamACell)
+
+  /*!
+    Constructor
+    \param Key :: Name of construction key
+  */
+{}
+
+BeamMonitor&
+BeamMonitor::operator=(const BeamMonitor& A) 
+{
+  if (&A!=this)
+    {
+     attachSystem::ContainedComp::operator=(A);
+     attachSystem::FixedComp::operator=(A);
+     //    wheelIndex=A.wheelIndex;
+     // cellIndex=A.cellIndex;
+     // xStep=A.xStep;
+     // yStep=A.yStep;
+     // zStep=A.zStep;
+     // xyAngle=A.xyAngle;
+     // zAngle=A.zAngle;
+     // nSecT=A.nSecT;
+     // radiusT=A.radiusT;
+     // lengthT=A.lengthT;
+     // cutT=A.cutT;
+     // thickT=A.thickT;
+     // inMatT=A.inMatT;
+     // wallMatT=A.wallMatT;
+     // XsetW=A.XsetW;
+     // YsetW=A.YsetW;
+     // ZsetW=A.ZsetW;
+     // sideW=A.sideW;
+     // nSecW=A.nSecW;
+     // radiusW=A.radiusW;
+     // thickW=A.thickW;
+     matW=A.matW;    
+     // frameSide=A.frameSide;
+     // frameHeightA=A.frameHeightA;
+     // frameHeightB=A.frameHeightB;
+     // frameHeightC=A.frameHeightC;  
+     // frameHeightD=A.frameHeightD;  
+     // frameWidthA=A.frameWidthA;
+     // frameWidthB=A.frameWidthB;
+     // frameWidthC=A.frameWidthC;
+     // frameThickA=A.frameThickA;
+     // frameThickB=A.frameThickB;
+     // frameThickC=A.frameThickC;
+     // tubeN=A.tubeN;
+     // tubeRadius=A.tubeRadius;
+     // tubeThick=A.tubeThick;
+     // tubeHe=A.tubeHe;
+     // tubeAl=A.tubeAl;
+     // extTubeHe=A.extTubeHe;
+     // mainPBeamACell=A.mainPBeamACell;
+
+    }
+  return *this;
+}
+
+
+
 BeamMonitor::~BeamMonitor()
   /*!
     Destructor
@@ -92,41 +173,39 @@ BeamMonitor::populate(const FuncDataBase& Control)
   xStep=Control.EvalVar<double>(keyName+"XStep");
   yStep=Control.EvalVar<double>(keyName+"YStep");
   zStep=Control.EvalVar<double>(keyName+"ZStep");
+
   xyAngle=Control.EvalVar<double>(keyName+"XYangle");
   zAngle=Control.EvalVar<double>(keyName+"Zangle");
 
+
+
+  XsetW=Control.EvalVar<double>(keyName+"OffsetX");   
+  YsetW=Control.EvalVar<double>(keyName+"OffsetY");   
+  ZsetW=Control.EvalVar<double>(keyName+"OffsetZ");   
+
   sideW=Control.EvalVar<double>(keyName+"BoxSide");   
 
-  nSec=Control.EvalVar<size_t>(keyName+"BoxNSections");   
+  nSecW=Control.EvalVar<size_t>(keyName+"BoxNSections");   
   double RW(0.0);
   double TW(0.0);
-  int MW;
+  int MW(0);
 
-  for(size_t i=0;i<nSec;i++)
+  /// ALB
+  for(size_t i=0;i<nSecW;i++)
     {
-      RW=Control.EvalDefVar<double>
-	(StrFunc::makeString(keyName+"BoxRadius",i+1),-1.0);   
-      TW=Control.EvalDefVar<double>
-	(StrFunc::makeString(keyName+"BoxThick",i+1),-1.0);     
-      MW=ModelSupport::EvalDefMat<int>
-	(Control,StrFunc::makeString(keyName+"BoxMat",i+1),0);   
-      if (RW<0.0 || TW<0.0)
-	{
-	  if (i<nSec/2)
-	    throw ColErr::InContainerError<std::string>
-	      (StrFunc::makeString(keyName+"BoxRadius/Thick",i+1),"Search");   
-	  
-	  const size_t index=nSec-(i+1);
-	  RW=radius[index];
-	  TW=thick[index];
-	  MW=mat[index];
-	}
-      radius.push_back(RW);
-      thick.push_back(TW);
-      mat.push_back(MW);
+     RW=Control.EvalVar<double>
+	(StrFunc::makeString(keyName+"BoxRadius",i+1));   
+     TW+=Control.EvalVar<double>
+	(StrFunc::makeString(keyName+"BoxThick",i+1));     
+     MW=ModelSupport::EvalMat<int>(Control,
+         StrFunc::makeString(keyName+"BoxMat",i+1));   
+	 ELog::EM<<" tubeAl "<<i<<" nSecW "<<MW<<ELog::endTrace;
+
+      radiusW.push_back(RW);
+      thickW.push_back(TW);
+      matW.push_back(MW);
     }
 
-  /*
   frameSide=Control.EvalVar<double>(keyName+"BoxSide5");    
   frameHeightA=Control.EvalVar<double>(keyName+"BoxHeightA5");    
   frameHeightB=Control.EvalVar<double>(keyName+"BoxHeightB5");    
@@ -143,16 +222,23 @@ BeamMonitor::populate(const FuncDataBase& Control)
   tubeRadius=Control.EvalVar<double>(keyName+"BoxTubeRadius");    
   tubeThick=Control.EvalVar<double>(keyName+"BoxTubeThick");    
   
-  tubeHe=Control.EvalVar<int>(keyName+"BoxTubeHeMat");   
-  tubeAl=Control.EvalVar<int>(keyName+"BoxTubeAlMat");  
-  extTubeHe=Control.EvalVar<int>(keyName+"BoxExtHeMat");
-  */
+  tubeHe=ModelSupport::EvalMat<int>
+	     (Control,keyName+"BoxTubeHeMat");   
+  tubeAl=ModelSupport::EvalMat<int>
+	     (Control,keyName+"BoxTubeAlMat");  
+  extTubeHe=ModelSupport::EvalMat<int>
+	     (Control,keyName+"BoxExtHeMat");
+
+  
+  ///ALB
+
   return;
 }
 
 void
-BeamMonitor::createUnitVector(const attachSystem::FixedComp& FC,
-			      const long int linkIndex)
+BeamMonitor::createUnitVector(const attachSystem::FixedComp& FC)
+// ,
+// 			      const long int linkIndex)
   /*!
     Create the unit vectors
     \param FC :: Fixed Component
@@ -160,7 +246,8 @@ BeamMonitor::createUnitVector(const attachSystem::FixedComp& FC,
   */
 {
   ELog::RegMethod RegA("BeamMonitor","createUnitVector");
-  attachSystem::FixedComp::createUnitVector(FC,linkIndex);
+  attachSystem::FixedComp::createUnitVector(FC);
+// ,linkIndex);
   applyShift(xStep,yStep,zStep);
   applyAngleRotate(xyAngle,zAngle);
 
@@ -175,23 +262,93 @@ BeamMonitor::createSurfaces()
 {
   ELog::RegMethod RegA("BeamMonitor","createSurfaces");
 
-  halfThick=std::accumulate(thick.begin(),thick.end(),
-			    0.0,std::plus<double>())/2.0;
+  // halfThick=std::accumulate(thick.begin(),thick.end(),
+  // 			    0.0,std::plus<double>())/2.0;
 
-  int BM(monIndex);
-  double T(-halfThick);
-  for(size_t i=0;i<nSec;i++)
-    {
-      ModelSupport::buildPlane(SMap,BM+1,Origin+Y*T,Y);  
-      ModelSupport::buildCylinder(SMap,BM+7,Origin,Y,radius[i]);  
-      ELog::EM<<"I == "<<i<<" "<<T<<" "<<thick[i]<<" "
-	      <<Origin+Y*T<<ELog::endTrace;
-      T+=thick[i];
+  // int BM(monIndex);
+  // double T(-halfThick);
+  // for(size_t i=0;i<nSec;i++)
+  //   {
+  //     ModelSupport::buildPlane(SMap,BM+1,Origin+Y*T,Y);  
+  //     ModelSupport::buildCylinder(SMap,BM+7,Origin,Y,radius[i]);  
+  //     ELog::EM<<"I == "<<i<<" "<<T<<" "<<thick[i]<<" "
+  // 	      <<Origin+Y*T<<ELog::endTrace;
+  //     T+=thick[i];
       
-      BM+=10;
+  //     BM+=10;
+  //   }
+  // // Back plane
+  // ModelSupport::buildPlane(SMap,BM+1,Origin+Y*T,Y);
+
+  ModelSupport::buildCylinder(SMap,monIndex+38,Origin,Y,radiusW[0]);  
+ 
+
+  int PW(monIndex+1000);
+  ModelSupport::buildPlane(SMap,PW+1,Origin+X*(XsetW-sideW/2.0)+Y*YsetW+Z*ZsetW,X);  
+  ModelSupport::buildPlane(SMap,PW+2,Origin+X*(XsetW+sideW/2.0)+Y*YsetW+Z*ZsetW,X);  
+  ModelSupport::buildPlane(SMap,PW+3,Origin+X*XsetW+Y*(YsetW+sideW/2.0)+Z*ZsetW,Y);  
+  ModelSupport::buildPlane(SMap,PW+4,Origin+X*XsetW+Y*(YsetW-sideW/2.0)+Z*ZsetW,Y);  
+  ModelSupport::buildPlane(SMap,PW+5,Origin+X*XsetW+Y*YsetW+Z*(ZsetW-sideW/2.0),Z);  
+  ModelSupport::buildPlane(SMap,PW+6,Origin+X*XsetW+Y*YsetW+Z*(ZsetW+sideW/2.0),Z);  
+
+  for(size_t i=0;i<nSecW+3;i++)
+    {
+     PW+=10;
+     if(i>=nSecW)
+       { 
+         radiusW[i]=radiusW[nSecW-(i-nSecW+2)];
+         thickW[i]=thickW[i-1]+(thickW[nSecW-(i-nSecW+2)]-thickW[nSecW-(i-nSecW+3)]);
+         matW[i]=matW[nSecW-(i-nSecW+2)];
+	   }
+     if(i==nSecW+2) thickW[i]+=thickW[0];
+     ModelSupport::buildCylinder(SMap,PW+7,Origin,Y,radiusW[i]);  
+     ModelSupport::buildPlane(SMap,PW+3,Origin+Y*(YsetW+sideW/2.0-thickW[i]),Y);
     }
-  // Back plane
-  ModelSupport::buildPlane(SMap,BM+1,Origin+Y*T,Y);  
+
+  int TI(monIndex+2000);
+
+  ModelSupport::buildPlane(SMap,TI+1,Origin+X*(XsetW-frameSide/2.0)+Y*YsetW+Z*ZsetW,X);  
+  ModelSupport::buildPlane(SMap,TI+2,Origin+X*(XsetW+frameSide/2.0)+Y*YsetW+Z*ZsetW,X);  
+  ModelSupport::buildPlane(SMap,TI+3,Origin+X*XsetW+Y*(YsetW-frameSide/2.0)+Z*ZsetW,Y);  
+  ModelSupport::buildPlane(SMap,TI+4,Origin+X*XsetW+Y*(YsetW+frameSide/2.0)+Z*ZsetW,Y);  
+  ModelSupport::buildPlane(SMap,TI+5,Origin+X*XsetW+Y*YsetW+Z*(ZsetW-frameSide/2.0),Z);  
+  ModelSupport::buildPlane(SMap,TI+6,Origin+X*XsetW+Y*YsetW+Z*(ZsetW+frameSide/2.0),Z);  
+
+  ModelSupport::buildPlane(SMap,TI+11,Origin+X*(XsetW-frameWidthA/2.0)+Y*YsetW+Z*ZsetW,X);  
+  ModelSupport::buildPlane(SMap,TI+12,Origin+X*(XsetW+frameWidthA/2.0)+Y*YsetW+Z*ZsetW,X);  
+  ModelSupport::buildPlane(SMap,TI+13,Origin+X*XsetW+Y*(YsetW-frameThickA/2.0)+Z*ZsetW,Y);  
+  ModelSupport::buildPlane(SMap,TI+14,Origin+X*XsetW+Y*(YsetW+frameThickA/2.0)+Z*ZsetW,Y);  
+  ModelSupport::buildPlane(SMap,TI+15,Origin+X*XsetW+Y*YsetW+Z*(ZsetW-frameHeightA/2.0),Z);  
+  ModelSupport::buildPlane(SMap,TI+16,Origin+X*XsetW+Y*YsetW+Z*(ZsetW+frameHeightA/2.0),Z);  
+
+  ModelSupport::buildPlane(SMap,TI+21,Origin+X*(XsetW-frameWidthB/2.0)+Y*YsetW+Z*ZsetW,X);  
+  ModelSupport::buildPlane(SMap,TI+22,Origin+X*(XsetW+frameWidthB/2.0)+Y*YsetW+Z*ZsetW,X);  
+  ModelSupport::buildPlane(SMap,TI+23,Origin+X*XsetW+Y*(YsetW-frameThickB/2.0)+Z*ZsetW,Y);  
+  ModelSupport::buildPlane(SMap,TI+24,Origin+X*XsetW+Y*(YsetW+frameThickB/2.0)+Z*ZsetW,Y);  
+  ModelSupport::buildPlane(SMap,TI+25,Origin+X*XsetW+Y*YsetW+Z*(ZsetW-frameHeightB/2.0),Z);  
+  ModelSupport::buildPlane(SMap,TI+26,Origin+X*XsetW+Y*YsetW+Z*(ZsetW+frameHeightB/2.0),Z);  
+
+  ModelSupport::buildPlane(SMap,TI+31,Origin+X*(XsetW-frameWidthC/2.0)+Y*YsetW+Z*ZsetW,X);  
+  ModelSupport::buildPlane(SMap,TI+32,Origin+X*(XsetW+frameWidthC/2.0)+Y*YsetW+Z*ZsetW,X);  
+  ModelSupport::buildPlane(SMap,TI+33,Origin+X*XsetW+Y*(YsetW-frameThickC/2.0)+Z*ZsetW,Y);  
+  ModelSupport::buildPlane(SMap,TI+34,Origin+X*XsetW+Y*(YsetW+frameThickC/2.0)+Z*ZsetW,Y);  
+  ModelSupport::buildPlane(SMap,TI+35,Origin+X*XsetW+Y*YsetW+Z*(ZsetW-frameHeightC/2.0),Z);  
+  ModelSupport::buildPlane(SMap,TI+36,Origin+X*XsetW+Y*YsetW+Z*(ZsetW+frameHeightC/2.0),Z);  
+
+  ModelSupport::buildPlane(SMap,TI+45,Origin+X*XsetW+Y*YsetW+Z*(ZsetW-frameHeightD/2.0),Z);  
+  ModelSupport::buildPlane(SMap,TI+46,Origin+X*XsetW+Y*YsetW+Z*(ZsetW+frameHeightD/2.0),Z);  
+
+
+  for(int i=0;i<tubeN;i++)
+    {
+      ModelSupport::buildCylinder(SMap,TI+7,
+				  Origin+X*(XsetW-frameWidthC/2.0+0.3+i*2*(tubeRadius+tubeThick))
+				  +Y*YsetW+Z*ZsetW,Z,tubeRadius);  
+      ModelSupport::buildCylinder(SMap,TI+8,
+				  Origin+X*(XsetW-frameWidthC/2.0+0.3+i*2*(tubeRadius+tubeThick))
+				  +Y*YsetW+Z*ZsetW,Z,tubeRadius+tubeThick);
+      TI+=10;
+    }
   return; 
 }
 
@@ -240,9 +397,10 @@ BeamMonitor::calcExclude(const size_t index,
 
 
 void
-BeamMonitor::createObjects(Simulation& System,
-			   const attachSystem::ContainedGroup& CG, 
-			   const std::string& CName)
+BeamMonitor::createObjects(Simulation& System)
+// ,
+// 			   const attachSystem::ContainedGroup& CG, 
+// 			   const std::string& CName)
   /*!
     Adds the components
     \param System :: Simulation to create objects in
@@ -252,18 +410,124 @@ BeamMonitor::createObjects(Simulation& System,
 {
   ELog::RegMethod RegA("BeamMonitor","createObjects");
     
-  std::string Out;
-  int BM(monIndex);
-  for(size_t i=0;i<nSec;i++)
-    {
-      Out=ModelSupport::getComposite(SMap,BM,"1 -11 -7 ");      
-      addOuterSurf(Out);
-      const std::string Exclude=
-	calcExclude(i,CG,CName);
+  // std::string Out;
+  // int BM(monIndex);
+  // for(size_t i=0;i<nSec;i++)
+  //   {
+  //     Out=ModelSupport::getComposite(SMap,BM,"1 -11 -7 ");      
+  //     addOuterSurf(Out);
+  //     const std::string Exclude=
+  // 	calcExclude(i,CG,CName);
 
-      System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],0.0,Out+Exclude));
-      BM+=10;
-    }
+  //     System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],0.0,Out+Exclude));
+  //     BM+=10;
+  //   }
+
+  ///ALB
+
+
+    int protonVoidCell;           ///< Inner void cell
+
+  std::string OutTot;
+  std::string OutTube;
+
+  std::string OutLeft;
+  //  OutLeft=TargetSurfBoundary;
+  std::string Out;
+  int PT(monIndex);
+  int PW(monIndex+1000);	    
+
+  for(size_t i=0;i<nSecW+3;i++)
+    {
+     Out=ModelSupport::getComposite(SMap,monIndex,PW,"(38 -17M -3M 13M)");
+     OutTot+=":"+Out;
+
+     if(i==nSecW-1) 
+       {
+        Out=ModelSupport::getComposite(SMap,monIndex,"( 38 ");
+        Out+=ModelSupport::getComposite(SMap,monIndex+1000,PW," 1 -2 -3 13M 5 -6 )");
+        OutTot+=":"+Out;  
+        Out=ModelSupport::getComposite(SMap,monIndex,"( 38 ");
+        Out+=ModelSupport::getComposite(SMap,monIndex+1000,PW," 1 -2 4 -3M 5 -6 )");
+        OutTot+=":"+Out;  
+        Out=ModelSupport::getComposite(SMap,monIndex+1000,PW,"( 1 -2 -3M 13M 5 -6 )");
+        OutTot+=":"+Out;  
+
+	// 
+        int TI(monIndex+2000);
+
+        for(int i=0;i<tubeN;i++)
+          {
+	    Out=ModelSupport::getComposite(SMap,monIndex+2000,TI,"-7M 25 -26");
+	    System.addCell(MonteCarlo::Qhull(cellIndex++,tubeHe,0.0,Out));
+	    Out=ModelSupport::getComposite(SMap,monIndex+2000,TI,"7M -8M 25 -26");
+	    System.addCell(MonteCarlo::Qhull(cellIndex++,tubeAl,0.0,Out));
+	    OutTube+=ModelSupport::getComposite(SMap,TI," 8M ");
+	    
+	    TI+=10;  
+	  }
+	// hugly piece by piece
+
+        Out=ModelSupport::getComposite(SMap,monIndex+2000,PW,
+                                       "(-11:12:-15:16) 1 -2 5 -6 -3M 13M");
+        System.addCell(MonteCarlo::Qhull(cellIndex++,matW[i],0.0,Out));
+
+        Out=ModelSupport::getComposite(SMap,monIndex+2000,PW, " 11 -12 13 -14 15 -16 (-25:26)");
+        System.addCell(MonteCarlo::Qhull(cellIndex++,tubeHe,0.0,Out));
+
+        Out=ModelSupport::getComposite(SMap,monIndex+2000,PW," 11 -12 -3M 14 15 -16 (-35:36) ");
+        System.addCell(MonteCarlo::Qhull(cellIndex++,tubeAl,0.0,Out));
+
+        Out=ModelSupport::getComposite(SMap,monIndex+2000,PW," 11 -12 13M -13 15 -16 (-35:36) ");
+        System.addCell(MonteCarlo::Qhull(cellIndex++,tubeAl,0.0,Out));
+
+        Out=ModelSupport::getComposite(SMap,monIndex+2000," 11 -12 13 -14 25 -26 (-45:46)");
+        System.addCell(MonteCarlo::Qhull(cellIndex++,tubeAl,0.0,Out+OutTube));
+
+        Out=ModelSupport::getComposite(SMap,monIndex+2000," (11 -12 33 -34  45 -46) ");
+        System.addCell(MonteCarlo::Qhull(cellIndex++,tubeAl,0.0,Out+OutTube));
+
+        Out=ModelSupport::getComposite(SMap,monIndex+2000,PW, " 31 -32 -33 13 45 -46");
+        System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+OutTube));
+
+        Out=ModelSupport::getComposite(SMap,monIndex+2000,PW, " 11 -12 (-31: 32) -33 13 45 -46");
+        System.addCell(MonteCarlo::Qhull(cellIndex++,tubeAl,0.0,Out+OutTube));
+
+        Out=ModelSupport::getComposite(SMap,monIndex+2000, " 31 -32 34 -14 45 -46");
+        System.addCell(MonteCarlo::Qhull(cellIndex++,extTubeHe,0.0,Out+OutTube));
+
+        Out=ModelSupport::getComposite(SMap,monIndex+2000,PW,"11 -12 (-31 : 32) 34 -14 45 -46");
+        System.addCell(MonteCarlo::Qhull(cellIndex++,tubeAl,0.0,Out+OutTube));
+
+       Out=ModelSupport::getComposite(SMap,monIndex+2000,PW, " 11 -12 13M -13 35 -36");
+       System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+
+        Out=ModelSupport::getComposite(SMap,monIndex+2000,PW, " 11 -12 -3M 14 35 -36");
+        System.addCell(MonteCarlo::Qhull(cellIndex++,extTubeHe,0.0,Out));
+      }
+     else
+       {
+        System.addCell(MonteCarlo::Qhull(cellIndex++,matW[i],0.0,Out));
+       }
+
+     Out=ModelSupport::getComposite(SMap,monIndex+1000," 1 -2 5 -6 ");
+
+     if(i==nSecW-1) 
+       {
+	 Out+=ModelSupport::getComposite(SMap,monIndex+2000,PW,"(-1:2:-5:6)-3M 13M ");
+       }
+     else
+       {
+     Out+=ModelSupport::getComposite(SMap,PW,"17M -3M 13M ");
+       }
+     System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+
+     PW+=10; 
+     }
+    addOuterSurf(OutTot);
+
+    ///ALB
+
   return;
 }
 
@@ -280,10 +544,11 @@ BeamMonitor::createLinks()
 
 void
 BeamMonitor::createAll(Simulation& System,
-		       const attachSystem::FixedComp& FC,
-		       const long int linkIndex,
-		       const attachSystem::ContainedGroup& CG,
-		       const std::string& CGName)
+		       const attachSystem::FixedComp& FC)
+// ,
+// 		       const long int linkIndex,
+// 		       const attachSystem::ContainedGroup& CG,
+// 		       const std::string& CGName)
   /*!
     Global creation of the hutch
     \param System :: Simulation to add vessel to
@@ -298,10 +563,14 @@ BeamMonitor::createAll(Simulation& System,
 
   std::string PBeam;
 
-  createUnitVector(FC,linkIndex);
+  // createUnitVector(FC,linkIndex);
+  createUnitVector(FC);
+
   createSurfaces();
-  createObjects(System,CG,CGName);
-  createLinks();
+  // createObjects(System,CG,CGName);
+ createObjects(System);
+  
+ createLinks();
   insertObjects(System); 
   return;
 }

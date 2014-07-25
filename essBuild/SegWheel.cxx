@@ -60,6 +60,7 @@
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
+#include "fileSupport.h"
 #include "generateSurf.h"
 #include "support.h"
 #include "stringCombine.h"
@@ -267,11 +268,23 @@ SegWheel::populate(const FuncDataBase& Control)
   heMat=ModelSupport::EvalMat<int>(Control,keyName+"HeMat");  
   steelMat=ModelSupport::EvalMat<int>(Control,keyName+"SteelMat");  
   innerMat=ModelSupport::EvalMat<int>(Control,keyName+"InnerMat");  
-  cladShaftMat=ModelSupport::EvalMat<int>(Control,keyName+"CladShaftMat");  
+
+  // cladShaftMat=ModelSupport::EvalMat<int>(Control,keyName+"CladShaftMat");  
+
+  cladShaftMat=ModelSupport::EvalMat<int>(Control,
+                                          StrFunc::makeString(keyName+"CladShaftMat"));  
+
+
+
+
   coolingShaftMatInt=ModelSupport::EvalMat<int>(Control,
 						keyName+"CoolingShaftMatInt");  
-  coolingShaftMatExt=ModelSupport::EvalMat<int>(Control,
-						keyName+"CoolingShaftMatExt");  
+ 
+   coolingShaftMatExt=ModelSupport::EvalMat<int>(Control,StrFunc::makeString(keyName+"CoolingShaftMatExt"));  
+
+   // coolingShaftMatExt=ModelSupport::EvalMat<int>(Control,keyName+"CoolingShaftMatExt");  
+
+
 
   return;
 }
@@ -415,11 +428,11 @@ SegWheel::makeShaftObjects(Simulation& System)
 
   // void in shaft foot
   Out=ModelSupport::getComposite(SMap,wheelIndex,"-1017 -1015 1025");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,coolingShaftMatExt,0.0,Out));
 
   // void around shaft
   Out=ModelSupport::getComposite(SMap,wheelIndex," (-1037 1056 -1006 1027):(-1057 -1056 1027 46 (1046:1047)):(-1057 1027 -45 1055 (-1045:1047)):(-1055 -1037 1035 (-1025:1027) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,coolingShaftMatExt,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,wheelIndex,"-18 1035 -1006 (-1037:(-1056 1055))");
   addOuterSurf("Shaft",Out);  
@@ -463,6 +476,10 @@ SegWheel::createSurfaces()
 
   Geometry::Vec3D dirX(X);
   int SI1(wheelIndex);
+
+  // divider
+  ModelSupport::buildPlane(SMap,wheelIndex+1000,Origin,Y);
+
 
   for(size_t i=0;i<targetSectorNumber;i++)
     { 
@@ -663,7 +680,7 @@ SegWheel::createObjects(Simulation& System)
   // Void surround
   Out=ModelSupport::getComposite(SMap,wheelIndex,"(38 -48 55 -56 (10:-35:36)) " 
 				          ":(18 -38 55 -56 (-45:46))");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,coolingShaftMatExt,0.0,Out));
 
   // outer world 
   //  Out=ModelSupport::getComposite(SMap,wheelIndex," (-48 55 -56 18) : "
@@ -685,18 +702,30 @@ SegWheel::createLinks()
   ELog::RegMethod RegA("PressVessel","createLinks");
   // set Links :: Inner links:
 
-  FixedComp::setConnect(0,Origin+Y*innerRadius,-Y);
-  FixedComp::setLinkSurf(0,-SMap.realSurf(wheelIndex+7));
+  FixedComp::setConnect(0,Origin-Y*innerRadius,-Y);
+  FixedComp::setLinkSurf(0,SMap.realSurf(wheelIndex+48));
+  FixedComp::addLinkSurf(0,-SMap.realSurf(wheelIndex+1000));
 
-  FixedComp::setConnect(1,Origin+Y*voidRadius,Y);
+  FixedComp::setConnect(1,Origin+Y*innerRadius,Y);
   FixedComp::setLinkSurf(1,SMap.realSurf(wheelIndex+48));
+  FixedComp::addLinkSurf(1,SMap.realSurf(wheelIndex+1000));
 
-  const double H1=(targetHeight/2.0)+voidThick;
-  FixedComp::setConnect(2,Origin-Z*H1,-Z);
-  FixedComp::setLinkSurf(2,-SMap.realSurf(wheelIndex+55));
+  // FixedComp::setConnect(2,Origin-Y*voidRadius,-Y);
+  // FixedComp::setLinkSurf(2,SMap.realSurf(wheelIndex+1037));
+  // FixedComp::addLinkSurf(2,-SMap.realSurf(wheelIndex+1));
 
-  FixedComp::setConnect(3,Origin+Z*H1,Z);
-  FixedComp::setLinkSurf(3,SMap.realSurf(wheelIndex+56));
+  // FixedComp::setConnect(3,Origin+Y*voidRadius,Y);
+  // FixedComp::setLinkSurf(3,SMap.realSurf(wheelIndex+1037));
+  // FixedComp::addLinkSurf(3,SMap.realSurf(wheelIndex+1));
+
+  // const double H=(targetHeight/2.0)+coolantThick+caseThick+voidThick;
+  // FixedComp::setConnect(4,Origin-Z*H,-Z);
+  // FixedComp::setLinkSurf(4,-SMap.realSurf(wheelIndex+55));
+
+  // FixedComp::setConnect(5,Origin+Z*H,Z);
+  // FixedComp::setLinkSurf(5,SMap.realSurf(wheelIndex+56));
+
+
 
   return;
 }

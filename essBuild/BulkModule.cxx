@@ -317,6 +317,8 @@ BulkModule::addFlightUnit(Simulation& System,
     cx<<FC.getLinkString(index)<<" : ";
   cx<<FC.getLinkString(5)<<" )";
 
+  // ELog::EM<<" cx "<<cx.str()<< " getLinkString(index) "<<FC.getLinkString(5)<<ELog::endWarn;
+
   // AVOID INNER
   for(int i=1;i<static_cast<int>(nLayer);i++)
     {

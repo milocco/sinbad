@@ -68,16 +68,24 @@
 #include "ContainedGroup.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "LinearComp.h"
 #include "mainJobs.h"
-#include "DefPhysics.h"
 #include "Volumes.h"
 #include "variableSetup.h"
 #include "ImportControl.h"
 #include "SourceCreate.h"
 #include "SourceSelector.h"
+#include "Triple.h"
+#include "NRange.h"
+#include "NList.h"
+#include "Tally.h"
+#include "TallyCreate.h"
 #include "TallySelector.h"
 #include "World.h"
 #include "makeESS.h"
+
+#include "DefPhysics.h"
+
 
 MTRand RNG(12345UL);
 
@@ -115,7 +123,19 @@ main(int argc,char* argv[])
   // The big variable setting
   setVariable::EssVariables(SimPtr->getDataBase());
   InputModifications(SimPtr,IParam,Names);
-  
+
+  //ALB
+  const std::string MatName=
+      IParam.dataCnt("matType") ? IParam.getValue<std::string>("matType") :
+        "Standard";
+  ELog::EM<<" MT "<<MatName<<ELog::endWarn;
+  if (MatName=="ISIS")
+  setVariable::ESSISISModel(SimPtr->getDataBase());
+else
+  setVariable::ESSStandardModel(SimPtr->getDataBase());
+
+
+ 
   // Definitions section 
   int MCIndex(0);
   const int multi=IParam.getValue<int>("multi");
@@ -128,6 +148,9 @@ main(int argc,char* argv[])
 	      ELog::EM.setActive(4);    // write error only
 	      ELog::FM.setActive(4);    
 	      ELog::RN.setActive(0);    
+	      // if (iteractive)
+	      // 	mainSystem::incRunTimeVariable
+	      // 	  (SimPtr->getDataBase(),IterVal);
 	    }
 
 	  SimPtr->resetAll();
@@ -139,7 +162,6 @@ main(int argc,char* argv[])
 
 	  SimPtr->removeComplements();
 	  SimPtr->removeDeadSurfaces(0);         
-	  ModelSupport::setDefaultPhysics(*SimPtr,IParam);
 
 	  const int renumCellWork=tallySelection(*SimPtr,IParam);
 	  SimPtr->masterRotation();
@@ -155,7 +177,7 @@ main(int argc,char* argv[])
 
 	  SimProcess::importanceSim(*SimPtr,IParam);
 	  SimProcess::inputPatternSim(*SimPtr,IParam); // energy cut etc
-
+	  
 	  if (renumCellWork)
 	    tallyRenumberWork(*SimPtr,IParam);
 	  tallyModification(*SimPtr,IParam);
@@ -168,14 +190,19 @@ main(int argc,char* argv[])
 	  //   SimPtr->setEnergy(IParam.getValue<double>("ECut"));
 
 	  // Ensure we done loop
+	  ModelSupport::setEssPhysics(*SimPtr,IParam);
+	  
 	  do
 	    {
 	      SimProcess::writeIndexSim(*SimPtr,Oname,MCIndex);
+              // ModelSupport::setEssPhysics(*SimPtr,IParam,Oname);
+
 	      MCIndex++;
 	    }
 	  while(!iteractive && MCIndex<multi);
 	}
-      exitFlag=SimProcess::processExitChecks(*SimPtr,IParam);
+      if (IParam.flag("cinder"))
+	SimPtr->writeCinder();
       ModelSupport::calcVolumes(SimPtr,IParam);
       ModelSupport::objectRegister::Instance().write("ObjectRegister.txt");
     }

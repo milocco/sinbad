@@ -535,7 +535,11 @@ void createESSInputs(inputParam& IParam)
   
   //  IParam.setValue("sdefEnergy",2503.0);    
   IParam.setValue("sdefType",std::string("ess"));  
-  IParam.setValue("targetType",std::string("Wheel"));  
+  IParam.setValue("targetType",std::string("Wheel"));
+  IParam.regDefItem<std::string>("MatName","matType",1,std::string("Standard"));
+
+
+  
 
   IParam.regDefItem<std::string>("lowMod","lowModType",1,std::string("lowMod"));
   IParam.regDefItem<std::string>("topMod","topModType",1,std::string("topMod"));
@@ -550,6 +554,8 @@ void createESSInputs(inputParam& IParam)
   IParam.setDesc("lowPipe","Type of low moderator pipework");
   IParam.setDesc("iradLine","Build an irradiation line [void for none]");
   IParam.setDesc("beamlines","Build beamlines [void for none]");
+  IParam.setDesc("MatName","Use ESS materials or bloody ISIS ones");
+
   return;
 }
 

@@ -71,6 +71,10 @@
 #include "ContainedGroup.h"
 #include "BlockAddition.h"
 #include "CylPreMod.h"
+//ALB
+// #include "SupplyPipe.h"
+
+
 
 namespace essSystem
 {
@@ -107,7 +111,8 @@ CylPreMod::CylPreMod(const CylPreMod& A) :
   depth(A.depth),mat(A.mat),temp(A.temp),viewY(A.viewY),
   viewAngle(A.viewAngle),viewOpenAngle(A.viewOpenAngle),
   viewHeight(A.viewHeight),viewWidth(A.viewWidth),
-  FLpts(A.FLpts),FLunit(A.FLunit),layerCells(A.layerCells)
+  FLpts(A.FLpts),FLunit(A.FLunit),layerCells(A.layerCells),
+  BottomCell(A.BottomCell)
   /*!
     Copy constructor
     \param A :: CylPreMod to copy
@@ -150,6 +155,8 @@ CylPreMod::operator=(const CylPreMod& A)
       FLpts=A.FLpts;
       FLunit=A.FLunit;
       layerCells=A.layerCells;
+      BottomCell=A.BottomCell;
+
     }
   return *this;
 }
@@ -368,14 +375,21 @@ CylPreMod::createSurfaces()
       double step[]={0.0,0.0,0.0,0.0};
       for(size_t i=0;i<(nLayers+1)/2;i++)
 	{
+
 	  SI=baseIndex+10*static_cast<int>(i);
 	  // SPECIAL moves inner layer in by thickness
 	  for(size_t jIndex=0;jIndex<4;jIndex++)
 	    {
+
 	      const size_t j(jIndex+flIndex*4);
 	      ModelSupport::buildPlane(SMap,SI+3,
 				       FLpts[j]+FLunit[j]*step[jIndex],
 				       FLunit[j]);  
+
+	  // std::cout<<" i  "<<i<<"  SI  "<< SI
+          //          <<"  FLpts[j]  " <<FLpts[j]<<"  FLunit[j] "<<FLunit[j]
+          //          <<"  step[jIndex]  "<<step[jIndex]<<" FLunit[j] "<< FLunit[j]<<std::endl;     
+
 	      SI++;
 	      if (jIndex<2)
 		step[jIndex]+=(i) ? radius[i]-radius[i-1] : radius[i]-innerRadius;
@@ -425,6 +439,15 @@ CylPreMod::createObjects(Simulation& System,
       else if (CMod)
 	Out+=CMod->getExclude();
       System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],temp[i],Out));
+
+     //ALB++++
+     if (i==nLayers-1)
+       {
+     BottomCell=cellIndex-1;
+     //     ELog::EM<<" cellIndex-1 "<<cellIndex-1<<" mat "<<mat[i]<<ELog::endTrace;
+       }
+     //ALB+++
+
       layerCells.push_back(cellIndex-1);
       SI+=10;
       if (i!=even)
@@ -448,17 +471,30 @@ CylPreMod::createObjects(Simulation& System,
 	  layerCells.push_back(cellIndex-1);
 	}
     }
-  
-  // Finally the void cell:
+
+  //ALB first Al layer  
   Out=ModelSupport::getComposite(SMap,modIndex,
-				 modIndex+10*static_cast<int>(nLayers-1),"9 -7M ");
+				 modIndex+10*static_cast<int>(nLayers-1),"9 -7 ");
 
   for(size_t viewIndex=0;viewIndex<viewAngle.size();viewIndex++)
     {	  
       std::string OComp(Out);
       OComp+=ModelSupport::getComposite(SMap,modIndex+100*static_cast<int>(viewIndex),
 				 "101 -103 -104 -105 -106 " );
-      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,OComp));
+      System.addCell(MonteCarlo::Qhull(cellIndex++,13060,0.0,OComp));
+    }
+  //ALB
+
+  // Finally the void cell:
+  Out=ModelSupport::getComposite(SMap,modIndex,
+				 modIndex+10*static_cast<int>(nLayers-1),"7 -7M ");
+
+  for(size_t viewIndex=0;viewIndex<viewAngle.size();viewIndex++)
+    {	  
+      std::string OComp(Out);
+      OComp+=ModelSupport::getComposite(SMap,modIndex+100*static_cast<int>(viewIndex),
+				 "101 -103 -104 -105 -106 " );
+      System.addCell(MonteCarlo::Qhull(cellIndex++,2000,0.0,OComp));
     }
   return; 
 }
@@ -566,12 +602,12 @@ CylPreMod::getLayerSurf(const size_t layerIndex,
 			const size_t sideIndex) const
   /*!
     Given a side and a layer calculate the link surf
-    \param sideIndex :: Side [0-5]
+    \param sideIndex :: Side [0-3]
     \param layerIndex :: layer, 0 is inner moderator [0-4]
     \return Surface string
   */
 {
-  ELog::RegMethod RegA("CylPreMod","getLinkSurf");
+  ELog::RegMethod RegA("H2Moderator","getLinkSurf");
 
   if (layerIndex>nLayers) 
     throw ColErr::IndexError<size_t>(layerIndex,nLayers,"layer");
@@ -600,13 +636,13 @@ std::string
 CylPreMod::getLayerString(const size_t layerIndex,
 			 const size_t sideIndex) const
   /*!
-    Given a side and a layer calculate the layerstring [outlooking]
+    Given a side and a layer calculate the link surf
     \param layerIndex :: layer, 0 is inner moderator [0-4]
-    \param sideIndex :: Side [0-5]
+    \param sideIndex :: Side [0-3]
     \return Surface string
   */
 {
-  ELog::RegMethod RegA("CylPreMod","getLayerString");
+  ELog::RegMethod RegA("H2Moderator","getLinkString");
 
   if (layerIndex>nLayers) 
     throw ColErr::IndexError<size_t>(layerIndex,nLayers,"layer");
@@ -736,8 +772,10 @@ CylPreMod::createAll(Simulation& System,
   createLinks();
 
   // CREATE BLOCK ADDITION
+  //     ELog::EM<<" PREMOD Ori "<<Origin<<ELog::endWarn;
 
   Geometry::Vec3D IPt=calcViewIntercept(0,aSide);
+
   ExtAObj->setActive(blockActiveA);
   ExtAObj->setCentRotate(Origin);
   ExtAObj->setEdgeSurf(SMap.realSurf(modIndex+103+
@@ -753,15 +791,20 @@ CylPreMod::createAll(Simulation& System,
 				     static_cast<int>(bSide)));  // 204
   ExtBObj->setCentRotate(Origin);
   ExtBObj->copyInterObj(this->getKey("Main"));
-
   ExtBObj->createAll(System,IPt,*this,nLayers-2,4+bSide);
-
   addOuterSurf("BlockB",ExtBObj->getCompExclude());  
+
+  // PreModSupply1(new SupplyPipe("PreModSupply")),
+  // OR.addObject(PreModSupply1);
+  // PreModSupply1->createAll(System,CylMod,0,0,0);
+
   for(size_t i=nLayers-2;i<nLayers;i++)
     {
-      updateLayers(System,'A',i,1);
-      updateLayers(System,'B',i,1);
+      //ALB nLevel changed from 1 to 0
+      updateLayers(System,'A',i,0);
+      updateLayers(System,'B',i,0);
     }
+
   insertObjects(System);       
   return;
 }

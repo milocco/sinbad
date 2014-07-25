@@ -34,6 +34,7 @@
 #include <functional>
 #include <boost/shared_ptr.hpp>
 #include <boost/array.hpp>
+#include <boost/format.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -87,6 +88,8 @@
 #include "PhysImp.h"
 #include "PhysicsCards.h"
 #include "DefPhysics.h"
+
+#include "support.h"
 
 namespace ModelSupport
 {
@@ -396,5 +399,91 @@ setReactorPhysics(Simulation& System,
   
   return; 
 }
+
+  //ALB+++++++++++++
+void 
+setEssPhysics(Simulation& System,
+	      const mainSystem::inputParam& IParam)
+  /*!
+    Set the default Physics
+    \param System :: Simulation
+    \param IParam :: Input parameter
+  */
+{
+  ELog::RegMethod RegA("EssPhysics","setDefaultPhysics");
+
+  const FuncDataBase& Control=System.getDataBase();
+  physicsSystem::PhysicsCards& PC=System.getPC();  
+  std::string PList(" p h / z ");
+  const double maxEnergy=Control.EvalDefVar<double>("sdefEnergy",2000.0);
+  const std::string EMax=StrFunc::makeString(maxEnergy);
+
+  System.getPC().setMode("n"+PList);
+  System.getPC().setPrintNum("-10 -20 -30 -70 ");
+  System.processCellsImp();
+  PC.setCells("imp",1,0);            // Set a zero cell
+  // System.getPC().addPhysImp("imp","n");
+ 
+  // Process cuts
+  physicsSystem::PhysCard& cn=PC.addPhysCard("cut","n");
+  cn.setValues("j 0.0");
+  physicsSystem::PhysCard& cp=PC.addPhysCard("cut","p");
+  cp.setValues("j 0.0");
+  physicsSystem::PhysCard& ch=PC.addPhysCard("cut","h");
+  ch.setValues("j 0.0");
+  physicsSystem::PhysCard& cpi=PC.addPhysCard("cut","/");
+  cpi.setValues("j 0.0");
+  physicsSystem::PhysCard& cz=PC.addPhysCard("cut","z");
+  cz.setValues("j 0.0");
+
+  // Process physics
+  physicsSystem::PhysCard& pn=PC.addPhysCard("phys","n");
+  pn.setValues(EMax);
+  physicsSystem::PhysCard& pp=PC.addPhysCard("phys","p");
+  pp.setValues(EMax);
+  physicsSystem::PhysCard& ph=PC.addPhysCard("phys","h");
+  ph.setValues(EMax);
+  physicsSystem::PhysCard& pa=PC.addPhysCard("phys","/");
+  pa.setValues(EMax);
+  physicsSystem::PhysCard& pz=PC.addPhysCard("phys","z");
+  pz.setValues(EMax);
+
+  // LCA ielas ipreq iexisa ichoic jcoul nexite npidk noact icem ilaq 
+  // LEA ipht icc nobalc nobale ifbrk ilvden ievap nofis
+  physicsSystem::LSwitchCard& lca=PC.getLEA();
+  physicsSystem::LSwitchCard& lcb=PC.getLEA();
+  physicsSystem::LSwitchCard& lcc=PC.getLEA();
+  physicsSystem::LSwitchCard& lea=PC.getLEA();
+  physicsSystem::LSwitchCard& leb=PC.getLEA();
+  
+
+ lca.setValuesJ("lca"," 9j 01 ");
+ lcb.setValuesJ("lcb"," 8j ");
+ lcc.setValuesJ("lcc"," 2j ");
+ lea.setValuesJ("lea"," 8j ");
+ leb.setValuesJ("leb"," 4j ");
+
+ // lca.setValues("lca","2 1 1 0023 1 1 0 1 0 1 ");
+ // lcb.setValuesF("lcb","3500 3500 2500 2500 800 800 -1 -1 ");
+ // lcc.setValuesF("lcc","1.5 45");
+ // lea.setValuesF("lea","1 4 1 0 1 0 0 1 ");
+ // leb.setValuesF("leb","1.5 8.0 1.5 10.0 ");
+
+  PC.setNPS(IParam.getValue<int>("nps"));
+  PC.setRND(IParam.getValue<long int>("random"));	
+  PC.setVoidCard(IParam.flag("void"));
+  
+  return; 
+}
+
+void 
+setSinbadPhysics(Simulation& System,
+		  const mainSystem::inputParam& IParam)
+{
+
+  return; 
+}
+
+
 
 } // NAMESPACE ModelSupport

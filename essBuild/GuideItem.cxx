@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   essBuild/GuideItem.cxx
- *
- * Copyright (c) 2004-2014 by Stuart Ansell
+*
+ * Copyright (c) 2004-2013 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -266,7 +266,7 @@ GuideItem::calcBeamLineTrack(const attachSystem::FixedComp& FC)
 
   const Geometry::Cylinder* DPtr=
     SMap.realPtr<Geometry::Cylinder>(outerCyl);
-  bExit=LI.getPoint(DPtr,bEnter+bY*length.back());
+  bExit=LI.getPoint(DPtr,bEnter);
   return;
 }
   
@@ -352,7 +352,7 @@ GuideItem::getEdgeStr(const GuideItem* GPtr) const
 }
 
 void
-GuideItem::createObjects(Simulation& System,const GuideItem* GPtr)
+GuideItem::createObjects(Simulation& System,const GuideItem* GPtr,const size_t voidIndex)
   /*!
     Adds the all the components
     \param System :: Simulation to create objects in
@@ -364,7 +364,6 @@ GuideItem::createObjects(Simulation& System,const GuideItem* GPtr)
   const std::string edgeStr=
     getEdgeStr(GPtr);
   std::string Out;  
-
 
   int GI(guideIndex);
   for(size_t i=0;i<nSegment;i++)
@@ -392,7 +391,10 @@ GuideItem::createObjects(Simulation& System,const GuideItem* GPtr)
   // Inner void  
   Out=ModelSupport::getComposite(SMap,guideIndex,GI,
 				 "1 7 -7M 103 -104 105 -106 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  if(voidIndex==5||voidIndex==6)
+    System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  else
+    System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
   //  addBoundarySurf(Out);
 
   return;
@@ -423,10 +425,11 @@ GuideItem::createLinks()
   FixedComp::setConnect(0,bEnter+bY*RInner,-bY);
   FixedComp::setLinkSurf(0,-SMap.realSurf(guideIndex+7));
 
-  const int GI=10*static_cast<int>(nSegment)+guideIndex;
+  const int GI=10*static_cast<int>(nSegment);
   FixedComp::setConnect(1,bExit,bY);
   FixedComp::setLinkSurf(1,SMap.realSurf(GI+7));
-  FixedComp::addBridgeSurf(1,SMap.realSurf(guideIndex+1));
+  FixedComp::addLinkSurf(1,SMap.realSurf(GI+1));
+
   FixedComp::setConnect(2,bEnter-bX*(beamWidth/2.0)+
 			bY*((RInner+ROuter)/2.0),-bX);
   FixedComp::setLinkSurf(2,-SMap.realSurf(guideIndex+103));
@@ -447,7 +450,8 @@ void
 GuideItem::createAll(Simulation& System,
 		     const attachSystem::FixedComp& FC,
 		     const size_t sideIndex,
-		     const GuideItem* GPtr)
+		     const GuideItem* GPtr,
+                     const size_t voidIndex)
   /*!
     Generic function to create everything
     \param System :: Simulation item
@@ -462,7 +466,7 @@ GuideItem::createAll(Simulation& System,
   createUnitVector(FC,sideIndex);
   calcBeamLineTrack(FC);
   createSurfaces();
-  createObjects(System,GPtr);
+  createObjects(System,GPtr,voidIndex);
   createLinks();
   insertObjects(System);              
 

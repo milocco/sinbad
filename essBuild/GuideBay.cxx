@@ -318,10 +318,11 @@ GuideBay::createGuideItems(Simulation& System)
       GA->setCylBoundary(dPlane,innerCyl,outerCyl);
       GA->addInsertCell("Inner",bayIndex+1);
       GA->addInsertCell("Outer",bayIndex+2);
+  
       if (i)
-	GA->createAll(System,*this,0,GUnit[i-1].get());
+	GA->createAll(System,*this,0,GUnit[i-1].get(),i);
       else
-	GA->createAll(System,*this,0,0);
+	GA->createAll(System,*this,0,0,i);
 
       GUnit.push_back(GA);
       OR.addObject(GUnit.back());
