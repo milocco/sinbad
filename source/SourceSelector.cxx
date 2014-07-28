@@ -182,7 +182,8 @@ sourceSelection(Simulation& System,
     SDef::createESSSource(Control,sourceCard);
   else if (sdefType=="Sinbad" || sdefType=="sinbad")
     SDef::createSinbadSource(Control,sourceCard);
-  else if (sdefType=="TS2")
+  
+ else if (sdefType=="TS2")
     {
   // Basic TS2 source
       if(IParam.hasKey("horr") && IParam.flag("horr"))
