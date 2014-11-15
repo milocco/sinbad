@@ -51,6 +51,11 @@ void addToInsertControl(Simulation&,const std::string&,
 			 const FixedComp&,ContainedComp&);
 void addToInsertControl(Simulation&,const int,const int,
 			 const FixedComp&,const ContainedComp&);
+// refuse from older version necessary to sinbadMake starter
+void addToInsertControl(Simulation&,const FixedComp&,
+			 const FixedComp&,ContainedComp&);
+
+
 
 // On surface intersects
 void addToInsertSurfCtrl(Simulation&,const FixedComp&,

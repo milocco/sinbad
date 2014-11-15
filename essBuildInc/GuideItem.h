@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   essBuildInc/GuideItem.h
- *
- * Copyright (c) 2004-2014 by Stuart Ansell
+*
+ * Copyright (c) 2004-2013 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,11 +28,11 @@ namespace essSystem
 {
 
 /*!
-  \class GuideItem
+  \class Reflector
   \version 1.0
   \author S. Ansell
-  \date November 2013
-  \brief Simple Guide element Housing + void
+  \date November 2012
+  \brief Reflector Cylindrical
 */
 
 class GuideItem : public attachSystem::ContainedGroup,
@@ -76,7 +76,7 @@ class GuideItem : public attachSystem::ContainedGroup,
 
   void createSurfaces();
   void createLinks();
-  void createObjects(Simulation&,const GuideItem*);
+  void createObjects(Simulation&,const GuideItem*,const size_t);
   std::string sideExclude(const size_t) const;
   std::string getEdgeStr(const GuideItem*) const;
   const Geometry::Plane* getPlane(const int) const;
@@ -92,7 +92,7 @@ class GuideItem : public attachSystem::ContainedGroup,
 
     
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const size_t,const GuideItem*);
+		 const size_t,const GuideItem*,const size_t);
 
 };
 

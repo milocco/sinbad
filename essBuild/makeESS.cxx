@@ -87,7 +87,9 @@
 #include "BulkModule.h"
 #include "ShutterBay.h"
 #include "GuideBay.h"
+
 #include "fusionStation.h"
+#include "BasementRooms.h"
 
 #include "ConicModerator.h"
 #include "essDBMaterial.h"
@@ -126,7 +128,8 @@ makeESS::makeESS() :
   LowPreModBReturnDown(new essSupplyPipe("LowPreModBReturnDown")),
 
   FusionStation(new fusionStation("fusionTestStation")),
-
+  BasementRooms(new essBasementRooms("essBasementRooms")),
+ 
 
   //ALB+++++
 
@@ -175,6 +178,7 @@ makeESS::makeESS() :
   OR.addObject(TopPreModBReturnDown);
 
   OR.addObject(FusionStation);
+  OR.addObject(BasementRooms);
 
 }
 
@@ -283,8 +287,12 @@ makeESS::build(Simulation* SimPtr,
   LowPreModBReturnUp->createAll(*SimPtr,*LowPre->ExtBObj,0,2,1);
   LowPreModBReturnDown->createAll(*SimPtr,*LowPre->ExtBObj,0,2,1);
 
-  FusionStation->addInsertCell(TopPre->getBottomCell());
-  FusionStation->createAll(*SimPtr,World::masterOrigin());
+  // FusionStation->addInsertCell(TopPre->getBottomCell());
+  // FusionStation->createAll(*SimPtr,World::masterOrigin());
+
+   BasementRooms->addInsertCell(74123);
+   BasementRooms->createAll(*SimPtr,World::masterOrigin());
+
 
 
   return;

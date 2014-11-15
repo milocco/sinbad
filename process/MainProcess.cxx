@@ -384,7 +384,8 @@ createSinbadInputs(inputParam& IParam)
 
   IParam.regDefItem<std::string>("preName","preName",1,"49");
 
-  IParam.setDesc("preName","Experiment type for sinbad configuration");
+  IParam.setDesc("preName","Experiment number for sinbad configuration");
+
   return;
 }
 

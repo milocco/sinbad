@@ -23,16 +23,9 @@
 #define essSystem_makeESS_h
 
 
-namespace beamlineSystem
-{
-  class beamlineConstructor;
-}
-
 namespace constructSystem
 {
   class ModBase;
-  class SupplyPipe;
-
 }
 
 namespace moderatorSystem
@@ -55,13 +48,17 @@ namespace essSystem
   class Wheel;
   class BeRef;
   class essMod;
+  class CylModerator;
   class ConicModerator;
+  class essSupplyPipe;
   class CylPreMod;
   class BulkModule;
   class ShutterBay;
   class ProtonTube;
   class GuideBay;
   class BeamMonitor;
+  class fusionStation;
+  class essBasementRooms;
 
   /*!
     \class makeESS
@@ -80,6 +77,30 @@ class makeESS
   boost::shared_ptr<ProtonTube> PBeam;   ///< Proton Void
   boost::shared_ptr<BeamMonitor> BMon;   ///< Beam Monitor
 
+  // ALB+++++
+  boost::shared_ptr<essSupplyPipe> TopModSupply;  ///< Top Mod supply 
+  boost::shared_ptr<essSupplyPipe> TopModReturn;  ///< Top Mod return 
+
+
+  boost::shared_ptr<essSupplyPipe> TopPreModASupply;  ///< Block Adition supply 
+  boost::shared_ptr<essSupplyPipe> TopPreModBSupply;  ///< Block Adition supply 
+  boost::shared_ptr<essSupplyPipe> TopPreModAReturnUp; //< Block addition return 
+  boost::shared_ptr<essSupplyPipe> TopPreModAReturnDown; //< Block addition return 
+  boost::shared_ptr<essSupplyPipe> TopPreModBReturnUp; //< Block addition return 
+  boost::shared_ptr<essSupplyPipe> TopPreModBReturnDown; //< Block addition return 
+
+  boost::shared_ptr<essSupplyPipe> LowPreModASupply;  ///< Block Adition supply 
+  boost::shared_ptr<essSupplyPipe> LowPreModBSupply;  ///< Block Adition supply 
+  boost::shared_ptr<essSupplyPipe> LowPreModAReturnUp; //< Block addition return 
+  boost::shared_ptr<essSupplyPipe> LowPreModAReturnDown; //< Block addition return 
+  boost::shared_ptr<essSupplyPipe> LowPreModBReturnUp; //< Block addition return 
+  boost::shared_ptr<essSupplyPipe> LowPreModBReturnDown; //< Block addition return 
+
+
+
+  // ALB+++++
+
+
   // ASSEMBLY 1:
   /// Primary Lower Mod
   boost::shared_ptr<constructSystem::ModBase> LowMod;  
@@ -88,11 +109,14 @@ class makeESS
   boost::shared_ptr<moderatorSystem::FlightLine> LowAFL;  ///< Lower Mode FL
   boost::shared_ptr<moderatorSystem::FlightLine> LowBFL;  ///< Lower Mode FL
   boost::shared_ptr<CylPreMod> LowPre;          ///< Upper Mod (Pre)
-  /// Lower supply 
-  boost::shared_ptr<constructSystem::SupplyPipe> LowSupplyPipe; 
-  boost::shared_ptr<constructSystem::SupplyPipe> LowReturnPipe;  ///< Lower supply 
+  boost::shared_ptr<essSupplyPipe> LowSupplyPipe;  ///< Lower supply 
+  boost::shared_ptr<essSupplyPipe> LowReturnPipe;  ///< Lower supply 
 
+  // boost::shared_ptr<constructSystem::ModBase> TopMod;   ///< Upper Mod
   boost::shared_ptr<constructSystem::ModBase> TopMod;   ///< Upper Mod
+
+  /* boost::shared_ptr<CylModerator> TopMod;    ///< */
+
   boost::shared_ptr<moderatorSystem::FlightLine> TopAFL;  ///< Upper Mode FL
   boost::shared_ptr<moderatorSystem::FlightLine> TopBFL;  ///< Upper Mode FL
   boost::shared_ptr<CylPreMod> TopPre;  ///< Upper Mod (Pre)
@@ -100,14 +124,12 @@ class makeESS
   boost::shared_ptr<BulkModule> Bulk;      ///< Main bulk module
   boost::shared_ptr<moderatorSystem::FlightLine> BulkLowAFL;  ///< Lower Mode FL
 
-  /// Shutterbay objects
+  /// Shutterbay object
   boost::shared_ptr<ShutterBay> ShutterBayObj;  
-  /// Array of Guidies
   std::vector<boost::shared_ptr<GuideBay> > GBArray;  
 
-  /// Array of beamlines constructors:
-  std::vector<boost::shared_ptr<beamlineSystem::beamlineConstructor> > 
-    BLArray;  
+  boost::shared_ptr<fusionStation> FusionStation;  ///< Fusion Test Station
+  boost::shared_ptr<essBasementRooms> BasementRooms;
 
   void topFlightLines(Simulation&);
   void lowFlightLines(Simulation&);
@@ -121,10 +143,7 @@ class makeESS
   void buildLowerPipe(Simulation&,const std::string&);
 
   void makeTarget(Simulation&,const std::string&);
-
-  void makeBeamLine(Simulation&,
-		    const mainSystem::inputParam&);
-  void optionSummary(Simulation&);
+  void optionSummary() const;
 
  public:
   

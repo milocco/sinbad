@@ -100,6 +100,7 @@ class DBMaterial
   void setActive(const int);
   bool isActive(const int) const;
   void setENDF7();
+ void initMXUnitsEss();
 
   void writeCinder(std::ostream& OX) const;
   void writeMCNPX(std::ostream& OX) const;

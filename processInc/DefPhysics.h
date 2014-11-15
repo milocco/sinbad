@@ -39,6 +39,11 @@ namespace ModelSupport
   void setDefaultPhysics(Simulation&,const mainSystem::inputParam&); 
   void setReactorPhysics(Simulation&,const mainSystem::inputParam&); 
   void setUFissionPhysics(Simulation&,const mainSystem::inputParam&); 
+  //ALB+++
+  void setEssPhysics(Simulation&,const mainSystem::inputParam&); 
+  void setSinbadPhysics(Simulation&,const mainSystem::inputParam&); 
+
+  //ALB+++
   std::string setDefRotation(const mainSystem::inputParam&);
   void setItemRotate(const attachSystem::FixedComp&,const std::string&);
 }

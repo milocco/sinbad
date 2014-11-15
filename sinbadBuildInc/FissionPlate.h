@@ -16,8 +16,9 @@ namespace sinbadSystem
   Based on object from A. Milocco
 */
 
-class FissionPlate  : public LayerPlate
+class FissionPlate : public LayerPlate
 {
+
  private:
 
   std::vector<size_t> DIndex;      ///< Objects that are divided
@@ -28,8 +29,9 @@ class FissionPlate  : public LayerPlate
 
   std::vector<double> XPts;        ///< X divide boundary  [NXSpace-1]
   std::vector<double> ZPts;        ///< Z divide boundary [NZSpace-1]
-  
-  /// material array for system [default populate]
+  std::vector<std::vector<double> > YPts;        ///< Values of source distribution between X and Z
+ 
+ /// material array for system [default populate]
   boost::multi_array<int,3> matIndex;
   /// temperature array [default populated]
   boost::multi_array<double,3> matTemp;
@@ -57,10 +59,18 @@ class FissionPlate  : public LayerPlate
   virtual void createAll(Simulation&,const attachSystem::FixedComp&,
 			     const long int);
 
-
 };
 
 }
+
+/* namespace SDef */
+
+/* { */
+/*  class Source;  */
+/*  void SinbadSourceDef(const FuncDataBase&,Source&); */
+
+/* } */
+
 
 #endif
  

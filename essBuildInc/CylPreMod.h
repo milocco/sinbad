@@ -23,13 +23,26 @@
 #define essSystem_CylPreMod_h
 
 class Simulation;
-
+ 
 namespace essSystem
 {
+
   class BlockAddition;
+
+/*   class BlockAddition : public attachSystem::ContainedGroup, */
+/*     public attachSystem::LayerComp, */
+/*     public attachSystem::FixedComp */
+/* { */
+/*  private: */
+/*   int a; */
+/*  public: */
+/*   int b; */
+/* }; */
+
+
 /*!
   \class CylPreMod
-  \author S. Ansell
+XS  \author S. Ansell
   \version 1.0
   \date October 2012
   \brief Specialized for a cylinder moderator
@@ -45,8 +58,10 @@ class CylPreMod : public attachSystem::ContainedGroup,
   int cellIndex;                  ///< Cell index
 
   /// Extension object
-  boost::shared_ptr<BlockAddition> ExtAObj; 
-  boost::shared_ptr<BlockAddition> ExtBObj; 
+ 
+  /* boost::shared_ptr<BlockAddition> ExtAObj; */
+  /* boost::shared_ptr<BlockAddition> ExtBObj;  */
+
   int blockActiveA;
   int blockActiveB;
   size_t aSide;  
@@ -72,6 +87,8 @@ class CylPreMod : public attachSystem::ContainedGroup,
   std::vector<Geometry::Vec3D> FLpts;   ///< Flight line corner 
   std::vector<Geometry::Vec3D> FLunit;  ///< Flight line direction  [-x,x,-z,z]
   std::vector<int> layerCells;          ///< Layered cells
+  int BottomCell;
+
   // Functions:  
   void checkItems(const attachSystem::FixedComp&);
   
@@ -96,11 +113,17 @@ class CylPreMod : public attachSystem::ContainedGroup,
 
   void createAll(Simulation&,const attachSystem::FixedComp&);
 
+  boost::shared_ptr<BlockAddition> ExtAObj;
+  boost::shared_ptr<BlockAddition> ExtBObj;
+  /* boost::shared_ptr<SupplyPipe> PreModSupply1;  ///< Block Adition supply */
+ 
+
   const boost::shared_ptr<BlockAddition>& getBox(const char) const;
   std::string getBoxCut(const char) const;
   virtual Geometry::Vec3D getSurfacePoint(const size_t,const size_t) const;
   virtual int getLayerSurf(const size_t,const size_t) const;
   virtual std::string getLayerString(const size_t,const size_t) const;
+  int getBottomCell() const { return BottomCell;}   
 
 
 };

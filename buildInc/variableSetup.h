@@ -37,7 +37,14 @@ namespace setVariable
   void CuVariables(FuncDataBase&);
   void D4CModel(FuncDataBase&);
   void DelftModel(FuncDataBase&);
+
+  // ESS
   void EssVariables(FuncDataBase&);
+  void ESSISISModel(FuncDataBase&);
+  void ESSStandardModel(FuncDataBase&);
+
+
+
   void EPBVariables(FuncDataBase&);
   void LensModel(FuncDataBase&);
   void IMatVariables(FuncDataBase&);

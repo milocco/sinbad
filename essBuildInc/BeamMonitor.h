@@ -34,7 +34,16 @@ class BeamMonitor : public attachSystem::ContainedComp,
   std::vector<int> mat;          ///< Material     
   double halfThick;              ///< Mid point thickness
 
-  double sideW;
+
+  //ALB
+  double XsetW;                 
+  double YsetW;                 
+  double ZsetW;                 
+  double sideW;                 
+  size_t nSecW;
+  std::vector<double> radiusW;    
+  std::vector<double> thickW;        
+  std::vector<int> matW;     
   double frameSide;
   double frameHeightA;
   double frameHeightB;
@@ -57,10 +66,12 @@ class BeamMonitor : public attachSystem::ContainedComp,
   // Functions:
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,const long int);
+  void createUnitVector(const attachSystem::FixedComp&);
+/* ,const long int); */
   void createSurfaces();
-  void createObjects(Simulation&,const attachSystem::ContainedGroup&,
-		     const std::string&);
+  void createObjects(Simulation&);
+/* ,const attachSystem::ContainedGroup&, */
+/* 		     const std::string&); */
   void createLinks();
   
   std::string calcExclude(const size_t,
@@ -76,9 +87,10 @@ class BeamMonitor : public attachSystem::ContainedComp,
   virtual ~BeamMonitor();
    
 
-  void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int,const attachSystem::ContainedGroup&,
-		 const std::string&);
+  void createAll(Simulation&,const attachSystem::FixedComp&);
+/* , */
+/* 		 const long int,const attachSystem::ContainedGroup&, */
+/* 		 const std::string&); */
  
 };
 

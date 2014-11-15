@@ -1071,6 +1071,51 @@ EssVariables(FuncDataBase& Control)
 
 
   /////////////////////////////////////////////////////////////
+  // BASEMENT ROOMS
+  /////////////////////////////////////////////////////////////
+
+  Control.addVariable("essBasementRoomsXStep",0.0);  
+  Control.addVariable("essBasementRoomsYStep",0.0);  
+  Control.addVariable("essBasementRoomsZStep",-600.0);
+  Control.addVariable("essBasementRoomsXYangle",0.0); 
+  Control.addVariable("essBasementRoomsZangle",0.0);
+
+  // Control.addVariable("essBasementRoomsWidth",2009.2);
+  // Control.addVariable("essBasementRoomsWidth",1909.2);
+ Control.addVariable("essBasementRoomsWidth",2000);
+ 
+  //height romms: beam dump and forward room 
+  Control.addVariable("essBasementRoomsYHeight",350.0);
+
+  //height right back room (looking from beam dir) 
+  Control.addVariable("essBasementRoomsX1Height",200.0);
+
+  //height left room (looking from beam dir) 
+  Control.addVariable("essBasementRoomsX2Height",300.0);
+
+  //height right front room (looking from beam dir)
+  Control.addVariable("essBasementRoomsX3Height",400.0);
+
+  Control.addVariable("essBasementRoomsLength",4200.0);
+  // Control.addVariable("essBasementRoomsLength",4100.0);
+
+  Control.addVariable("essBasementRoomsInnerRadius",600.0);
+  Control.addVariable("essBasementRoomsOuterRadius",700.0);
+
+  Control.addVariable("essBasementRoomsTopWallThick",100.0);
+  Control.addVariable("essBasementRoomsTopWallThickMax",120.0);
+  Control.addVariable("essBasementRoomsBottomWallThick",100.0);
+  Control.addVariable("essBasementRoomsSideWallThick",100.0);
+  Control.addVariable("essBasementRoomsInnerWallThick",100.0);
+  Control.addVariable("essBasementRoomsInnerWallAngle",60.0);
+
+  Control.addVariable("essBasementRoomsWallMat","EssW");
+
+
+
+
+
+  /////////////////////////////////////////////////////////////
   // FUSION TEST STATION
   /////////////////////////////////////////////////////////////
 

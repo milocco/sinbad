@@ -525,9 +525,9 @@ funcbaseTest(const int type,const int extra)
 
   if(type==1 || type<0)
     {
-      testFunction A;
-      const int X=A.applyTest(extra);
-      if (X) return -1;
+      // testFunction A;
+      // const int X=A.applyTest(extra);
+      // if (X) return -1;
     }
   if(type==2 || type<0)
     {
