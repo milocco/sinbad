@@ -47,9 +47,10 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "ContainedComp.h"
+#include "inputParam.h"
 
 #include "sbadDetector.h"
-
+  
 namespace sinbadSystem
 {
 
@@ -80,8 +81,9 @@ sbadDetector::sbadDetector(const sbadDetector& A) :
   baseName(A.baseName),detID(A.detID),detIndex(A.detIndex),
   cellIndex(A.cellIndex),active(A.active),xStep(A.xStep),
   yStep(A.yStep),zStep(A.zStep),xyAngle(A.xyAngle),
-  zAngle(A.zAngle),radius(A.radius),length(A.length),
-  mat(A.mat)
+  zAngle(A.zAngle),diameter(A.diameter),length(A.length),
+  mat(A.mat),xOffset(A.xOffset),yOffset(A.yOffset),
+  zOffset(A.zOffset),detT(A.detT)
   /*!
     Copy constructor
     \param A :: sbadDetector to copy
@@ -107,9 +109,13 @@ sbadDetector::operator=(const sbadDetector& A)
       zStep=A.zStep;
       xyAngle=A.xyAngle;
       zAngle=A.zAngle;
-      radius=A.radius;
+      diameter=A.diameter;
       length=A.length;
       mat=A.mat;
+      xOffset=A.xOffset;
+      yOffset=A.yOffset;
+      zOffset=A.zOffset;
+      detT=A.detT;
     }
   return *this;
 }
@@ -121,6 +127,27 @@ sbadDetector::~sbadDetector()
   */
 {}
 
+
+std::string
+sbadDetector::getDet(const mainSystem::inputParam& IParam) const
+{
+
+
+ int t(0);
+  //  const std::string detT;
+  while(t<10 && IParam.getValue<std::string>("detType",t).size()!=0)
+	//  const std::string detT=IParam.getValue<std::string>("detType",2);
+    {
+     const std::string detT=IParam.getValue<std::string>("detType",t);
+     int  TT(0);
+     TT=t;
+       ELog::EM<<" XX "<<TT<<" X "<<t<<" Det TypeXxX == "<<detT<<" sizeXXX "<< IParam.getValue<std::string>("detType",t).size()<<ELog::endDiag;
+       //     buildDetectorsAM(*SimPtr,detT,TT);
+     t=t+1;
+    }
+  return detT;
+}
+
 void
 sbadDetector::populate(const FuncDataBase& Control)
   /*
@@ -131,15 +158,23 @@ sbadDetector::populate(const FuncDataBase& Control)
   ELog::RegMethod RegA("sbadDetector","populate");
 
   active=Control.EvalVar<int>(keyName+"Active");
-  xStep=Control.EvalPair<double>(keyName,baseName,"XStep");
-  yStep=Control.EvalPair<double>(keyName,baseName,"YStep");
-  zStep=Control.EvalPair<double>(keyName,baseName,"ZStep");
+  xStep=Control.EvalPair<double>(keyName,baseName,"StepX");
+  yStep=Control.EvalPair<double>(keyName,baseName,"StepY");
+  zStep=Control.EvalPair<double>(keyName,baseName,"StepZ");
   xyAngle=Control.EvalPair<double>(keyName,baseName,"XYAngle");
   zAngle=Control.EvalPair<double>(keyName,baseName,"ZAngle");
 
-  radius=Control.EvalPair<double>(keyName,baseName,"Radius");
-  length=Control.EvalPair<double>(keyName,baseName,"Length");
-  radius=Control.EvalPair<double>(keyName,baseName,"Radius");
+	  ELog::EM<<"baseName "<<baseName<<ELog::endDiag;
+	  ELog::EM<<"keyName "<<keyName<<ELog::endDiag;
+
+  std::string keyName1("49DetectorRh");
+
+  xOffset=Control.EvalDefVar<double>(baseName+"OffSetX",0.0);
+  yOffset=Control.EvalDefVar<double>(baseName+"OffSetY",0.0);
+  zOffset=Control.EvalDefVar<double>(baseName+"OffSetZ",0.0);
+
+  length=Control.EvalPair<double>(keyName,baseName,"Thick");
+  diameter=Control.EvalPair<double>(keyName,baseName,"Diam");
 
   mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat",baseName+"Mat");
 
@@ -156,7 +191,25 @@ sbadDetector::createUnitVector(const attachSystem::FixedComp& FC)
   ELog::RegMethod RegA("sbadDetector","createUnitVector");
 
   FixedComp::createUnitVector(FC);
-  applyShift(xStep,yStep,zStep);
+  applyShift(xOffset+xStep,yOffset+yStep,zOffset+zStep);
+  applyAngleRotate(xyAngle,zAngle);
+
+  return;
+}
+
+void
+sbadDetector::createUnitVectorAM(const attachSystem::FixedComp& FC, const double& offSet)
+  /*!
+    Create the unit vectors
+    \param FC :: FixedComponent for origin
+  */
+{
+  ELog::RegMethod RegA("sbadDetector","createUnitVector");
+
+  FixedComp::createUnitVector(FC);
+  applyShift(xOffset+xStep,yOffset+yStep,zOffset+zStep);
+  // applyShift(xStep,yStep,zStep);
+ ELog::EM<<" offSet===="<<offSet<<ELog::endDiag;
   applyAngleRotate(xyAngle,zAngle);
 
   return;
@@ -170,11 +223,13 @@ sbadDetector::createSurfaces()
    */
 {
   ELog::RegMethod RegA("sbadDetector","createSurface");
-  
-  
-  ModelSupport::buildPlane(SMap,detIndex+1,Origin-Y*(length/2.0),Y);
-  ModelSupport::buildPlane(SMap,detIndex+2,Origin+Y*(length/2.0),Y);
-  ModelSupport::buildCylinder(SMap,detIndex+7,Origin,Y,radius);
+
+  // ModelSupport::buildPlane(SMap,detIndex+1,Origin-Y*(length/2.0),Y);
+  // ModelSupport::buildPlane(SMap,detIndex+2,Origin+Y*(length/2.0),Y);
+  ModelSupport::buildPlane(SMap,detIndex+1,Origin,Y);
+  ModelSupport::buildPlane(SMap,detIndex+2,Origin+Y*length,Y);
+
+  ModelSupport::buildCylinder(SMap,detIndex+7,Origin,Y,diameter/2);
 
   return;
 }
@@ -214,10 +269,10 @@ sbadDetector::createLinks()
 
   FixedComp::setConnect(0,Origin-Y*(length/2.0),-Y);
   FixedComp::setConnect(1,Origin+Y*(length/2.0),Y);
-  FixedComp::setConnect(2,Origin-X*(radius),-X);
-  FixedComp::setConnect(3,Origin-X*(radius),X);
-  FixedComp::setConnect(4,Origin-Z*(radius),-Z);
-  FixedComp::setConnect(5,Origin+Z*(radius),Z);
+  FixedComp::setConnect(2,Origin-X*(diameter/2),-X);
+  FixedComp::setConnect(3,Origin-X*(diameter/2),X);
+  FixedComp::setConnect(4,Origin-Z*(diameter/2),-Z);
+  FixedComp::setConnect(5,Origin+Z*(diameter/2),Z);
 
   return;
 }
@@ -235,6 +290,7 @@ sbadDetector::createAll(Simulation& System,
 
   populate(System.getDataBase());
   createUnitVector(FC);
+  createUnitVector(FC);
   createSurfaces();
   createObjects(System);
   createLinks();
@@ -242,5 +298,34 @@ sbadDetector::createAll(Simulation& System,
 
   return;
 }
+
+
+void
+sbadDetector::createAllAM(Simulation& System,const mainSystem::inputParam& IParam,
+			  const attachSystem::FixedComp& FC,
+                          const double& offSet)
+  /*!
+    Generic function to create everything
+    \param System :: Simulation item
+    \param FC :: Fixed Component for origin
+  */
+{
+  ELog::RegMethod RegA("sbadDetector","createAll");
+  getDet(IParam);
+  populate(System.getDataBase());
+  createUnitVector(FC);
+  createUnitVectorAM(FC,offSet);
+  createSurfaces();
+  if(active==1)
+  createObjects(System);
+  createLinks();
+  insertObjects(System);
+
+  return;
+}
+
+
+
+
   
 }  // NAMESPACE sinbadSystem

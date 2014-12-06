@@ -228,21 +228,65 @@ void addSinbadMaterial()
   DBObj.resetMaterial(MObj);
 
 
+  std::string nd;
+  nd=".71c";
+
+  MObj.setMaterial(101,"49S",
+     " 16032.71c  3.4287E-02 "
+     " 16033.71c  2.7450E-04 "
+     " 16034.71c  1.5495E-03 "
+     " 16036.71c  7.2236E-06 ",
+ 		   "",MLib);
+  MObj.setDensity(3.6118E-02);
+  DBObj.resetMaterial(MObj);
 
 
+  MObj.setMaterial(102,"49Spressed",
+     " 16032.71c  3.2443E-02 "
+     " 16033.71c  2.5974E-04 "
+     " 16034.71c  1.4661E-03 "
+     " 16036.71c  6.8352E-06 ",
+ 		      "",MLib);
+  MObj.setDensity(3.4176E-02);
+  DBObj.resetMaterial(MObj);
 
 
+  MObj.setMaterial(103,"49Rh",
+    " 45103.71c  7.2625e-02 ",
+		     "",MLib);
+  MObj.setDensity(7.2625E-02);
+  DBObj.resetMaterial(MObj);
 
-  MObj.setMaterial(204,"Rh","45103.71c  7.2625e-02 ",
-		   "",MLib);
-  DBObj.setMaterial(MObj);
 
-  MObj.setMaterial(205,"Gold",
-		   " 79197.71c  5.9009E-02 ",
-		   "",MLib);
-  DBObj.setMaterial(MObj);
+  MObj.setMaterial(104,"49Mn",
+    " 25055.71c  7.9034E-02 ",
+		     "",MLib);
+  MObj.setDensity(7.9034E-02);
+  DBObj.resetMaterial(MObj);
 
-     //M103 Rh
+
+  MObj.setMaterial(105,"49Au",
+    " 79197.71c  5.9009E-02 ",
+		     "",MLib);
+  MObj.setDensity(5.9009E-02);
+  DBObj.resetMaterial(MObj);
+
+
+  MObj.setMaterial(106,"49Cd",
+     " 48106.71c  5.7925E-04 "  
+     " 48108.71c  4.1243E-04 "
+     " 48110.71c  5.7879E-03 " 
+     " 48111.71c  5.9315E-03 "
+     " 48112.71c  1.1182E-02 "
+     " 48113.71c  5.6628E-03 "  
+     " 48114.71c  1.3314E-02 " 
+     " 48116.71c  3.4709E-03 ",
+         	     "",MLib);
+  MObj.setDensity(4.6340E-02);
+  DBObj.resetMaterial(MObj);
+
+
+  // };
 
 
   return;

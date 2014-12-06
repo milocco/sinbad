@@ -29,16 +29,22 @@ class sbadDetector : public attachSystem::ContainedComp,
   double zStep;                   ///< Z step
   double xyAngle;                 ///< XY Angle
   double zAngle;                  ///< Z Angle
+  double xOffset;                   ///< X step
+  double yOffset;                   ///< Y step
+  double zOffset;                   ///< Z step
 
-  double radius;                  ///< Radis of rod 
+  double diameter;                  ///< Radis of rod 
   double length;                  ///< Length of rod
   int mat;                        ///< Material 
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&);  
+  void createUnitVectorAM(const attachSystem::FixedComp&,const double& );  
+
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
+  std::string detT;
 
  public:
 
@@ -50,9 +56,13 @@ class sbadDetector : public attachSystem::ContainedComp,
 
   virtual void createAll(Simulation&,
   			 const attachSystem::FixedComp&);
+  virtual void createAllAM(Simulation&, const mainSystem::inputParam&,
+			   const attachSystem::FixedComp&, const double& offSet);
+
   
   int isActive() const { return active; }
-  
+  std::string getDet(const mainSystem::inputParam&) const;
+ 
 };
 
 }

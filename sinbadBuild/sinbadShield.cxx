@@ -171,9 +171,10 @@ sinbadShield::createSurfaces()
   int SI1(slabIndex);
   int SI2(slabIndex+1000);
 
+
+
   for(size_t i=0;i<=nSlab;i++)
    {
-
      ModelSupport::buildPlane(SMap,SI1+1,Origin-X*(length[i]/2.0),X);
      ModelSupport::buildPlane(SMap,SI1+2,Origin+X*(length[i]/2.0),X);
 

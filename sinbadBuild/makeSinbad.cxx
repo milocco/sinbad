@@ -60,6 +60,7 @@
 #include "sinbadSource.h"
 #include "sinbadMaterial.h"
 #include "makeSinbad.h"
+#include "MainProcess.h"
 
   
 namespace sinbadSystem 
@@ -128,7 +129,10 @@ makeSinbad::buildDetectors(Simulation& System)
   const FuncDataBase& Control=System.getDataBase();
   
   const std::string detKey=preName+"Detector";
+
+
   const size_t detN=Control.EvalVar<size_t>(detKey+"PositionN");
+
   for(size_t i=0;i<detN;i++)
     { 
       boost::shared_ptr<sbadDetector> detPtr
@@ -138,12 +142,63 @@ makeSinbad::buildDetectors(Simulation& System)
       detArray.back()->createAll(System,*Secondary);
       if (detArray.back()->isActive())
 	{
-	  ELog::EM<<"Active"<<ELog::endDiag;
+
+	  ELog::EM<<"Active "<<i<<ELog::endDiag;
+	  attachSystem::addToInsertControl(System,*Secondary,*detPtr,*detPtr);
+
+	}
+    }
+  return;
+}
+
+  std::vector<double> Off(10);  
+
+
+void
+makeSinbad::buildDetectorsAM(Simulation& System,  const mainSystem::inputParam& IParam, 
+                             const std::string& detType,const int& T)
+  /*!
+    Build detector units
+    \param System :: Simulation
+  */
+{
+  ELog::RegMethod RegA("makeSinbad","buildDetectors");
+
+  const FuncDataBase& Control=System.getDataBase();  
+  const std::string detKey=preName+detType;
+  const size_t detN=Control.EvalVar<size_t>(detKey+"N");
+
+  double offSet=Control.EvalVar<double>(detKey+"Thick");
+  //  offSet=0.0;    
+  double offSet1(0.0);
+  Off[T]=offSet;
+   
+  if (T>0) offSet1=Off[T-1];
+  if (T==0) offSet1=0;
+  
+  ELog::EM<<"TTTT "<<T<<" DDDD "<<detType<<" OOOO "<<offSet<<" Off[T] "<<Off[0]<<" "<<Off[1]<<" offSet1 "<<offSet1<<ELog::endDiag;
+  detT=detType;
+  //  ELog::EM<<"VVVVVV "<<getDet()<<ELog::endDiag;
+  
+
+  for(size_t i=0;i<detN;i++)
+    { 
+      boost::shared_ptr<sbadDetector> detPtr
+	(new sbadDetector(preName+detType,i));
+
+      detArray.push_back(detPtr);   
+      detArray.back()->createAllAM(System,IParam, *Secondary,offSet1);
+      if (detArray.back()->isActive())
+	{
+	  ELog::EM<<"Active "<<i<<"  "<<detArray.back()->isActive() <<ELog::endDiag;
+
 	  attachSystem::addToInsertControl(System,*Secondary,*detPtr,*detPtr);
 	}
     }
   return;
 }
+
+
 
 void 
 makeSinbad::build(Simulation* SimPtr,
@@ -159,7 +214,8 @@ makeSinbad::build(Simulation* SimPtr,
 
   ModelSupport::addSinbadMaterial();
   int voidCell(74123);
-  
+  int TT(0);
+ 
   Primary->addInsertCell(voidCell) ;
   Primary->createAll(*SimPtr,World::masterOrigin(),0);
 
@@ -169,7 +225,24 @@ makeSinbad::build(Simulation* SimPtr,
   Secondary->addInsertCell(voidCell) ;
   Secondary->createAll(*SimPtr,*fPlate,2);
 
-  buildDetectors(*SimPtr);
+ ELog::EM<<" Deeettttttt == "<<detT<<" I "<<IParam.getValue<std::string>("detType",0)<<ELog::endDiag;
+
+
+  int t(0);
+  //  const std::string detT;
+  while(t<10 && IParam.getValue<std::string>("detType",t).size()!=0)
+	//  const std::string detT=IParam.getValue<std::string>("detType",2);
+    {
+     const std::string detT=IParam.getValue<std::string>("detType",t);
+     int  TT(0);
+     TT=t;
+       // ELog::EM<<" TT "<<TT<<" t "<<t<<" Det Type == "<<detT<<" size "<< IParam.getValue<std::string>("detType",t).size()<<ELog::endDiag;
+     buildDetectorsAM(*SimPtr,IParam,detT,TT);
+     t=t+1;
+    }
+
+
+  //  buildDetectors(*SimPtr);  && IParam.getValue<std::string>("detType",t)!=""
 
   //  ShieldArray->addInsertCell(voidCell) ;
   //  ShieldArray->createAll(*SimPtr,World::masterOrigin());

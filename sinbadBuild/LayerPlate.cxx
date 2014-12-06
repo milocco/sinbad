@@ -261,6 +261,7 @@ LayerPlate::createSurfaces()
   // Special case for sideIndex 1
   //  
 
+ 
   ModelSupport::buildPlane(SMap,slabIndex+3,Origin-X*(width/2.0),X);
   ModelSupport::buildPlane(SMap,slabIndex+4,Origin+X*(width/2.0),X);
   ModelSupport::buildPlane(SMap,slabIndex+5,Origin-Z*(height/2.0),Z);

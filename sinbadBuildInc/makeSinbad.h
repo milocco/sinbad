@@ -30,7 +30,15 @@ class makeSinbad
 {
  private:
 
-  const std::string preName;          ///< Initializtion tag
+  const std::string preName;          ///< Initializtion ta
+  const std::string detType;
+  std::string detT;
+
+  //  int T;
+  // std::vector<double> Off;  
+
+  //  std::vector<int> Off;  
+   /* const int TT; */
 
   boost::shared_ptr<Cave> Surround;   
 
@@ -42,6 +50,7 @@ class makeSinbad
   std::vector<boost::shared_ptr<sbadDetector> > detArray;
 
   void buildDetectors(Simulation&);
+  void buildDetectorsAM(Simulation&, const mainSystem::inputParam&, const std::string&, const int&);
 
  public:
   
