@@ -47,7 +47,12 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "ContainedComp.h"
+
 #include "inputParam.h"
+#include "ImportControl.h"
+#include "MainProcess.h"
+
+
 
 #include "sbadDetector.h"
   
@@ -141,7 +146,7 @@ sbadDetector::getDet(const mainSystem::inputParam& IParam) const
      const std::string detT=IParam.getValue<std::string>("detType",t);
      int  TT(0);
      TT=t;
-       ELog::EM<<" XX "<<TT<<" X "<<t<<" Det TypeXxX == "<<detT<<" sizeXXX "<< IParam.getValue<std::string>("detType",t).size()<<ELog::endDiag;
+      // ELog::EM<<" XX "<<TT<<" X "<<t<<" Det TypeXxX == "<<detT<<" sizeXXX "<< IParam.getValue<std::string>("detType",t).size()<<ELog::endDiag;
        //     buildDetectorsAM(*SimPtr,detT,TT);
      t=t+1;
     }
@@ -157,6 +162,21 @@ sbadDetector::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("sbadDetector","populate");
 
+ //  mainSystem::inputParam IPar;
+ //  //InputControl::mainVector(argc,argv,Names);
+ //  createSinbadInputs(IPar);
+
+
+
+ // // std::string DT;
+ // const std::string DT=IPar.getValue<std::string>("detType",0);
+ // const std::string DT1=IPar.getValue<std::string>("detType1");
+
+ // const std::string PN=IPar.getValue<std::string>("preName");
+
+ // ELog::EM<<"PN  "<< PN <<"  DT  "<<DT<<"  DT1  "<<DT1<<ELog::endDiag;
+
+
   active=Control.EvalVar<int>(keyName+"Active");
   xStep=Control.EvalPair<double>(keyName,baseName,"StepX");
   yStep=Control.EvalPair<double>(keyName,baseName,"StepY");
@@ -167,7 +187,7 @@ sbadDetector::populate(const FuncDataBase& Control)
 	  ELog::EM<<"baseName "<<baseName<<ELog::endDiag;
 	  ELog::EM<<"keyName "<<keyName<<ELog::endDiag;
 
-  std::string keyName1("49DetectorRh");
+	  //  std::string keyName1("49DetectorRh");
 
   xOffset=Control.EvalDefVar<double>(baseName+"OffSetX",0.0);
   yOffset=Control.EvalDefVar<double>(baseName+"OffSetY",0.0);
@@ -207,9 +227,9 @@ sbadDetector::createUnitVectorAM(const attachSystem::FixedComp& FC, const double
   ELog::RegMethod RegA("sbadDetector","createUnitVector");
 
   FixedComp::createUnitVector(FC);
-  applyShift(xOffset+xStep,yOffset+yStep,zOffset+zStep);
+  applyShift(xOffset+xStep,yOffset+yStep+offSet,zOffset+zStep);
   // applyShift(xStep,yStep,zStep);
- ELog::EM<<" offSet===="<<offSet<<ELog::endDiag;
+ ELog::EM<<" offSet== "<<offSet<<" yStep== "<<yStep<<" yOffset== "<<yOffset<<ELog::endDiag;
   applyAngleRotate(xyAngle,zAngle);
 
   return;
@@ -267,8 +287,8 @@ sbadDetector::createLinks()
   FixedComp::setLinkSurf(4,SMap.realSurf(detIndex+7));
   FixedComp::setLinkSurf(5,SMap.realSurf(detIndex+7));
 
-  FixedComp::setConnect(0,Origin-Y*(length/2.0),-Y);
-  FixedComp::setConnect(1,Origin+Y*(length/2.0),Y);
+  FixedComp::setConnect(0,Origin,-Y);
+  FixedComp::setConnect(1,Origin+Y*(length),Y);
   FixedComp::setConnect(2,Origin-X*(diameter/2),-X);
   FixedComp::setConnect(3,Origin-X*(diameter/2),X);
   FixedComp::setConnect(4,Origin-Z*(diameter/2),-Z);

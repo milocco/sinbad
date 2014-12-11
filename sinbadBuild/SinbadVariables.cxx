@@ -56,22 +56,17 @@ SinbadVariables(FuncDataBase& Control)
   Control.addVariable("49ShieldZStep",0.0);  
   Control.addVariable("49ShieldXYAngle",0.0);  
   Control.addVariable("49ShieldZAngle",0.0);  
-
+  //number of slabs
   Control.addVariable("49ShieldNSlab",26);
-  
   Control.addVariable("49ShieldWidth",182.9);   
   Control.addVariable("49ShieldHeight",191.0);  
-
-  // Control.addVariable("49ShieldThick0",0.70); 
-  Control.addVariable("49ShieldThick0",4.04); 
-
+  Control.addVariable("49ShieldThick0",4.60); 
   Control.addVariable("49ShieldMat0","Void"); 
   Control.addVariable("49ShieldThick1",0.50); 
-  Control.addVariable("49ShieldMat1","Boral5"); 
-  // Control.addVariable("49ShieldThick2",0.0015);
-  Control.addVariable("49ShieldThick2",0.56);
-
-  Control.addVariable("49ShieldMat2","Void");  
+  Control.addVariable("49ShieldMat1","49Boral"); 
+  // fictitious layer to accomodate the detectors when the boral is shifted back
+  Control.addVariable("49ShieldThick2",0.0);
+  Control.addVariable("49ShieldMat2","Void");
   Control.addVariable("49ShieldThick3",5.08); 
   Control.addVariable("49ShieldMat3","49MildSteel1");  
   Control.addVariable("49ShieldThick4",0.70); 
@@ -122,27 +117,19 @@ SinbadVariables(FuncDataBase& Control)
 
 
   /////////////////////////////////////////////////
-  // 49 NestorSide 
-  // (The part of the experimental array between Nestor reactor and fission plate)
+  // 49 NestorSide (The array between Nestor reactor and fission plate)
 
-
-  // Control.addVariable("49NestorSideXStep",91.45);  
-  // Control.addVariable("49NestorSideYStep",-1.45);  
-  // Control.addVariable("49NestorSideZStep",95.5);  
 
   Control.addVariable("49NestorSideXStep",0);
   // the Y step is set so that the fission plate centre is at the origin  
   Control.addVariable("49NestorSideYStep",-26.71);  
   Control.addVariable("49NestorSideZStep",0);  
-
   Control.addVariable("49NestorSideXYAngle",0.0);  
   Control.addVariable("49NestorSideZAngle",0.0);  
-
   Control.addVariable("49NestorSideWidth",182.9);   
   Control.addVariable("49NestorSideHeight",191.0);  
-
+  // number of slabs
   Control.addVariable("49NestorSideNSlab",6);
-
   Control.addVariable("49NestorSideThick0",3.18); 
   Control.addVariable("49NestorSideMat0","49MildSteel1");  
   Control.addVariable("49NestorSideAlWindowRadius",56.06); 
@@ -157,6 +144,8 @@ SinbadVariables(FuncDataBase& Control)
   Control.addVariable("49NestorSideThick5",0.70); 
   Control.addVariable("49NestorSideMat5","Void"); 
 
+
+
   ////////////////////////////////////////////////
   // 49 Fission Plate
 
@@ -165,12 +154,11 @@ SinbadVariables(FuncDataBase& Control)
   Control.addVariable("49FissionPlateZStep",0.0);   
   Control.addVariable("49FissionPlateXYAngle",0.0);   
   Control.addVariable("49FissionPlateZAngle",0.0);   
-
-// correct but to avoid geom error it is the same as other slabs
-  Control.addVariable("49FissionPlateHeight",191.1);  
-  Control.addVariable("49FissionPlateWidth",182.9);  
+  //fission plate layers  
   Control.addVariable("49FissionPlateNSlab",6);
-
+  //correct but to avoid geom error it is the same as other slabs
+  Control.addVariable("49FissionPlateHeight",191.1);  
+  Control.addVariable("49FissionPlateWidth",182.9); 
   Control.addVariable("49FissionPlateThick0",1.2);
   Control.addVariable("49FissionPlateMat0","49Aluminium");   
   Control.addVariable("49FissionPlateThick1",0.1); 
@@ -183,57 +171,14 @@ SinbadVariables(FuncDataBase& Control)
   Control.addVariable("49FissionPlateMat4","49Aluminium");   
   Control.addVariable("49FissionPlateThick5",1.2); 
   Control.addVariable("49FissionPlateMat5","49Aluminium");   
-
-
-  Control.addVariable("49FissionPlateDivIndex0",3);   
-
-  // Control.addVariable("49FissionPlateDivIndex1",4);   
-
-  // Control.addVariable("49FissionPlateNXSpace",5);   
-  // Control.addVariable("49FissionPlateNZSpace",5);   
-  
-
-  // Control.addVariable("49FissionPlateXPt0",-30.0);   
-  // Control.addVariable("49FissionPlateXPt1",-10.0);   
-  // Control.addVariable("49FissionPlateXPt2",0.0);   
-  // Control.addVariable("49FissionPlateXPt3",10.0);   
-  // Control.addVariable("49FissionPlateXPt4",-30.0);
-
-  // Control.addVariable("49FissionPlateZPt0",-30.0);   
-  // Control.addVariable("49FissionPlateZPt1",-10.0);   
-  // Control.addVariable("49FissionPlateZPt2",0.0);   
-  // Control.addVariable("49FissionPlateZPt3",10.0);   
-  // Control.addVariable("49FissionPlateZPt4",-30.0);
-  // Control.addVariable("49FissionPlateZPt0",-30.0);   
-
+  //fuel plate index
+  Control.addVariable("49FissionPlateDivIndex0",3);
+  //////////////////////////////////////////////////////////////
+  // imports of fission source specificationsfrom SINBAD     
+  //49 X-Z sectioning of fuel plate
   double  Xarray[16]={ -49.75, -46.58, -43.32, -37.08, -33.92, -27.58, -11.75, -2.25,  7.25, 16.75, 32.58, 38.92, 42.08, 48.42, 51.58, 54.75 };
-
   double Zarray[16]={ -51.44, -47.63, -40.64, -35.56, -31.75, -19.69, -15.88,  -5.29,  5.29, 15.88, 19.69, 31.75, 35.56, 40.64, 47.63, 51.44};
-
-
-  int nx=sizeof(Xarray)/sizeof(double);
-  int nz=sizeof(Zarray)/sizeof(double);
-
-  Control.addVariable("49FissionPlateNXSpace",nx);   
-  Control.addVariable("49FissionPlateNZSpace",nz);   
-
-  for(int i=0;i<nx;i++)
-    {
-      const std::string baseKey=
-  	StrFunc::makeString("49FissionPlateXPt",i);
-      // BeamLine in guide bay
-      Control.addVariable(baseKey,Xarray[i]);  
-    }
-
-  for(int i=0;i<nz;i++)
-    {
-      const std::string baseKey=
-  	StrFunc::makeString("49FissionPlateZPt",i);
-      // BeamLine in guide bay
-      Control.addVariable(baseKey,Zarray[i]);  
-    }
-
-
+  //49 source specification
   double fissionSource49 [15] [15] = {
  {    0  ,    0  ,    0  ,    0  ,    0  ,    0  , 2.935, 2.967, 2.861,   0  ,   0  ,   0  ,   0  ,   0  ,   0   },
  {    0  ,    0  ,    0  ,    0  ,    0  ,  3.222, 3.529, 3.567, 3.446, 3.023,   0  ,   0  ,   0  ,   0  ,   0	 },
@@ -251,9 +196,21 @@ SinbadVariables(FuncDataBase& Control)
  {    0  ,    0  ,    0  ,    0  ,    0  ,  2.681, 3.036, 3.124, 3.032, 2.607,   0  ,   0  ,   0  ,   0  ,   0	 },
  {    0  ,    0  ,    0  ,    0  ,    0  ,    0  , 2.399, 2.470, 2.382,   0  ,   0  ,   0  ,   0  ,   0  ,   0	 }
  } ; 
-
-
-
+  //set CombLayer variables and keys for fission plate sectioning and source
+  int nx=sizeof(Xarray)/sizeof(double);
+  int nz=sizeof(Zarray)/sizeof(double);
+  Control.addVariable("49FissionPlateNXSpace",nx);   
+  Control.addVariable("49FissionPlateNZSpace",nz);   
+  for(int i=0;i<nx;i++)
+    {
+     const std::string baseKey=StrFunc::makeString("49FissionPlateXPt",i);
+     Control.addVariable(baseKey,Xarray[i]);  
+    }
+  for(int i=0;i<nz;i++)
+    {
+     const std::string baseKey=StrFunc::makeString("49FissionPlateZPt",i);
+     Control.addVariable(baseKey,Zarray[i]);  
+    }
   int ny=10;
 // sizeof(Zarray)/sizeof(double);
 
@@ -266,536 +223,326 @@ SinbadVariables(FuncDataBase& Control)
   //   }
 
   int i(0);
-
   for(size_t ix=0;ix<nx-1;ix++)
-
     for(size_t iz=0;iz<nz-1;iz++)
-
-
      {
- 
       const std::string baseKey=
-  	StrFunc::makeString("49FissionPlateYPt",i);
-
-        Control.addVariable(baseKey,fissionSource49[iz][ix]);
+      StrFunc::makeString("49FissionPlateYPt",i);
+      Control.addVariable(baseKey,fissionSource49[iz][ix]);
       i+=1;
-
-
 	// ELog::EM<<" ix "<<ix<<" iz "<<iz<<" i "<<i<<" 49FissionPlateYpt "<<baseKey<<" fissionSource49[ix][iz]) "<<fissionSource49[ix][iz]<<ELog::endWarn;
- 
-
-   }
-
-
+     }
   //     const std::string baseKeyxz=
   // 	StrFunc::makeString(ix,iz);
   //     // BeamLine in guide bay
   //     const std::string baseKey=
   // 	StrFunc::makeString("49FissionPlatePt",ix,iz);
-
   //     Control.addVariable(baseKey,fissionSource49[ix][iz]);  
-
-
-
 
   Control.addVariable("49FissionPlateMatInL0","49Fuel");   
   Control.addVariable("49FissionPlateMatOutL0","49Aluminium");   
-
   Control.addVariable("49FissionPlateMatTempL0",300.0);   
-
   // Control.addVariable("49FissionPlateMatL1","Aluminium");   
   // Control.addVariable("49FissionPlateMatTempL1",300.0);   
 
 
-
-
-
-
-  //49NestorSide side
-
-  // Control.addVariable("49NestorSideXStep",91.45);  
-  // Control.addVariable("49NestorSideYStep",-1.45);  
-  // Control.addVariable("49NestorSideZStep",95.5);  
-
-  // Control.addVariable("49NestorSideXStep",0);  
-  // Control.addVariable("49NestorSideYStep",0);  
-  // Control.addVariable("49NestorSideZStep",0);  
-
-
-
-  // Control.addVariable("49NestorSideXYAngle",0.0);  
-  // Control.addVariable("49NestorSideZAngle",0.0);  
-
-  // Control.addVariable("49NestorSideWidth",182.9);   
-  // Control.addVariable("49NestorSideHeight",191.0);  
-
-  // Control.addVariable("49NestorSideNSlab",6);
-  // Control.addVariable("49NestorSideThick0",0.70); 
-  // Control.addVariable("49NestorSideMat0","Void"); 
-  // Control.addVariable("49NestorSideThick1",15.0); 
-  // Control.addVariable("49NestorSideMat1","Graphite"); 
-  // Control.addVariable("49NestorSideThick2",0.60); 
-  // Control.addVariable("49NestorSideMat2","Void");  
-  // Control.addVariable("49NestorSideThick3",5.08); 
-  // Control.addVariable("49NestorSideMat3","sbadLead");  
-  // Control.addVariable("49NestorSideThick4",0.70); 
-  // Control.addVariable("49NestorSideMat4","Void");  
-  // Control.addVariable("49NestorSideThick5",3.18); 
-  // Control.addVariable("49NestorSideMat5","49MildSteel1");  
-  // Control.addVariable("49NestorSideAlWindowRadius",56.06); 
-
   //////////////////////////////////////////////////////////////
   // DETECTORS
 
+
+
+
+  Control.addVariable("49DetOffsetX",2.5);  
+  Control.addVariable("49DetOffsetZ",-6.6);
+  // possible detector positions along Y axis 
+  Control.addVariable("49DetN",34);    
+
+  // monitor
+  Control.addVariable("49StepY0",0.0);  
+  // pos 0
+  //Detector 1 needs this depth; the boral is then moved accordingly
+  Control.addVariable("49StepY1",5.1);  
+  // pos 1
+  Control.addVariable("49StepY2",10.18);  
+  // pos 2
+  Control.addVariable("49StepY3",15.96);
+  // pos 3  
+  Control.addVariable("49StepY4",21.74);
+  // pos F0 (water shield front)  
+  Control.addVariable("49StepY5",25.44);
+  // pos F0.4
+  Control.addVariable("49StepY6",25.84);  
+  // pos F2  
+  Control.addVariable("49StepY7",27.44);  
+  // pos F4
+  Control.addVariable("49StepY8",29.44);  
+  // pos F4.5
+  Control.addVariable("49StepY9",29.94);
+  // pos F5
+  Control.addVariable("49StepY10",30.44);
+  // pos F7.5  
+  Control.addVariable("49StepY11",32.94);
+  // pos F9  
+  Control.addVariable("49StepY12",34.44);
+  // pos F9.3  
+  Control.addVariable("49StepY13",34.74);
+  // pos F13.5  
+  Control.addVariable("49StepY14",38.94); 
+  // pos F13.7  
+  Control.addVariable("49StepY15",39.14); 
+  // pos F13.8  
+  Control.addVariable("49StepY16",39.24); 
+  // pos F14.3  
+  Control.addVariable("49StepY17",39.74); 
+  // pos F14.6  
+  Control.addVariable("49StepY18",40.04); 
+  // pos F14.8  
+  Control.addVariable("49StepY19",40.24); 
+  // pos F15   
+  Control.addVariable("49StepY20",40.44);
+  // pos F18  
+  Control.addVariable("49StepY21",43.44);
+  // pos 4
+  Control.addVariable("49StepY22",46.75);  
+  // pos 5
+  Control.addVariable("49StepY23",52.53);  
+  // pos R0
+  Control.addVariable("49StepY24",55.73);
+  // pos R1.1  
+  Control.addVariable("49StepY25", 56.83);  
+  // pos R1.6  
+  Control.addVariable("49StepY26", 57.33);  
+  // pos R4
+  Control.addVariable("49StepY27", 59.73);  
+  // pos R8
+  Control.addVariable("49StepY28",63.73);  
+  // POS 9.8
+  Control.addVariable("49StepY29",65.53);  
+  // pos R10.1
+  Control.addVariable("49StepY30",65.83);
+  // pos R15.7  
+  Control.addVariable("49StepY31",71.43);  
+  // pos R18.8
+  Control.addVariable("49StepY32",74.53);  
+
+
+
+ 
   //Sulphur
-
-
-
-
-
-  Control.addVariable("49SN",9);  
-
   Control.addVariable("49SMat","49S");  
   Control.addVariable("49SDiam",5.10);   
   Control.addVariable("49SThick",0.56); 
-  Control.addVariable("49SXYAngle",0.0);  
-  Control.addVariable("49SZAngle",0.0);  
-  // Control.addVariable("49SOffSetY",-0.56);  
-
-
-  Control.addVariable("49S0Active",1);   
-  Control.addVariable("49S0StepX",2.5);  
-  Control.addVariable("49S0StepY",0.0);
-  Control.addVariable("49S0StepZ",-6.6);  
-
-
-  Control.addVariable("49S1Active",1);   
-  Control.addVariable("49S1StepX",2.5);  
-  Control.addVariable("49S1StepY",5.1);  
-  Control.addVariable("49S1StepZ",-6.6);  
-
-  Control.addVariable("49S2Active",1);   
-  Control.addVariable("49S2StepX",2.5);  
-  Control.addVariable("49S2StepY",10.18);  
-  Control.addVariable("49S2StepZ",-6.6);  
-
-  Control.addVariable("49S3Active",1);   
-  Control.addVariable("49S3StepX",2.5);  
-  Control.addVariable("49S3StepY",15.96);  
-  Control.addVariable("49S3StepZ",-6.6);  
-
-
-  Control.addVariable("49S4Active",1);   
-  Control.addVariable("49S4StepX",2.5);  
-  Control.addVariable("49S4StepY",21.74);  
-  Control.addVariable("49S4StepZ",-6.6);  
-
-
-  Control.addVariable("49S5Active",1);   
-  Control.addVariable("49S5StepX",2.5);  
-  Control.addVariable("49S5StepY",29.94);  
-  Control.addVariable("49S5StepZ",-6.6);  
-
-
-  Control.addVariable("49S6Active",1);   
-  Control.addVariable("49S6StepX",2.5);  
-  Control.addVariable("49S6StepY",34.44);  
-  Control.addVariable("49S6StepZ",-6.6);  
-
-
-  Control.addVariable("49S7Active",1);   
-  Control.addVariable("49S7StepX",2.5);  
-  Control.addVariable("49S7StepY",46.75);  
-  Control.addVariable("49S7StepZ",-6.6);  
-
-
-  Control.addVariable("49S8Active",1);   
-  Control.addVariable("49S8StepX",2.5);  
-  Control.addVariable("49S8StepY", 52.53);  
-  Control.addVariable("49S8StepZ",-6.6);  
-
-
-
-
-
-  //Rhodium
-
- Control.addVariable("49RhN",13);
-
-  Control.addVariable("49RhMat","Rh");  
-  Control.addVariable("49RhRadius",10.27);   
-  Control.addVariable("49RhLength",0.4); 
-  Control.addVariable("49RhXYAngle",0.0);  
-  Control.addVariable("49RhZAngle",0.0);  
-  Control.addVariable("49Rh1Active",1);   
-  Control.addVariable("49Rh1StepX",2.5);  
-  Control.addVariable("49Rh1StepY",5.1);  
-  Control.addVariable("49Rh1StepZ",-6.6);  
-
-  Control.addVariable("49Rh2Active",1);   
-  Control.addVariable("49Rh2StepX",2.5);  
-  Control.addVariable("49Rh2StepY",10.18001);  
-  Control.addVariable("49Rh2StepZ",-6.6);  
-
-  Control.addVariable("49Rh3Active",1);   
-  Control.addVariable("49Rh3StepX",2.5);  
-  Control.addVariable("49Rh3StepY",15.96);  
-  Control.addVariable("49Rh3StepZ",-6.6);  
-
-
- //  Control.addVariable("49RhActive",0);   
- //  Control.addVariable("49RhStepX",2.5);  
- //  // Control.addVariable("49RhOffStepY0",0.56);  
- // Control.addVariable("49RhStepY",1.45);
- // Control.addVariable("49RhStepZ",-6.6);  
-
-  Control.addVariable("49Rh0Active",1);   
-  Control.addVariable("49Rh0StepX",2.5);  
-  // Control.addVariable("49RhOffStepY0",0.56);  
-  Control.addVariable("49Rh0StepY",1.5);
-  Control.addVariable("49Rh0StepZ",-6.6);  
-
-
-  Control.addVariable("49Rh1Active",1);   
-  Control.addVariable("49Rh1StepX",2.5);  
-  Control.addVariable("49Rh1StepY",5.1);  
-  Control.addVariable("49Rh1StepZ",-6.6);  
-
-  Control.addVariable("49Rh2Active",1);   
-  Control.addVariable("49Rh2StepX",2.5);  
-  Control.addVariable("49Rh2StepY",10.18001);  
-  Control.addVariable("49Rh2StepZ",-6.6);  
-
-  Control.addVariable("49Rh3Active",1);   
-  Control.addVariable("49Rh3StepX",2.5);  
-  Control.addVariable("49Rh3StepY",15.96);  
-  Control.addVariable("49Rh3StepZ",-6.6);  
-
-  Control.addVariable("49Rh4Active",1);   
-  Control.addVariable("49Rh4StepX",2.5);  
-  Control.addVariable("49Rh4StepY",21.74);  
-  Control.addVariable("49Rh4StepZ",-6.6);  
-
-  Control.addVariable("49Rh5Active",1);   
-  Control.addVariable("49Rh5StepX",2.5);  
-  Control.addVariable("49Rh5StepY",25.44);  
-  Control.addVariable("49Rh5StepZ",-6.6);  
-
-  Control.addVariable("49Rh6Active",1);   
-  Control.addVariable("49Rh6StepX",2.5);  
-  Control.addVariable("49Rh6StepY",27.44);  
-  Control.addVariable("49Rh6StepZ",-6.6);  
-
-  Control.addVariable("49Rh7Active",1);   
-  Control.addVariable("49Rh7StepX",2.5);  
-  Control.addVariable("49Rh7StepY",29.44);  
-  Control.addVariable("49Rh7StepZ",-6.6);  
-
-  Control.addVariable("49Rh8Active",1);   
-  Control.addVariable("49Rh8StepX",2.5);  
-  Control.addVariable("49Rh8StepY",29.94);  
-  Control.addVariable("49Rh8StepZ",-6.6);  
-
-  Control.addVariable("49Rh9Active",0);   
-  Control.addVariable("49Rh9StepX",2.5);  
-  Control.addVariable("49Rh9StepY",32.94);  
-  Control.addVariable("49Rh9StepZ",-6.6);  
-
-  Control.addVariable("49Rh10Active",1);   
-  Control.addVariable("49Rh10StepX",2.5);  
-  Control.addVariable("49Rh10StepY",34.44);  
-  Control.addVariable("49Rh10StepZ",-6.6);  
-
-  Control.addVariable("49Rh11Active",1);   
-  Control.addVariable("49Rh11StepX",2.5);  
-  Control.addVariable("49Rh11StepY",38.94);  
-  Control.addVariable("49Rh11StepZ",-6.6);  
-  //attenzione!!!!!
-  Control.addVariable("49Rh12Active",0);   
-  Control.addVariable("49Rh12StepX",2.5);  
-  Control.addVariable("49Rh12StepY",40.44);  
-  Control.addVariable("49Rh12StepZ",-6.6);  
-
-  Control.addVariable("49Rh13Active",1);   
-  Control.addVariable("49Rh13StepX",2.5);  
-  Control.addVariable("49Rh13StepY",43.44);  
-  Control.addVariable("49Rh13StepZ",-6.6);  
-
-  Control.addVariable("49Rh14Active",1);   
-  Control.addVariable("49Rh14StepX",2.5);  
-  Control.addVariable("49Rh14StepY",46.75);  
-  Control.addVariable("49Rh14StepZ",-6.6);  
-
-  Control.addVariable("49Rh15Active",1);   
-  Control.addVariable("49Rh15StepX",2.5);  
-  Control.addVariable("49Rh15StepY",52.53);  
-  Control.addVariable("49Rh15StepZ",-6.6);  
-
-  Control.addVariable("49Rh16Active",1);   
-  Control.addVariable("49Rh16StepX",2.5);  
-  Control.addVariable("49Rh16StepY",55.73);  
-  Control.addVariable("49Rh16StepZ",-6.6);  
-
-  Control.addVariable("49Rh17Active",1);   
-  Control.addVariable("49Rh17StepX",2.5);  
-  Control.addVariable("49Rh17StepY",57.33);  
-  Control.addVariable("49Rh17StepZ",-6.6);  
-
-  Control.addVariable("49Rh18Active",1);   
-  Control.addVariable("49Rh18StepX",2.5);  
-  Control.addVariable("49Rh18StepY",59.73);  
-  Control.addVariable("49Rh18StepZ",-6.6);  
-
-  Control.addVariable("49Rh19Active",1);   
-  Control.addVariable("49Rh19StepX",2.5);  
-  Control.addVariable("49Rh19StepY",63.73);  
-  Control.addVariable("49Rh19StepZ",-6.6);  
-
-  Control.addVariable("49Rh20Active",1);   
-  Control.addVariable("49Rh20StepX",2.5);  
-  Control.addVariable("49Rh20StepY",65.83);  
-  Control.addVariable("49Rh20StepZ",-6.6);  
-
-  Control.addVariable("49Rh21Active",1);   
-  Control.addVariable("49Rh21StepX",2.5);  
-  Control.addVariable("49Rh21StepY",71.43);  
-  Control.addVariable("49Rh21StepZ",-6.6);  
-
-  Control.addVariable("49Rh22Active",1);   
-  Control.addVariable("49Rh22StepX",2.5);  
-  Control.addVariable("49Rh22StepY",74.53);  
-  Control.addVariable("49Rh22StepZ",-6.6);  
-
-
-
-
-
-
-
-
-
-
- //  Control.addVariable("49DetectorPositionN",3);  
- //  // Control.addVariable("49DetectorRhPositionN",3);  
- //  // Control.addVariable("49DetectorSPositionN",3);  
- //  // Control.addVariable("49DetectorAuPositionN",3);  
-
- //  Control.addVariable("49Detector0Active",1);   
- //  Control.addVariable("49Detector1Active",1);   
- //  Control.addVariable("49Detector2Active",1);   
- //  Control.addVariable("49Detector3Active",0);   
-
- //  // Control.addVariable("49DetectorXStep",2.5);  
- //  // Control.addVariable("49DetectorYStep",20.0);  
- //  // Control.addVariable("49DetectorZStep",-6.6);  
- //  Control.addVariable("49DetectorXYAngle",0.0);  
- //  Control.addVariable("49DetectorZAngle",0.0);  
-
- //  Control.addVariable("49DetectorRhMat","Rh");  
- //  Control.addVariable("49DetectorRhRadius",10.27);   
- //  Control.addVariable("49DetectorRhLength",0.5); 
-
- //  Control.addVariable("49Detector0Active",1);   
- //  Control.addVariable("49Detector0XStep",2.5);  
- //  Control.addVariable("49Detector0YStep",31.3);  
- //  Control.addVariable("49Detector0ZStep",-6.6);  
-
- // Control.addVariable("49Detector1XStep",2.5);  
- //  Control.addVariable("49Detector1YStep",20.0);  
- //  Control.addVariable("49Detector1ZStep",-6.6);  
- //  Control.addVariable("49Detector1XYAngle",0.0);  
- //  Control.addVariable("49Detector1ZAngle",0.0);  
-
- // Control.addVariable("49Detector2XStep",2.5);  
- //  Control.addVariable("49Detector2YStep",30.0);  
- //  Control.addVariable("49Detector2ZStep",-6.6);  
- //  Control.addVariable("49Detector2XYAngle",0.0);  
- //  Control.addVariable("49Detector2ZAngle",0.0);  
- 
-
- //  // Control.addVariable("49Detector1Active",1);   
- //  // Control.addVariable("49Detector1XStep",2.5);  
- //  // Control.addVariable("49Detector1YStep",50.3);  
- //  // Control.addVariable("49Detector1ZStep",-6.6);  
-
-
- //  // Control.addVariable("49DetectorYStep1",5.1);  
-
- //  Control.addVariable("49DetectorLayerN",1);
-
- // Rh
-  // Control.addVariable("49DetectorDiameterLayer0",10.27);   
-  // Control.addVariable("49DetectorWidthLayer0",10.0015); 
-  // Control.addVariable("49DetectorMaterialLayer0","Rh");   
-
-  // S cast
-  // Control.addVariable("49DetectorDiameterLayer0",5.1);   
-  // Control.addVariable("49DetectorWidthLayer0",0.56); 
-  // Control.addVariable("49DetectorMaterialLayer0",101);   
-
-  // Cd
-  // Control.addVariable("49DetectorDiameterLayer0",1.27);   
-  // Control.addVariable("49DetectorWidthLayer0",0.127); //0.0 
-  // Control.addVariable("49DetectorMaterialLayer0",106);   
-
-  // Mn
-  // Control.addVariable("49DetectorDiameterLayer1",1.27);   
-  // Control.addVariable("49DetectorWidthLayer1",0.015); 
-  // Control.addVariable("49DetectorMaterialLayer1",104);   
-
-  // S cast
-
- //Cd
-  // Control.addVariable("49DetectorDiameterLayer2",1.27);   
-  // Control.addVariable("49DetectorWidthLayer2",0.127); //0.0 
-  // Control.addVariable("49DetectorMaterialLayer2","Cadnium");   
-
-  // // Au
-  // Control.addVariable("49DetectorDiameterLayer4",1.27);   
-  // Control.addVariable("49DetectorWidthLayer4",0.0005); 
-  // Control.addVariable("49DetectorMaterialLayer4","Gold");   
-
-  // // S pressed
-  // Control.addVariable("49DetectorDiameterLayerX",3.81);   
-  // Control.addVariable("49DetectorWidthLayerX",0.241); 
-  // Control.addVariable("49DetectorMateriaLayerX","Rh");   
-
-
-
-
-  // Control.addVariable("49DetectorYStep1",3.1);  
-
-  // Control.addVariable("49DetectorYStep2",10.18);  
-  // Control.addVariable("49DetectorYStep3",15.96);  
-  // Control.addVariable("49DetectorYStep4",21.74);  
-  // Control.addVariable("49DetectorYStep5",25.44);  
-  // Control.addVariable("49DetectorYStep6",27.44);  
-  // Control.addVariable("49DetectorYStep7",29.44);  
-
-  // Control.addVariable("49DetectorYStep8",29.94);  
-  // Control.addVariable("49DetectorYStep9",32.94);  
-  // Control.addVariable("49DetectorYStep10",34.44);  
-
-
-  // // Control.addVariable("49Detector0Active",1);   
-  // // Control.addVariable("49DetectorXStep",2.5);  
-  // // Control.addVariable("49DetectorYStep",50.3);  
-  // // Control.addVariable("49DetectorZStepZ1",-6.6);  
-
-  // // Control.addVariable("49Detector1Active",1);   
-  // // Control.addVariable("49DetectorXStep",2.5);  
-  // // Control.addVariable("49DetectorYStep",55.3);  
-  // // Control.addVariable("49DetectorZStepZ1",-6.6);  
-
-  // Control.addVariable("49DetectorActive1",1);   
-  // Control.addVariable("49DetectorStepX1",2.5);  
-  // Control.addVariable("49DetectorStepY1",5.1);  
-  // Control.addVariable("49DetectorStepZ1",-6.6);  
-
-  // Control.addVariable("49DetectorActive2",1);   
-  // Control.addVariable("49DetectorStepX2",2.5);  
-  // Control.addVariable("49DetectorStepY2",10.18001);  
-  // Control.addVariable("49DetectorStepZ2",-6.6);  
-
-  // Control.addVariable("49DetectorActive3",1);   
-  // Control.addVariable("49DetectorStepX3",2.5);  
-  // Control.addVariable("49DetectorStepY3",15.96);  
-  // Control.addVariable("49DetectorStepZ3",-6.6);  
-
-  // Control.addVariable("49DetectorActive4",1);   
-  // Control.addVariable("49DetectorStepX4",2.5);  
-  // Control.addVariable("49DetectorStepY4",21.74);  
-  // Control.addVariable("49DetectorStepZ4",-6.6);  
-
-  // Control.addVariable("49DetectorActive5",1);   
-  // Control.addVariable("49DetectorStepX5",2.5);  
-  // Control.addVariable("49DetectorStepY5",25.44);  
-  // Control.addVariable("49DetectorStepZ5",-6.6);  
-
-  // Control.addVariable("49DetectorActive6",0);   
-  // Control.addVariable("49DetectorStepX6",2.5);  
-  // Control.addVariable("49DetectorStepY6",27.44);  
-  // Control.addVariable("49DetectorStepZ6",-6.6);  
-
-  // Control.addVariable("49DetectorActive7",0);   
-  // Control.addVariable("49DetectorStepX7",2.5);  
-  // Control.addVariable("49DetectorStepY7",29.44);  
-  // Control.addVariable("49DetectorStepZ7",-6.6);  
-
-  // Control.addVariable("49DetectorActive8",0);   
-  // Control.addVariable("49DetectorStepX8",2.5);  
-  // Control.addVariable("49DetectorStepY8",29.94);  
-  // Control.addVariable("49DetectorStepZ8",-6.6);  
-
-  // Control.addVariable("49DetectorActive9",1);   
-  // Control.addVariable("49DetectorStepX9",2.5);  
-  // Control.addVariable("49DetectorStepY9",32.94);  
-  // Control.addVariable("49DetectorStepZ9",-6.6);  
-
-  // Control.addVariable("49DetectorActive10",0);   
-  // Control.addVariable("49DetectorStepX10",2.5);  
-  // Control.addVariable("49DetectorStepY10",34.44);  
-  // Control.addVariable("49DetectorStepZ10",-6.6);  
-
-  // Control.addVariable("49DetectorActive11",0);   
-  // Control.addVariable("49DetectorStepX11",2.5);  
-  // Control.addVariable("49DetectorStepY11",38.94);  
-  // Control.addVariable("49DetectorStepZ11",-6.6);  
-
-  // Control.addVariable("49DetectorActive12",1);   
-  // Control.addVariable("49DetectorStepX12",2.5);  
-  // Control.addVariable("49DetectorStepY12",40.44);  
-  // Control.addVariable("49DetectorStepZ12",-6.6);  
-
-  // Control.addVariable("49DetectorActive13",0);   
-  // Control.addVariable("49DetectorStepX13",2.5);  
-  // Control.addVariable("49DetectorStepY13",43.44);  
-  // Control.addVariable("49DetectorStepZ13",-6.6);  
-
-  // Control.addVariable("49DetectorActive14",1);   
-  // Control.addVariable("49DetectorStepX14",2.5);  
-  // Control.addVariable("49DetectorStepY14",46.75);  
-  // Control.addVariable("49DetectorStepZ14",-6.6);  
-
-  // Control.addVariable("49DetectorActive15",1);   
-  // Control.addVariable("49DetectorSetX15",2.5);  
-  // Control.addVariable("49DetectorSetY15",52.53);  
-  // Control.addVariable("49DetectorSetZ15",-6.6);  
-
-  // Control.addVariable("49DetectorActive16",1);   
-  // Control.addVariable("49DetectorSetX16",2.5);  
-  // Control.addVariable("49DetectorSetY16",55.73);  
-  // Control.addVariable("49DetectorSetZ16",-6.6);  
-
-  // Control.addVariable("49DetectorActive17",1);   
-  // Control.addVariable("49DetectorSetX17",2.5);  
-  // Control.addVariable("49DetectorSetY17",57.33);  
-  // Control.addVariable("49DetectorSetZ17",-6.6);  
-
-  // Control.addVariable("49DetectorActive18",1);   
-  // Control.addVariable("49DetectorSetX18",2.5);  
-  // Control.addVariable("49DetectorSetY18",59.73);  
-  // Control.addVariable("49DetectorSetZ18",-6.6);  
-
-  // Control.addVariable("49DetectorActive19",1);   
-  // Control.addVariable("49DetectorSetX19",2.5);  
-  // Control.addVariable("49DetectorSetY19",63.73);  
-  // Control.addVariable("49DetectorSetZ19",-6.6);  
-
-  // Control.addVariable("49DetectorActive20",1);   
-  // Control.addVariable("49DetectorSetX20",2.5);  
-  // Control.addVariable("49DetectorSetY20",65.83);  
-  // Control.addVariable("49DetectorSetZ20",-6.6);  
-
-  // Control.addVariable("49DetectorActive21",1);   
-  // Control.addVariable("49DetectorSetX21",2.5);  
-  // Control.addVariable("49DetectorSetY21",71.43);  
-  // Control.addVariable("49DetectorOffSetZ21",-6.6);  
-
-  // Control.addVariable("49DetectorActive22",1);   
-  // Control.addVariable("49DetectorOffSetX22",2.5);  
-  // Control.addVariable("49DetectorOffSetY22",74.53);  
-  // Control.addVariable("49DetectorOffSetZ22",-6.6);  
+  // active detector positions along Y axis
+  Control.addVariable("49SActiveY0",1);   
+  Control.addVariable("49SActiveY1",1);   
+  Control.addVariable("49SActiveY2",1);   
+  Control.addVariable("49SActiveY3",1);   
+  Control.addVariable("49SActiveY4",1);   
+  Control.addVariable("49SActiveY5",0);   
+  Control.addVariable("49SActiveY6",0);   
+  Control.addVariable("49SActiveY7",0);   
+  Control.addVariable("49SActiveY8",0);   
+  Control.addVariable("49SActiveY9",1);   
+  Control.addVariable("49SActiveY10",0);   
+  Control.addVariable("49SActiveY11",0);   
+  Control.addVariable("49SActiveY12",1);   
+  Control.addVariable("49SActiveY13",0);   
+  Control.addVariable("49SActiveY14",0);   
+  Control.addVariable("49SActiveY15",0);   
+  Control.addVariable("49SActiveY16",0);   
+  Control.addVariable("49SActiveY17",0);   
+  Control.addVariable("49SActiveY18",0);   
+  Control.addVariable("49SActiveY19",0);   
+  Control.addVariable("49SActiveY20",0);   
+  Control.addVariable("49SActiveY21",0);   
+  Control.addVariable("49SActiveY22",1);   
+  Control.addVariable("49SActiveY23",1);   
+  Control.addVariable("49SActiveY24",0);   
+  Control.addVariable("49SActiveY25",0);   
+  Control.addVariable("49SActiveY26",0);   
+  Control.addVariable("49SActiveY27",0);   
+  Control.addVariable("49SActiveY28",0);   
+  Control.addVariable("49SActiveY29",0);   
+  Control.addVariable("49SActiveY30",0);   
+  Control.addVariable("49SActiveY31",0);   
+  Control.addVariable("49SActiveY32",0);   
+  //
+  Control.addVariable("49StepZ0",75.0);  
+  Control.addVariable("49StepZ1",50.0);  
+  Control.addVariable("49StepZ2",25.0);  
+  Control.addVariable("49StepZ3",0.0);
+  Control.addVariable("49StepZ4",-25.0);
+  Control.addVariable("49StepZ5",-50.0);
+  Control.addVariable("49StepZ6",-75.0);  
+
+
+  // Rhodium
+  Control.addVariable("49RhMat","49Rh");  
+  Control.addVariable("49RhDiam",1.27);   
+  Control.addVariable("49RhThick",0.0015); 
+  // Rh positions are the nominal ones; in case of detector stack these are arranged consequently
+  // active detector positions along Y axis
+  Control.addVariable("49RhActiveY0",0);   
+  Control.addVariable("49RhActiveY1",1);   
+  Control.addVariable("49RhActiveY2",1);   
+  Control.addVariable("49RhActiveY3",1);   
+  Control.addVariable("49RhActiveY4",1);   
+  Control.addVariable("49RhActiveY5",1);   
+  Control.addVariable("49RhActiveY6",0);   
+  Control.addVariable("49RhActiveY7",0);   
+  Control.addVariable("49RhActiveY8",0);   
+  Control.addVariable("49RhActiveY9",0);   
+  Control.addVariable("49RhActiveY10",0);   
+  Control.addVariable("49RhActiveY11",1);   
+  Control.addVariable("49RhActiveY12",0);   
+  Control.addVariable("49RhActiveY13",0);   
+  Control.addVariable("49RhActiveY14",0);   
+  Control.addVariable("49RhActiveY15",0);   
+  Control.addVariable("49RhActiveY16",0);   
+  Control.addVariable("49RhActiveY17",0);   
+  Control.addVariable("49RhActiveY18",1);   
+  Control.addVariable("49RhActiveY19",0);   
+  Control.addVariable("49RhActiveY20",0);   
+  Control.addVariable("49RhActiveY21",0);   
+  Control.addVariable("49RhActiveY22",1);   
+  Control.addVariable("49RhActiveY23",1);   
+  Control.addVariable("49RhActiveY24",0);   
+  Control.addVariable("49RhActiveY25",0);   
+  Control.addVariable("49RhActiveY26",0);   
+  Control.addVariable("49RhActiveY27",0);   
+  Control.addVariable("49RhActiveY28",0);   
+  Control.addVariable("49RhActiveY29",0);   
+  Control.addVariable("49RhActiveY30",0);   
+  Control.addVariable("49RhActiveY31",0);   
+  Control.addVariable("49RhActiveY32",0);   
+
+  // Manganese
+  Control.addVariable("49MnMat","49Mn");  
+  Control.addVariable("49MnDiam",1.27);   
+  Control.addVariable("49MnThick",0.015);
+  // 
+  Control.addVariable("49MnActiveY0",0);   
+  Control.addVariable("49MnActiveY1",1);   
+  Control.addVariable("49MnActiveY2",1);   
+  Control.addVariable("49MnActiveY3",1);   
+  Control.addVariable("49MnActiveY4",1);   
+  Control.addVariable("49MnActiveY5",1);   
+  Control.addVariable("49MnActiveY6",0);   
+  Control.addVariable("49MnActiveY7",1);   
+  Control.addVariable("49MnActiveY8",1);   
+  Control.addVariable("49MnActiveY9",1);   
+  Control.addVariable("49MnActiveY10",0);   
+  Control.addVariable("49MnActiveY11",1);   
+  Control.addVariable("49MnActiveY12",1);   
+  Control.addVariable("49MnActiveY13",0);   
+  Control.addVariable("49MnActiveY14",1);   
+  Control.addVariable("49MnActiveY15",0);   
+  Control.addVariable("49MnActiveY16",0);   
+  Control.addVariable("49MnActiveY17",0);   
+  Control.addVariable("49MnActiveY18",1);   
+  Control.addVariable("49MnActiveY19",0);   
+  Control.addVariable("49MnActiveY20",0);   
+  Control.addVariable("49MnActiveY21",1);   
+  Control.addVariable("49MnActiveY22",1);   
+  Control.addVariable("49MnActiveY23",1);   
+  Control.addVariable("49MnActiveY24",1);   
+  Control.addVariable("49MnActiveY25",0);   
+  Control.addVariable("49MnActiveY26",1);   
+  Control.addVariable("49MnActiveY27",1);   
+  Control.addVariable("49MnActiveY28",1);   
+  Control.addVariable("49MnActiveY29",0);   
+  Control.addVariable("49MnActiveY30",1);   
+  Control.addVariable("49MnActiveY31",1);   
+  Control.addVariable("49MnActiveY32",1);   
+
+  //TLD
+  Control.addVariable("49TldMat","49Tld");  
+  Control.addVariable("49TldDiam",1.27);   
+  Control.addVariable("49TldThick",0.015); 
+  //
+  Control.addVariable("49TldActiveY0",0);   
+  Control.addVariable("49TldActiveY1",0);   
+  Control.addVariable("49TldActiveY2",1);   
+  Control.addVariable("49TldActiveY3",1);   
+  Control.addVariable("49TldActiveY4",1);   
+  Control.addVariable("49TldActiveY5",0);   
+  Control.addVariable("49TldActiveY6",1);   
+  Control.addVariable("49TldActiveY7",0);   
+  Control.addVariable("49TldActiveY8",0);   
+  Control.addVariable("49TldActiveY9",0);   
+  Control.addVariable("49TldActiveY10",1);   
+  Control.addVariable("49TldActiveY11",0);   
+  Control.addVariable("49TldActiveY12",0);   
+  Control.addVariable("49TldActiveY13",1);   
+  Control.addVariable("49TldActiveY14",0);   
+  Control.addVariable("49TldActiveY15",1);   
+  Control.addVariable("49TldActiveY16",0);   
+  Control.addVariable("49TldActiveY17",0);   
+  Control.addVariable("49TldActiveY18",0);   
+  Control.addVariable("49TldActiveY19",0);   
+  Control.addVariable("49TldActiveY20",0);   
+  Control.addVariable("49TldActiveY21",1);   
+  Control.addVariable("49TldActiveY22",1);   
+  Control.addVariable("49TldActiveY23",1);   
+  Control.addVariable("49TldActiveY24",0);   
+  Control.addVariable("49TldActiveY25",1);   
+  Control.addVariable("49TldActiveY26",0);   
+  Control.addVariable("49TldActiveY27",0);   
+  Control.addVariable("49TldActiveY28",0);   
+  Control.addVariable("49TldActiveY29",1);   
+  Control.addVariable("49TldActiveY30",0);   
+  Control.addVariable("49TldActiveY31",0);   
+  Control.addVariable("49TldActiveY32",0);   
+
+  //Ionisation chamber
+  Control.addVariable("49IcMat","49Ic");  
+  Control.addVariable("49IcDiam",1.27);   
+  Control.addVariable("49IcThick",0.015); 
+  //
+  Control.addVariable("49IcActiveY0",0);   
+  Control.addVariable("49IcActiveY1",0);   
+  Control.addVariable("49IcActiveY2",0);   
+  Control.addVariable("49IcActiveY3",0);   
+  Control.addVariable("49IcActiveY4",0);   
+  Control.addVariable("49IcActiveY5",0);   
+  Control.addVariable("49IcActiveY6",0);   
+  Control.addVariable("49IcActiveY7",0);   
+  Control.addVariable("49IcActiveY8",1);   
+  Control.addVariable("49IcActiveY9",0);   
+  Control.addVariable("49IcActiveY10",0);   
+  Control.addVariable("49IcActiveY11",0);   
+  Control.addVariable("49IcActiveY12",0);   
+  Control.addVariable("49IcActiveY13",0);   
+  Control.addVariable("49IcActiveY14",0);   
+  Control.addVariable("49IcActiveY15",0);   
+  Control.addVariable("49IcActiveY16",0);   
+  Control.addVariable("49IcActiveY17",1);   
+  Control.addVariable("49IcActiveY18",0);   
+  Control.addVariable("49IcActiveY19",0);   
+  Control.addVariable("49IcActiveY20",0);   
+  Control.addVariable("49IcActiveY21",0);   
+  Control.addVariable("49IcActiveY22",0);   
+  Control.addVariable("49IcActiveY23",0);   
+  Control.addVariable("49IcActiveY24",0);   
+  Control.addVariable("49IcActiveY25",0);   
+  Control.addVariable("49IcActiveY26",0);   
+  Control.addVariable("49IcActiveY27",1);   
+  Control.addVariable("49IcActiveY28",0);   
+  Control.addVariable("49IcActiveY29",0);   
+  Control.addVariable("49IcActiveY30",0);
+  //in reality: R15.8 rather then R15.7   
+  Control.addVariable("49IcActiveY31",1);   
+  Control.addVariable("49IcActiveY32",0);   
+
+  //Cd
+  Control.addVariable("49CdMat","49Cd");  
+  Control.addVariable("49CdDiam",1.27);   
+  Control.addVariable("49CdThick",0.127);
+
+  // S pressed
+  Control.addVariable("49CdMat","49Sp");  
+  Control.addVariable("49CdDiam",3.81);   
+  Control.addVariable("49CdThick",0.241);
 
 
 
@@ -869,6 +616,68 @@ SinbadVariables(FuncDataBase& Control)
 
   Control.addVariable("75CaveWidthSlab1",15.0); 
   Control.addVariable("75CaveMaterialSlab1",1); 
+
+
+
+
+
+
+
+
+
+  // Control.addVariable("49FissionPlateDivIndex1",4);   
+
+  // Control.addVariable("49FissionPlateNXSpace",5);   
+  // Control.addVariable("49FissionPlateNZSpace",5);   
+  
+
+  // Control.addVariable("49FissionPlateXPt0",-30.0);   
+  // Control.addVariable("49FissionPlateXPt1",-10.0);   
+  // Control.addVariable("49FissionPlateXPt2",0.0);   
+  // Control.addVariable("49FissionPlateXPt3",10.0);   
+  // Control.addVariable("49FissionPlateXPt4",-30.0);
+
+  // Control.addVariable("49FissionPlateZPt0",-30.0);   
+  // Control.addVariable("49FissionPlateZPt1",-10.0);   
+  // Control.addVariable("49FissionPlateZPt2",0.0);   
+  // Control.addVariable("49FissionPlateZPt3",10.0);   
+  // Control.addVariable("49FissionPlateZPt4",-30.0);
+  // Control.addVariable("49FissionPlateZPt0",-30.0);   
+
+  //49NestorSide side
+
+  // Control.addVariable("49NestorSideXStep",91.45);  
+  // Control.addVariable("49NestorSideYStep",-1.45);  
+  // Control.addVariable("49NestorSideZStep",95.5);  
+
+  // Control.addVariable("49NestorSideXStep",0);  
+  // Control.addVariable("49NestorSideYStep",0);  
+  // Control.addVariable("49NestorSideZStep",0);  
+
+
+
+  // Control.addVariable("49NestorSideXYAngle",0.0);  
+  // Control.addVariable("49NestorSideZAngle",0.0);  
+
+  // Control.addVariable("49NestorSideWidth",182.9);   
+  // Control.addVariable("49NestorSideHeight",191.0);  
+
+  // Control.addVariable("49NestorSideNSlab",6);
+  // Control.addVariable("49NestorSideThick0",0.70); 
+  // Control.addVariable("49NestorSideMat0","Void"); 
+  // Control.addVariable("49NestorSideThick1",15.0); 
+  // Control.addVariable("49NestorSideMat1","Graphite"); 
+  // Control.addVariable("49NestorSideThick2",0.60); 
+  // Control.addVariable("49NestorSideMat2","Void");  
+  // Control.addVariable("49NestorSideThick3",5.08); 
+  // Control.addVariable("49NestorSideMat3","sbadLead");  
+  // Control.addVariable("49NestorSideThick4",0.70); 
+  // Control.addVariable("49NestorSideMat4","Void");  
+  // Control.addVariable("49NestorSideThick5",3.18); 
+  // Control.addVariable("49NestorSideMat5","49MildSteel1");  
+  // Control.addVariable("49NestorSideAlWindowRadius",56.06); 
+
+
 
   return;
 }

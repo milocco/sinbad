@@ -46,7 +46,7 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "ContainedComp.h"
-
+#include "inputParam.h"
 #include "LayerPlate.h"
 #include "FissionPlate.h"
 

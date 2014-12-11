@@ -46,7 +46,7 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "ContainedComp.h"
-
+#include "inputParam.h"
 #include "LayerPlate.h"
 
 namespace sinbadSystem
@@ -185,6 +185,59 @@ LayerPlate::getBackSurface(const size_t layerIndex,
   return ModelSupport::getComposite(SMap,SI," -11 ");  
 }
 
+double
+LayerPlate::boralGap(const FuncDataBase& Control,
+                     const mainSystem::inputParam& IParam)
+{
+
+  double bGap(0.0);
+  //  double cGap(0.0);
+  cGap=0.0;
+
+ int t(0);
+  //  const std::string detT;
+  while(t<10 && IParam.getValue<std::string>("detType",t).size()!=0)
+    {
+      ELog::EM<<" XX0 "<<bGap<<" c "<<cGap<<ELog::endDiag;
+
+      //    const std::string detKey=preName+detType;
+      //     const FuncDataBase& Control=System.getDataBase();  
+     const std::string detT=IParam.getValue<std::string>("detType",t);
+     const std::string preName=IParam.getValue<std::string>("preName");
+
+     const std::string detKey=preName+detT;
+
+     bGap=Control.EvalVar<double>(detKey+"Thick");
+
+     ELog::EM<<" XX1 "<<bGap<<" c "<<cGap<<ELog::endDiag;
+
+     cGap+=bGap;
+  //    double offSet1(0.0);
+  //     Off[T]=offSet;
+  //     detT=detType;
+   
+  // if (T>0) offSet1=Off[T-1];
+  // if (T==0) offSet1=0;
+
+
+  //    int  TT(0);
+  //    TT=t;
+
+     ELog::EM<<" XX2 "<<bGap<<" c "<<cGap<<ELog::endDiag;
+
+     // ELog::EM<<" XX "<<bGap<<" X "<<t<<" Det TypeXxX == "<<detT<<" sizeXXX "<< detKey<<ELog::endDiag;
+
+
+     t=t+1;
+    }
+  //CGap=cGap;
+
+  return cGap;
+}
+
+
+
+
 
 void
 LayerPlate::populate(const FuncDataBase& Control)
@@ -209,17 +262,25 @@ LayerPlate::populate(const FuncDataBase& Control)
 
   double Len,Tmp;
   int M;
-  
+
+  double BG=0.0;
+    // boralGap;
+
   for(size_t i=0;i<nSlab;i++)
     {
       const std::string NStr(StrFunc::makeString(i));
       Len=Control.EvalVar<double>(keyName+"Thick"+NStr);
       Tmp=Control.EvalDefVar<double>(keyName+"Temp"+NStr,0.0);
       M=ModelSupport::EvalMat<int>(Control,keyName+"Mat"+NStr);
-
       thick.push_back(Len);   
       mat.push_back(M);   
       matTemp.push_back(Tmp);   
+
+       if(mat[i]==0 && mat[i-1]==6)
+	 {
+	   thick[i-2]=thick[i-2]-cGap;
+           thick[i]=cGap;
+	 }
     }
 
   return;
@@ -386,5 +447,32 @@ LayerPlate::createAll(Simulation& System,
 
   return;
 }
+
+
+void
+LayerPlate::createAllAM(Simulation& System, 
+			const mainSystem::inputParam& IParam,
+		        const attachSystem::FixedComp& FC,
+		        const long int sideIndex)
+  /*!
+    Generic function to create everything
+    \param System :: Simulation item
+    \param FC :: Fixed Component for origin
+    \param sideIndex :: Direction/type of side index [0 central origin]
+  */
+{
+  ELog::RegMethod RegA("LayerPlate","createAll");
+  boralGap(System.getDataBase(),IParam);
+  populate(System.getDataBase());
+  createUnitVector(FC,sideIndex);
+  createSurfaces();
+  createObjects(System,FC,sideIndex);
+  createLinks();
+  insertObjects(System);
+
+  return;
+}
+
+
   
 } 
