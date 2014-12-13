@@ -117,41 +117,42 @@ makeSinbad::~makeSinbad()
   */
 {}
 
-void
-makeSinbad::buildDetectors(Simulation& System)
-  /*!
-    Build detector units
-    \param System :: Simulation
-  */
-{
-  ELog::RegMethod RegA("makeSinbad","buildDetectors");
+// void
+// makeSinbad::buildDetectors(Simulation& System)
+//   /*!
+//     Build detector units
+//     \param System :: Simulation
+//   */
+// {
+//   ELog::RegMethod RegA("makeSinbad","buildDetectors");
 
-  const FuncDataBase& Control=System.getDataBase();
+//   const FuncDataBase& Control=System.getDataBase();
   
-  const std::string detKey=preName+"Detector";
+//   const std::string detKey=preName+"Detector";
 
 
-  const size_t detN=Control.EvalVar<size_t>(detKey+"PositionN");
+//   const size_t detN=Control.EvalVar<size_t>(detKey+"PositionN");
 
-  for(size_t i=0;i<detN;i++)
-    { 
-      boost::shared_ptr<sbadDetector> detPtr
-	(new sbadDetector(preName+"Detector",i));
+//   for(size_t i=0;i<detN;i++)
+//     { 
+//       boost::shared_ptr<sbadDetector> detPtr
+// 	(new sbadDetector(preName+"Detector",i));
       
-      detArray.push_back(detPtr);   
-      detArray.back()->createAll(System,*Secondary);
-      if (detArray.back()->isActive())
-	{
+//       detArray.push_back(detPtr);   
+//       detArray.back()->createAll(System,*Secondary);
+//       if (detArray.back()->isActive())
+// 	{
 
-	  ELog::EM<<"Active "<<i<<ELog::endDiag;
-	  attachSystem::addToInsertControl(System,*Secondary,*detPtr,*detPtr);
+// 	  ELog::EM<<"Active "<<i<<ELog::endDiag;
+// 	  attachSystem::addToInsertControl(System,*Secondary,*detPtr,*detPtr);
 
-	}
-    }
-  return;
-}
+// 	}
+//     }
+//   return;
+// }
 
-  std::vector<double> Off(10);  
+    std::vector<double> Off(10);  
+  //  offSet1=0.0;
 
 
 void
@@ -166,56 +167,74 @@ makeSinbad::buildDetectorsAM(Simulation& System, const mainSystem::inputParam& I
 
   const FuncDataBase& Control=System.getDataBase();  
   const std::string detKey=preName+detType;
-  const size_t detN=Control.EvalVar<size_t>(detKey+"N");
+  const size_t detN=Control.EvalVar<size_t>(preName+"DetN");
 
-  double offSet=Control.EvalVar<double>(detKey+"Thick");
-  double offSet1(0.0);
-  double offSet2(0.0);
-  Off[T]=offSet;
-  detT=detType;
-   
-  if (T>0) offSet1=Off[T-1];
-  if (T==0) offSet1=0;
+  ELog::EM<<"detKey== "<<detKey<<ELog::endDiag;
 
   int dS(0);
   int dT(0);
-  for(size_t i=0;i<10;i++)
-    {
-      
-       dS = IParam.getValue<std::string>("detType",i).size(); 
-       if(dS!=0) dT=dS;
-    }
- //  ELog::EM<<"TTTT "<<T<<" DDDD "<<detType<<" OOOO "<<dS<<" Off[T] "<<Off[0]<<" "<<Off[1]<<" offSet1 "<<offSet1<<ELog::endDiag;
-
+  double offSet=Control.EvalVar<double>(detKey+"Thick");
+  double offSet2(0.0);
   double offSet3(0.0);
-  for(size_t i=0;i<dT;i++)
-    {
-     std::string TT=IParam.getValue<std::string>("detType",i);
-     const std::string detKey1=preName+TT;
-     offSet3+=Control.EvalVar<double>(detKey1+"Thick");
-    }
 
-       ELog::EM<<"offSet3 "<<offSet3<<ELog::endDiag;
-  
+  Off[T]=offSet;
+  detT=detType;
+
   for(size_t i=0;i<detN;i++)
     { 
       boost::shared_ptr<sbadDetector> detPtr
 	(new sbadDetector(preName+detType,i));
-
       detArray.push_back(detPtr);
 
+      offSet1=0.0;   
+
+
+
+      if (T>0)
+	{
+	  for(size_t m=0;m<T;m++)
+	   { 
+	     if(detArray[detArray.size()-(T-m)*detN-1]->isActive())
+	       {   
+                offSet1+=Off[m];
+               }
+             else
+               {
+                offSet1+=0;
+	       }
+           }
+	}
+
+
+      for(size_t i=0;i<10;i++)
+       {
+        dS = IParam.getValue<std::string>("detType",i).size(); 
+        if(dS!=0) dT=i+1;
+       }
+
+     //       offSet3=0.0;
       if(i==1) 
       	{
+         for(size_t n=0;n<dT;n++)
+          {
+           const std::string TT=IParam.getValue<std::string>("detType",n);
+           const std::string detKey1=preName+TT;
+           offSet3+=Control.EvalVar<double>(detKey1+"Thick");
+	   ELog::EM<<" off3  "<<offSet3<<ELog::endDiag;
+          }
       	  offSet2=-offSet3+offSet1; 
-	  ELog::EM<<" i" <<i<<" offSet2  "<<offSet2 <<ELog::endDiag;
-          detArray.back()->createAllAM(System,IParam, *Secondary,offSet2);
+          detArray.back()->createAllAM(System,IParam,*Secondary,offSet2);
       	}
        else
-      detArray.back()->createAllAM(System,IParam, *Secondary,offSet1);
+	 {
+          detArray.back()->createAllAM(System,IParam, *Secondary,offSet1);
+	 }
+
+    // ELog::EM<<"Active?? "<<preName+detType<<"  "<<i<<" "<<detArray.size()<<ELog::endDiag;
 
       if (detArray.back()->isActive())
 	{
-	  ELog::EM<<"Active "<<i<<"  "<<detArray.back()->isActive() <<ELog::endDiag;
+	  ELog::EM<<" DET "<< preName+detType  <<" OFF "<<offSet1<<"  Active "<<i<<"  "<<detArray.back()->isActive() <<ELog::endDiag;
 
 	  attachSystem::addToInsertControl(System,*Secondary,*detPtr,*detPtr);
 	}
@@ -250,17 +269,16 @@ makeSinbad::build(Simulation* SimPtr,
   Secondary->addInsertCell(voidCell) ;
   // Secondary->createAll(*SimPtr,*fPlate,2);
 
-  ELog::EM<<" Off[T] "<<Off[0]<<" "<<Off[1]<<ELog::endDiag;
-
 
   Secondary->createAllAM(*SimPtr,IParam,*fPlate,2);
 
 
   int t(0);
+  int  detI(0);
+
   while(t<10 && IParam.getValue<std::string>("detType",t).size()!=0)
     {
      const std::string detT=IParam.getValue<std::string>("detType",t);
-     int  detI(0);
      detI=t;
      buildDetectorsAM(*SimPtr,IParam,detT,detI);
      t=t+1;

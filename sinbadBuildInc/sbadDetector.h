@@ -36,6 +36,9 @@ class sbadDetector : public attachSystem::ContainedComp,
   double diameter;                  ///< Radis of rod 
   double length;                  ///< Length of rod
   int mat;                        ///< Material 
+  std::string expName;
+
+
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&);  

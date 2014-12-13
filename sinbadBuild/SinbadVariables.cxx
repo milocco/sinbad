@@ -255,7 +255,19 @@ SinbadVariables(FuncDataBase& Control)
   Control.addVariable("49DetOffsetX",2.5);  
   Control.addVariable("49DetOffsetZ",-6.6);
   // possible detector positions along Y axis 
-  Control.addVariable("49DetN",34);    
+  Control.addVariable("49DetN",33);    
+
+  Control.addVariable("49DetStepX",0.0);  
+  Control.addVariable("49DetStepZ",0.0);  
+
+  Control.addVariable("49StepZ0",75.0);  
+  Control.addVariable("49StepZ1",50.0);  
+  Control.addVariable("49StepZ2",25.0);  
+  Control.addVariable("49StepZ3",0.0);
+  Control.addVariable("49StepZ4",-25.0);
+  Control.addVariable("49StepZ5",-50.0);
+  Control.addVariable("49StepZ6",-75.0);  
+
 
   // monitor
   Control.addVariable("49StepY0",0.0);  

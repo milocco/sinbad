@@ -198,7 +198,7 @@ LayerPlate::boralGap(const FuncDataBase& Control,
   //  const std::string detT;
   while(t<10 && IParam.getValue<std::string>("detType",t).size()!=0)
     {
-      ELog::EM<<" XX0 "<<bGap<<" c "<<cGap<<ELog::endDiag;
+      //     ELog::EM<<" XX0 "<<bGap<<" c "<<cGap<<ELog::endDiag;
 
       //    const std::string detKey=preName+detType;
       //     const FuncDataBase& Control=System.getDataBase();  
@@ -209,7 +209,7 @@ LayerPlate::boralGap(const FuncDataBase& Control,
 
      bGap=Control.EvalVar<double>(detKey+"Thick");
 
-     ELog::EM<<" XX1 "<<bGap<<" c "<<cGap<<ELog::endDiag;
+     //    ELog::EM<<" XX1 "<<bGap<<" c "<<cGap<<ELog::endDiag;
 
      cGap+=bGap;
   //    double offSet1(0.0);
@@ -223,7 +223,7 @@ LayerPlate::boralGap(const FuncDataBase& Control,
   //    int  TT(0);
   //    TT=t;
 
-     ELog::EM<<" XX2 "<<bGap<<" c "<<cGap<<ELog::endDiag;
+  //   ELog::EM<<" XX2 "<<bGap<<" c "<<cGap<<ELog::endDiag;
 
      // ELog::EM<<" XX "<<bGap<<" X "<<t<<" Det TypeXxX == "<<detT<<" sizeXXX "<< detKey<<ELog::endDiag;
 

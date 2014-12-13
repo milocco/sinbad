@@ -1,3 +1,4 @@
+
 #ifndef sinbadSystem_makeSinbad_h
 #define sinbadSystem_makeSinbad_h
 
@@ -33,12 +34,8 @@ class makeSinbad
   const std::string preName;          ///< Initializtion ta
   const std::string detType;
   std::string detT;
-
-  //  int T;
-  // std::vector<double> Off;  
-
-  //  std::vector<int> Off;  
-   /* const int TT; */
+  int detI;
+  double offSet1;
 
   boost::shared_ptr<Cave> Surround;   
 

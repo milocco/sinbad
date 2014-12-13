@@ -13,6 +13,8 @@
 #include <algorithm>
 #include <boost/array.hpp>
 #include <boost/shared_ptr.hpp>
+//
+#include <boost/regex.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -47,6 +49,9 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "ContainedComp.h"
+//
+#include "support.h"
+#include "regexSupport.h"
 
 #include "inputParam.h"
 #include "ImportControl.h"
@@ -136,17 +141,18 @@ sbadDetector::~sbadDetector()
 std::string
 sbadDetector::getDet(const mainSystem::inputParam& IParam) const
 {
-
-
+  // std::string expName;
+  // const std::string 
+    // expName=IParam.getValue<std::string>("preName");
+  //ELog::EM<<" XX "<<expName<<" inp "<<IParam.getValue<std::string>("preName")<<ELog::endDiag;
  int t(0);
   //  const std::string detT;
   while(t<10 && IParam.getValue<std::string>("detType",t).size()!=0)
-	//  const std::string detT=IParam.getValue<std::string>("detType",2);
     {
      const std::string detT=IParam.getValue<std::string>("detType",t);
      int  TT(0);
      TT=t;
-      // ELog::EM<<" XX "<<TT<<" X "<<t<<" Det TypeXxX == "<<detT<<" sizeXXX "<< IParam.getValue<std::string>("detType",t).size()<<ELog::endDiag;
+     //  ELog::EM<<" Det TypeXxX == "<<detT<<ELog::endDiag;
        //     buildDetectorsAM(*SimPtr,detT,TT);
      t=t+1;
     }
@@ -176,18 +182,29 @@ sbadDetector::populate(const FuncDataBase& Control)
 
  // ELog::EM<<"PN  "<< PN <<"  DT  "<<DT<<"  DT1  "<<DT1<<ELog::endDiag;
 
+  // ELog::EM<<"baseName "<<baseName<<" s "<<baseName.size()<<ELog::endDiag;
+  // ELog::EM<<"keyName "<<keyName<<" s "<<keyName.size()<<ELog::endDiag;
+  
+  std::string YIndex("Y");
+  for(size_t i=baseName.size();i<keyName.size();i++)
+    {
+      YIndex+=keyName[i];     
+      //      ELog::EM<<"splitIndex "<<YIndex<<ELog::endDiag;
+    }
+  std::string expName(""); 
+   for(size_t i=0;i<2;i++)
+    {
+      expName+=keyName[i];     
+      // ELog::EM<<"expname "<<expName<<ELog::endDiag;
+    }
 
-  active=Control.EvalVar<int>(keyName+"Active");
-  xStep=Control.EvalPair<double>(keyName,baseName,"StepX");
-  yStep=Control.EvalPair<double>(keyName,baseName,"StepY");
-  zStep=Control.EvalPair<double>(keyName,baseName,"StepZ");
-  xyAngle=Control.EvalPair<double>(keyName,baseName,"XYAngle");
-  zAngle=Control.EvalPair<double>(keyName,baseName,"ZAngle");
+  std::string detAny(expName+"Det");
 
-	  ELog::EM<<"baseName "<<baseName<<ELog::endDiag;
-	  ELog::EM<<"keyName "<<keyName<<ELog::endDiag;
+  active=Control.EvalVar<int>(baseName+"Active"+YIndex);
 
-	  //  std::string keyName1("49DetectorRh");
+  xStep=Control.EvalPair<double>(detAny,baseName,"StepX");
+  yStep=Control.EvalPair<double>(expName,baseName,"Step"+YIndex);
+  zStep=Control.EvalPair<double>(detAny,baseName,"StepZ");
 
   xOffset=Control.EvalDefVar<double>(baseName+"OffSetX",0.0);
   yOffset=Control.EvalDefVar<double>(baseName+"OffSetY",0.0);
@@ -229,8 +246,8 @@ sbadDetector::createUnitVectorAM(const attachSystem::FixedComp& FC, const double
   FixedComp::createUnitVector(FC);
   applyShift(xOffset+xStep,yOffset+yStep+offSet,zOffset+zStep);
   // applyShift(xStep,yStep,zStep);
- ELog::EM<<" offSet== "<<offSet<<" yStep== "<<yStep<<" yOffset== "<<yOffset<<ELog::endDiag;
-  applyAngleRotate(xyAngle,zAngle);
+  // ELog::EM<<" offSet== "<<offSet<<" yStep== "<<yStep<<" yOffset== "<<yOffset<<ELog::endDiag;
+  //  applyAngleRotate(xyAngle,zAngle);
 
   return;
 }

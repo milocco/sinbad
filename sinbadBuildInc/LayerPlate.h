@@ -42,6 +42,10 @@ class LayerPlate  : public attachSystem::ContainedComp,
 
   /// Cut out size
   double radiusWindow;
+  //  double bGap;
+  double cGap;
+
+  std::string detT;
 
   std::string getFrontSurface(const size_t,const attachSystem::FixedComp&,
 			      const long int) const;
@@ -54,7 +58,11 @@ class LayerPlate  : public attachSystem::ContainedComp,
   virtual void createSurfaces();
   virtual void createObjects(Simulation&,const attachSystem::FixedComp&,
 			     const long int);
+  virtual double boralGap(const FuncDataBase&, const mainSystem::inputParam&);
+
   virtual void createLinks();
+
+  // private:
 
 
  public:
@@ -68,6 +76,11 @@ class LayerPlate  : public attachSystem::ContainedComp,
   virtual void createAll(Simulation&,
 			 const attachSystem::FixedComp&,
 			 const long int);
+  virtual void createAllAM(Simulation&, const mainSystem::inputParam&, 
+			 const attachSystem::FixedComp&,
+			 const long int);
+
+
 };
 
 }
