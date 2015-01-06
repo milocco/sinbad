@@ -255,18 +255,10 @@ SinbadVariables(FuncDataBase& Control)
   Control.addVariable("49DetOffsetX",2.5);  
   Control.addVariable("49DetOffsetZ",-6.6);
   // possible detector positions along Y axis 
-  Control.addVariable("49DetN",33);    
+  Control.addVariable("49DetNY",33);    
 
   Control.addVariable("49DetStepX",0.0);  
   Control.addVariable("49DetStepZ",0.0);  
-
-  Control.addVariable("49StepZ0",75.0);  
-  Control.addVariable("49StepZ1",50.0);  
-  Control.addVariable("49StepZ2",25.0);  
-  Control.addVariable("49StepZ3",0.0);
-  Control.addVariable("49StepZ4",-25.0);
-  Control.addVariable("49StepZ5",-50.0);
-  Control.addVariable("49StepZ6",-75.0);  
 
 
   // monitor
@@ -337,6 +329,17 @@ SinbadVariables(FuncDataBase& Control)
   // pos R18.8
   Control.addVariable("49StepY32",74.53);  
 
+  // possible detectors for vertical scans
+  Control.addVariable("49DetNZ",7);    
+  Control.addVariable("49StepZ0",75.0);  
+  Control.addVariable("49StepZ1",50.0);  
+  Control.addVariable("49StepZ2",25.0);  
+  Control.addVariable("49StepZ3",0.0);
+  Control.addVariable("49StepZ4",-25.0);
+  Control.addVariable("49StepZ5",-50.0);
+  Control.addVariable("49StepZ6",-75.0);  
+
+
 
 
  
@@ -378,14 +381,8 @@ SinbadVariables(FuncDataBase& Control)
   Control.addVariable("49SActiveY30",0);   
   Control.addVariable("49SActiveY31",0);   
   Control.addVariable("49SActiveY32",0);   
-  //
-  Control.addVariable("49StepZ0",75.0);  
-  Control.addVariable("49StepZ1",50.0);  
-  Control.addVariable("49StepZ2",25.0);  
-  Control.addVariable("49StepZ3",0.0);
-  Control.addVariable("49StepZ4",-25.0);
-  Control.addVariable("49StepZ5",-50.0);
-  Control.addVariable("49StepZ6",-75.0);  
+  // number of vertical scans
+  Control.addVariable("49SVscanNY",0);           
 
 
   // Rhodium
@@ -427,12 +424,14 @@ SinbadVariables(FuncDataBase& Control)
   Control.addVariable("49RhActiveY30",0);   
   Control.addVariable("49RhActiveY31",0);   
   Control.addVariable("49RhActiveY32",0);   
+  // number of vertical scans
+  Control.addVariable("49RhVscanNY",0);           
 
   // Manganese
   Control.addVariable("49MnMat","49Mn");  
   Control.addVariable("49MnDiam",1.27);   
   Control.addVariable("49MnThick",0.015);
-  // 
+  // active detectors along axial direction
   Control.addVariable("49MnActiveY0",0);   
   Control.addVariable("49MnActiveY1",1);   
   Control.addVariable("49MnActiveY2",1);   
@@ -465,13 +464,26 @@ SinbadVariables(FuncDataBase& Control)
   Control.addVariable("49MnActiveY29",0);   
   Control.addVariable("49MnActiveY30",1);   
   Control.addVariable("49MnActiveY31",1);   
-  Control.addVariable("49MnActiveY32",1);   
+  Control.addVariable("49MnActiveY32",1);
+  // number of vertical scans
+  Control.addVariable("49MnVscanNY",1);           
+  // Axial offset for vertical scan
+  Control.addVariable("49MnVscanY0",29.44);   
+  // active detectors along vertical direction
+  Control.addVariable("49MnVscanNZ",7);           
+  Control.addVariable("49MnY0ActiveZ0",1);   
+  Control.addVariable("49MnY0ActiveZ1",1);   
+  Control.addVariable("49MnY0ActiveZ2",1);   
+  Control.addVariable("49MnY0ActiveZ3",1);   
+  Control.addVariable("49MnY0ActiveZ4",1);   
+  Control.addVariable("49MnY0ActiveZ5",1);   
+  Control.addVariable("49MnY0ActiveZ6",1);   
 
   //TLD
   Control.addVariable("49TldMat","49Tld");  
   Control.addVariable("49TldDiam",1.27);   
   Control.addVariable("49TldThick",0.015); 
-  //
+  // active detectors along axial direction
   Control.addVariable("49TldActiveY0",0);   
   Control.addVariable("49TldActiveY1",0);   
   Control.addVariable("49TldActiveY2",1);   
@@ -505,6 +517,45 @@ SinbadVariables(FuncDataBase& Control)
   Control.addVariable("49TldActiveY30",0);   
   Control.addVariable("49TldActiveY31",0);   
   Control.addVariable("49TldActiveY32",0);   
+  // number of vertical scans
+  Control.addVariable("49TldZscanN",4);           
+  // Axial offset for vertical scan
+  Control.addVariable("49TldZscanY0",21.74);   
+  Control.addVariable("49TldZscanY1",39.24);   
+  Control.addVariable("49TldZscanY2",39.74);   
+  Control.addVariable("49TldZscanY3",40.24);   
+  // active detectors along vertical direction
+  Control.addVariable("49TldY0ActiveZ0",1);   
+  Control.addVariable("49TldY0ActiveZ1",1);   
+  Control.addVariable("49TldY0ActiveZ2",1);   
+  Control.addVariable("49TldY0ActiveZ3",1);   
+  Control.addVariable("49TldY0ActiveZ4",1);   
+  Control.addVariable("49TldY0ActiveZ5",1);   
+  Control.addVariable("49TldY0ActiveZ6",1); 
+  //  
+  Control.addVariable("49TldY1ActiveZ0",1);   
+  Control.addVariable("49TldY1ActiveZ1",1);   
+  Control.addVariable("49TldY1ActiveZ2",1);   
+  Control.addVariable("49TldY1ActiveZ3",1);   
+  Control.addVariable("49TldY1ActiveZ4",1);   
+  Control.addVariable("49TldY1ActiveZ5",1);   
+  Control.addVariable("49TldY1ActiveZ6",1);
+  //   
+  Control.addVariable("49TldY2ActiveZ0",1);   
+  Control.addVariable("49TldY2ActiveZ1",1);   
+  Control.addVariable("49TldY2ActiveZ2",1);   
+  Control.addVariable("49TldY2ActiveZ3",1);   
+  Control.addVariable("49TldY2ActiveZ4",1);   
+  Control.addVariable("49TldY2ActiveZ5",1);   
+  Control.addVariable("49TldY2ActiveZ6",1);
+  //   
+  Control.addVariable("49TldY3ActiveZ0",1);   
+  Control.addVariable("49TldY3ActiveZ1",1);   
+  Control.addVariable("49TldY3ActiveZ2",1);   
+  Control.addVariable("49TldY3ActiveZ3",1);   
+  Control.addVariable("49TldY3ActiveZ4",1);   
+  Control.addVariable("49TldY3ActiveZ5",1);   
+  Control.addVariable("49TldY3ActiveZ6",1);   
 
   //Ionisation chamber
   Control.addVariable("49IcMat","49Ic");  

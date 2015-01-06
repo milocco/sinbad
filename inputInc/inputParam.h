@@ -100,7 +100,6 @@ class inputParam
   std::string getFull(const std::string&,const size_t =0) const;
   template<typename T>
   const T& getValue(const std::string&,const size_t =0) const;
-
   template<typename T>
   const T& getCompValue(const std::string&,const size_t,const size_t) const;
 

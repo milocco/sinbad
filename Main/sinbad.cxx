@@ -78,6 +78,9 @@ main(int argc,char* argv[])
   mainSystem::inputParam IParam;
   createSinbadInputs(IParam);
 
+
+
+
   const int iteractive(IterVal.empty() ? 0 : 1);   
   Simulation* SimPtr=createSimulation(IParam,Names,Oname);
   if (!SimPtr) return -1;
@@ -102,8 +105,10 @@ main(int argc,char* argv[])
 	    }
 
 	  SimPtr->resetAll();
+	  const std::string preName=IParam.getValue<std::string>("preName");
+	  ELog::EM<<"Pre "<<preName<<ELog::endDiag;
 
-	  sinbadSystem::makeSinbad SinbadObj("49");
+	  sinbadSystem::makeSinbad SinbadObj(preName);
 	  World::createOuterObjects(*SimPtr);
 
 	  SinbadObj.build(SimPtr,IParam);

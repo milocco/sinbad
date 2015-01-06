@@ -167,9 +167,23 @@ makeSinbad::buildDetectorsAM(Simulation& System, const mainSystem::inputParam& I
 
   const FuncDataBase& Control=System.getDataBase();  
   const std::string detKey=preName+detType;
-  const size_t detN=Control.EvalVar<size_t>(preName+"DetN");
+  // const size_t detNY=Control.EvalVar<size_t>(preName+"DetN");
+  // const size_t detNZ=Control.EvalVar<size_t>(preName+"ZscanN");
+ size_t detN;
+ size_t detN1;
+ size_t detN2;
 
-  ELog::EM<<"detKey== "<<detKey<<ELog::endDiag;
+
+  
+  if(IParam.getValue<std::string>("detType").size()!=0)
+  detN=Control.EvalVar<size_t>(preName+"DetNY");
+  if(IParam.getValue<std::string>("ZScan").size()!=0)
+    {
+     detN1 =Control.EvalVar<size_t>(preName+"DetNZ");
+     detN2 =Control.EvalVar<size_t>(preName+detType+"VscanNY");
+     detN=detN1*detN2; 
+    }
+  ELog::EM<<"detKey== "<<detKey<<" detN "<<detN<<ELog::endDiag;
 
   int dS(0);
   int dT(0);
@@ -181,21 +195,19 @@ makeSinbad::buildDetectorsAM(Simulation& System, const mainSystem::inputParam& I
   detT=detType;
 
   for(size_t i=0;i<detN;i++)
-    { 
+    {
       boost::shared_ptr<sbadDetector> detPtr
 	(new sbadDetector(preName+detType,i));
       detArray.push_back(detPtr);
 
       offSet1=0.0;   
-
-
-
       if (T>0)
 	{
 	  for(size_t m=0;m<T;m++)
-	   { 
-	     if(detArray[detArray.size()-(T-m)*detN-1]->isActive())
-	       {   
+	   {
+	     if(detArray[detArray.size()-(T-m)*detN-1]->isActiveY()||
+                detArray[detArray.size()-(T-m)*detN-1]->isActiveZ())
+	       {
                 offSet1+=Off[m];
                }
              else
@@ -211,8 +223,7 @@ makeSinbad::buildDetectorsAM(Simulation& System, const mainSystem::inputParam& I
         dS = IParam.getValue<std::string>("detType",i).size(); 
         if(dS!=0) dT=i+1;
        }
-
-     //       offSet3=0.0;
+       offSet3=0.0;
       if(i==1) 
       	{
          for(size_t n=0;n<dT;n++)
@@ -220,7 +231,6 @@ makeSinbad::buildDetectorsAM(Simulation& System, const mainSystem::inputParam& I
            const std::string TT=IParam.getValue<std::string>("detType",n);
            const std::string detKey1=preName+TT;
            offSet3+=Control.EvalVar<double>(detKey1+"Thick");
-	   ELog::EM<<" off3  "<<offSet3<<ELog::endDiag;
           }
       	  offSet2=-offSet3+offSet1; 
           detArray.back()->createAllAM(System,IParam,*Secondary,offSet2);
@@ -232,9 +242,9 @@ makeSinbad::buildDetectorsAM(Simulation& System, const mainSystem::inputParam& I
 
     // ELog::EM<<"Active?? "<<preName+detType<<"  "<<i<<" "<<detArray.size()<<ELog::endDiag;
 
-      if (detArray.back()->isActive())
+      if (detArray.back()->isActiveY())
 	{
-	  ELog::EM<<" DET "<< preName+detType  <<" OFF "<<offSet1<<"  Active "<<i<<"  "<<detArray.back()->isActive() <<ELog::endDiag;
+	  ELog::EM<<" DET "<< preName+detType  <<" OFF "<<offSet1<<"  ActiveY "<<i<<"  "<<detArray.back()->isActiveY() <<ELog::endDiag;
 
 	  attachSystem::addToInsertControl(System,*Secondary,*detPtr,*detPtr);
 	}
@@ -269,7 +279,6 @@ makeSinbad::build(Simulation* SimPtr,
   Secondary->addInsertCell(voidCell) ;
   // Secondary->createAll(*SimPtr,*fPlate,2);
 
-
   Secondary->createAllAM(*SimPtr,IParam,*fPlate,2);
 
 
@@ -280,6 +289,20 @@ makeSinbad::build(Simulation* SimPtr,
     {
      const std::string detT=IParam.getValue<std::string>("detType",t);
      detI=t;
+     buildDetectorsAM(*SimPtr,IParam,detT,detI);
+     t=t+1;
+    }
+
+  t=0;
+  detI=0 ;
+
+  while(t<10 && IParam.getValue<std::string>("ZScan",t).size()!=0)
+    {
+     const std::string detT=IParam.getValue<std::string>("detType",t);
+     detI=t;
+      
+     //     VscanNY=Control.EvalVar<size_t>(baseName+"VscanNY");
+     for(size_t i=0;i<10;i++)
      buildDetectorsAM(*SimPtr,IParam,detT,detI);
      t=t+1;
     }

@@ -209,25 +209,9 @@ LayerPlate::boralGap(const FuncDataBase& Control,
 
      bGap=Control.EvalVar<double>(detKey+"Thick");
 
-     //    ELog::EM<<" XX1 "<<bGap<<" c "<<cGap<<ELog::endDiag;
-
+     ELog::EM<<" XX1 "<<detKey<<" c "<<cGap<<ELog::endDiag;
+     if(Control.EvalVar<int>(detKey+"Active"+"Y1")!=0)
      cGap+=bGap;
-  //    double offSet1(0.0);
-  //     Off[T]=offSet;
-  //     detT=detType;
-   
-  // if (T>0) offSet1=Off[T-1];
-  // if (T==0) offSet1=0;
-
-
-  //    int  TT(0);
-  //    TT=t;
-
-  //   ELog::EM<<" XX2 "<<bGap<<" c "<<cGap<<ELog::endDiag;
-
-     // ELog::EM<<" XX "<<bGap<<" X "<<t<<" Det TypeXxX == "<<detT<<" sizeXXX "<< detKey<<ELog::endDiag;
-
-
      t=t+1;
     }
   //CGap=cGap;

@@ -69,7 +69,7 @@ sbadDetector::sbadDetector(const std::string& Key,const size_t ID) :
   attachSystem::FixedComp(Key+StrFunc::makeString(ID),6),
   baseName(Key),detID(ID),
   detIndex(ModelSupport::objectRegister::Instance().cell(keyName)),
-  cellIndex(detIndex+1),active(0)
+  cellIndex(detIndex+1),activeY(0),activeZ(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -89,11 +89,12 @@ sbadDetector::clone() const
 sbadDetector::sbadDetector(const sbadDetector& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
   baseName(A.baseName),detID(A.detID),detIndex(A.detIndex),
-  cellIndex(A.cellIndex),active(A.active),xStep(A.xStep),
+  cellIndex(A.cellIndex),activeY(A.activeY),activeZ(A.activeZ),xStep(A.xStep),
   yStep(A.yStep),zStep(A.zStep),xyAngle(A.xyAngle),
   zAngle(A.zAngle),diameter(A.diameter),length(A.length),
   mat(A.mat),xOffset(A.xOffset),yOffset(A.yOffset),
-  zOffset(A.zOffset),detT(A.detT)
+  zOffset(A.zOffset),detT(A.detT),VscanNY(A.VscanNY),
+  VscanY(A.VscanY),VscanNZ(A.VscanNZ),VscanZ(A.VscanZ)
   /*!
     Copy constructor
     \param A :: sbadDetector to copy
@@ -113,7 +114,8 @@ sbadDetector::operator=(const sbadDetector& A)
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedComp::operator=(A);
       cellIndex=A.cellIndex;
-      active=A.active;
+      activeY=A.activeY;
+      activeZ=A.activeZ;
       xStep=A.xStep;
       yStep=A.yStep;
       zStep=A.zStep;
@@ -126,6 +128,10 @@ sbadDetector::operator=(const sbadDetector& A)
       yOffset=A.yOffset;
       zOffset=A.zOffset;
       detT=A.detT;
+      VscanNY=A.VscanNY;
+      VscanY=A.VscanY;
+      VscanNZ=A.VscanNZ;
+      VscanZ=A.VscanZ;
     }
   return *this;
 }
@@ -141,21 +147,26 @@ sbadDetector::~sbadDetector()
 std::string
 sbadDetector::getDet(const mainSystem::inputParam& IParam) const
 {
-  // std::string expName;
-  // const std::string 
-    // expName=IParam.getValue<std::string>("preName");
-  //ELog::EM<<" XX "<<expName<<" inp "<<IParam.getValue<std::string>("preName")<<ELog::endDiag;
  int t(0);
-  //  const std::string detT;
-  while(t<10 && IParam.getValue<std::string>("detType",t).size()!=0)
-    {
-     const std::string detT=IParam.getValue<std::string>("detType",t);
-     int  TT(0);
-     TT=t;
-     //  ELog::EM<<" Det TypeXxX == "<<detT<<ELog::endDiag;
-       //     buildDetectorsAM(*SimPtr,detT,TT);
-     t=t+1;
-    }
+  // while(t<10 && IParam.getValue<std::string>("detType",t).size()!=0)
+  //   {
+ //    const std::string detT=IParam.getValue<std::string>("detType",0);
+     detT==IParam.getValue<std::string>("detType",0);
+  
+ //    int  TT(0);
+  //    TT=t;
+  //    t=t+1;
+  //   }
+
+  // while(t<10 && IParam.getValue<std::string>("detType",t).size()!=0)
+  //   {
+  //    const std::string detT=IParam.getValue<std::string>("detType",t);
+  //    int  TT(0);
+  //    TT=t;
+  //    t=t+1;
+  //   }
+  ELog::EM<<" detT=== "<<detT<<ELog::endDiag; 
+
   return detT;
 }
 
@@ -168,39 +179,43 @@ sbadDetector::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("sbadDetector","populate");
 
- //  mainSystem::inputParam IPar;
- //  //InputControl::mainVector(argc,argv,Names);
- //  createSinbadInputs(IPar);
-
-
-
- // // std::string DT;
- // const std::string DT=IPar.getValue<std::string>("detType",0);
- // const std::string DT1=IPar.getValue<std::string>("detType1");
-
- // const std::string PN=IPar.getValue<std::string>("preName");
-
- // ELog::EM<<"PN  "<< PN <<"  DT  "<<DT<<"  DT1  "<<DT1<<ELog::endDiag;
-
-  // ELog::EM<<"baseName "<<baseName<<" s "<<baseName.size()<<ELog::endDiag;
-  // ELog::EM<<"keyName "<<keyName<<" s "<<keyName.size()<<ELog::endDiag;
-  
+  // ELog::EM<<" baseName "<<baseName<<" keyName "<<keyName<<ELog::endDiag; 
   std::string YIndex("Y");
+  std::string ZIndex("Z");
+
   for(size_t i=baseName.size();i<keyName.size();i++)
     {
       YIndex+=keyName[i];     
-      //      ELog::EM<<"splitIndex "<<YIndex<<ELog::endDiag;
+      ZIndex+=keyName[i];     
     }
   std::string expName(""); 
    for(size_t i=0;i<2;i++)
     {
       expName+=keyName[i];     
-      // ELog::EM<<"expname "<<expName<<ELog::endDiag;
     }
+   ELog::EM<<" baseName "<<baseName<<" keyName "<<keyName<<" ZIndex "<<YIndex<<ELog::endDiag; 
 
   std::string detAny(expName+"Det");
+  if(Control.EvalVar<size_t>(expName+"DetN")!=0)
+  activeY=Control.EvalVar<int>(baseName+"Active"+YIndex);
 
-  active=Control.EvalVar<int>(baseName+"Active"+YIndex);
+  VscanNY=Control.EvalVar<size_t>(baseName+"VscanNY");
+  for(size_t i=0;i<VscanNY;i++)
+   {
+    VscanY=Control.EvalVar<size_t>(baseName+"Vscan"+YIndex);
+   }
+  if(VscanNY>0)
+    {
+     VscanNZ=Control.EvalVar<size_t>(baseName+"VscanZ");
+     for(size_t i1=0;i1<VscanNY;i1++)
+       {
+        for(size_t i2=0;i2<VscanNZ;i2++)
+          {
+	    // VscanY=Control.EvalVar<size_t>(baseName+YIndex+i1+"Active"+ZIndex+i2);
+          }
+       }
+    }
+
 
   xStep=Control.EvalPair<double>(detAny,baseName,"StepX");
   yStep=Control.EvalPair<double>(expName,baseName,"Step"+YIndex);
@@ -353,7 +368,7 @@ sbadDetector::createAllAM(Simulation& System,const mainSystem::inputParam& IPara
   createUnitVector(FC);
   createUnitVectorAM(FC,offSet);
   createSurfaces();
-  if(active==1)
+  if(activeY==1 || activeZ==1)
   createObjects(System);
   createLinks();
   insertObjects(System);

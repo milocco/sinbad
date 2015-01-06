@@ -34,7 +34,10 @@ class makeSinbad
   const std::string preName;          ///< Initializtion ta
   const std::string detType;
   std::string detT;
+  //  std::string detT;
+
   int detI;
+
   double offSet1;
 
   boost::shared_ptr<Cave> Surround;   

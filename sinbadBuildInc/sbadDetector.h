@@ -23,7 +23,9 @@ class sbadDetector : public attachSystem::ContainedComp,
   const int detIndex;             ///< Index of surface offset
   int cellIndex;                  ///< Cell index
 
-  int active;                     ///< active flag
+  int activeY;                     ///< active flag axial det
+  int activeZ;                     ///< active flag vertical det
+
   double xStep;                   ///< X step
   double yStep;                   ///< Y step
   double zStep;                   ///< Z step
@@ -36,8 +38,11 @@ class sbadDetector : public attachSystem::ContainedComp,
   double diameter;                  ///< Radis of rod 
   double length;                  ///< Length of rod
   int mat;                        ///< Material 
-  std::string expName;
-
+  //  std::string detT;
+  int VscanNY;
+  double VscanY;
+  int VscanNZ;
+  double VscanZ;
 
 
   void populate(const FuncDataBase&);
@@ -48,7 +53,7 @@ class sbadDetector : public attachSystem::ContainedComp,
   void createObjects(Simulation&);
   void createLinks();
   std::string detT;
-
+ 
  public:
 
   sbadDetector(const std::string&,const size_t);
@@ -63,7 +68,9 @@ class sbadDetector : public attachSystem::ContainedComp,
 			   const attachSystem::FixedComp&, const double& offSet);
 
   
-  int isActive() const { return active; }
+  int isActiveY() const { return activeY; }
+  int isActiveZ() const { return activeZ; }
+
   std::string getDet(const mainSystem::inputParam&) const;
  
 };
