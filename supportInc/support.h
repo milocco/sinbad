@@ -91,6 +91,11 @@ void writeMCNPX(const std::string&,std::ostream&);
 void writeMCNPXcont(const std::string&,std::ostream&);
 void writeMCNPXcomment(const std::string&,std::ostream&);
 
+//ALB
+void writeMCNPXsinbad(const std::string&,std::ostream&);
+
+//ALB
+
 std::vector<std::string> StrParts(std::string);
 
 template<template<typename T,typename Alloc> class V,typename T,typename Alloc> 

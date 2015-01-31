@@ -68,6 +68,8 @@
 #include "PhysicsCards.h"
 #include "Simulation.h"
 #include "SimProcess.h"
+#include "writeSinbad.h"
+
 
 namespace SimProcess
 {

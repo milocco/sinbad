@@ -53,14 +53,16 @@
 #include "AttachSupport.h"
 
 #include "Cave.h"
-#include "sinbadShield.h"
+// #include "sinbadShield.h"
 #include "LayerPlate.h"
 #include "FissionPlate.h"
-#include "sbadDetector.h"
+// #include "sbadDetector.h"
 #include "sinbadSource.h"
 #include "sinbadMaterial.h"
 #include "makeSinbad.h"
 #include "MainProcess.h"
+#include "sinbadSource.h"
+#include "Detectors.h"
 
   
 namespace sinbadSystem 
@@ -68,23 +70,29 @@ namespace sinbadSystem
 
 makeSinbad::makeSinbad(const std::string& pKey) :
   preName(pKey),
-  Primary(new LayerPlate(pKey+"NestorSide")),
-  Secondary(new LayerPlate(pKey+"Shield")),
-  fPlate(new FissionPlate(pKey+"FissionPlate"))
+  nestorSide(new LayerPlate(pKey+"NestorSide")),
+  shield(new LayerPlate(pKey+"Shield")),
+  fissionPlate(new FissionPlate(pKey+"FissionPlate"))
+  // detArray(new Detectors(pKey+"Det",0))
+
   /*!
     Constructor
   */
 {
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
-  OR.addObject(Primary);
-  OR.addObject(Secondary);
-  OR.addObject(fPlate);
+  OR.addObject(nestorSide);
+  OR.addObject(fissionPlate);
+  OR.addObject(shield);
+
+  //  OR.addObject(detArray);
+
 } 
 
 makeSinbad::makeSinbad(const makeSinbad& A) : 
-  preName(A.preName),Surround(A.Surround),Primary(A.Primary),
-  Secondary(A.Secondary),fPlate(A.fPlate),detArray(A.detArray)
+  preName(A.preName),room(A.room),shield(A.shield),
+  nestorSide(A.nestorSide),fissionPlate(A.fissionPlate)
+  //,detArray(A.detArray)
   /*!
     Copy constructor
     \param A :: makeSinbad to copy
@@ -101,11 +109,11 @@ makeSinbad::operator=(const makeSinbad& A)
 {
   if (this!=&A)
     {
-      Surround=A.Surround;
-      Primary=A.Primary;
-      Secondary=A.Secondary;
-      fPlate=A.fPlate;
-      detArray=A.detArray;
+      room=A.room;
+      shield=A.shield;
+      nestorSide=A.nestorSide;
+      fissionPlate=A.fissionPlate;
+      //      detArray=A.detArray;
     }
   return *this;
 }
@@ -117,47 +125,10 @@ makeSinbad::~makeSinbad()
   */
 {}
 
-// void
-// makeSinbad::buildDetectors(Simulation& System)
-//   /*!
-//     Build detector units
-//     \param System :: Simulation
-//   */
-// {
-//   ELog::RegMethod RegA("makeSinbad","buildDetectors");
-
-//   const FuncDataBase& Control=System.getDataBase();
-  
-//   const std::string detKey=preName+"Detector";
-
-
-//   const size_t detN=Control.EvalVar<size_t>(detKey+"PositionN");
-
-//   for(size_t i=0;i<detN;i++)
-//     { 
-//       boost::shared_ptr<sbadDetector> detPtr
-// 	(new sbadDetector(preName+"Detector",i));
-      
-//       detArray.push_back(detPtr);   
-//       detArray.back()->createAll(System,*Secondary);
-//       if (detArray.back()->isActive())
-// 	{
-
-// 	  ELog::EM<<"Active "<<i<<ELog::endDiag;
-// 	  attachSystem::addToInsertControl(System,*Secondary,*detPtr,*detPtr);
-
-// 	}
-//     }
-//   return;
-// }
-
-    std::vector<double> Off(10);  
-  //  offSet1=0.0;
-
 
 void
-makeSinbad::buildDetectorsAM(Simulation& System, const mainSystem::inputParam& IParam, 
-                             const std::string& detType, const int& T)
+makeSinbad::buildDetectors(Simulation& System, const mainSystem::inputParam& IParam)
+
   /*!
     Build detector units
     \param System :: Simulation
@@ -166,91 +137,145 @@ makeSinbad::buildDetectorsAM(Simulation& System, const mainSystem::inputParam& I
   ELog::RegMethod RegA("makeSinbad","buildDetectors");
 
   const FuncDataBase& Control=System.getDataBase();  
-  const std::string detKey=preName+detType;
-  // const size_t detNY=Control.EvalVar<size_t>(preName+"DetN");
-  // const size_t detNZ=Control.EvalVar<size_t>(preName+"ZscanN");
- size_t detN;
- size_t detN1;
- size_t detN2;
+ 
+ const std::string preName=IParam.getValue<std::string>("preName");
+  // support vectors for detector type, scan type and detector offset
+  std::vector<std::string> DT;
+  std::vector<std::string> DF;
+  std::vector<double> DO;
 
-
-  
-  if(IParam.getValue<std::string>("detType").size()!=0)
-  detN=Control.EvalVar<size_t>(preName+"DetNY");
-  if(IParam.getValue<std::string>("ZScan").size()!=0)
+  size_t t(0);
+  while(t<10 && IParam.getValue<std::string>("axDet",t).size()!=0)
     {
-     detN1 =Control.EvalVar<size_t>(preName+"DetNZ");
-     detN2 =Control.EvalVar<size_t>(preName+detType+"VscanNY");
-     detN=detN1*detN2; 
+     DT.push_back(IParam.getValue<std::string>("axDet",t));
+     DF.push_back("Axial");
+     t=t+1;
     }
-  ELog::EM<<"detKey== "<<detKey<<" detN "<<detN<<ELog::endDiag;
-
-  int dS(0);
-  int dT(0);
-  double offSet=Control.EvalVar<double>(detKey+"Thick");
-  double offSet2(0.0);
-  double offSet3(0.0);
-
-  Off[T]=offSet;
-  detT=detType;
-
-  for(size_t i=0;i<detN;i++)
+  t=0;
+  while(t<10 && IParam.getValue<std::string>("vertDet",t).size()!=0)
     {
-      boost::shared_ptr<sbadDetector> detPtr
-	(new sbadDetector(preName+detType,i));
-      detArray.push_back(detPtr);
+     DT.push_back(IParam.getValue<std::string>("vertDet",t));
+     DF.push_back("Vertical");
+     t=t+1;
+    }
 
-      offSet1=0.0;   
-      if (T>0)
-	{
-	  for(size_t m=0;m<T;m++)
-	   {
-	     if(detArray[detArray.size()-(T-m)*detN-1]->isActiveY()||
-                detArray[detArray.size()-(T-m)*detN-1]->isActiveZ())
-	       {
-                offSet1+=Off[m];
-               }
-             else
-               {
-                offSet1+=0;
-	       }
-           }
-	}
+  // support vector dor detector pile-up
+  std::vector<double> CumOffset;  
+
+  // insert a row/column of detectors
+  for(size_t i=0;i<DT.size();i++)
+    {
+     // detector key (e.g. 49S)
+
+     const std::string detKey=preName+DT[i];
+     const std::string detFlag=DF[i];
 
 
-      for(size_t i=0;i<10;i++)
+     // number of axial/vertical detectors
+     size_t detNY(0);
+     size_t detNZ(0);
+     if(detFlag=="Axial")
        {
-        dS = IParam.getValue<std::string>("detType",i).size(); 
-        if(dS!=0) dT=i+1;
+        detNY=Control.EvalVar<size_t>(preName+"DetNY");
+        detNZ=1;
        }
-       offSet3=0.0;
-      if(i==1) 
-      	{
-         for(size_t n=0;n<dT;n++)
+     if(detFlag=="Vertical")
+       {
+        detNY =Control.EvalVar<size_t>(detKey+"VscanNY");
+        detNZ =Control.EvalVar<size_t>(preName+"DetNZ");
+       }
+
+     // detector thickness for pile up 
+     DO.push_back(Control.EvalVar<double>(detKey+"Thick"));
+     // detector offset
+     double detOffset(0.0);
+     double boralOffset(0.0);
+
+ 
+     // loop along axial positions
+     std::string YIndex("");
+     std::string ZIndex("");
+     for(size_t iy=0;iy<detNY;iy++)
+       {
+ 	YIndex="Y";  
+ 	std::stringstream IS2("");
+        IS2<< iy;
+        std::string s2 = IS2.str();
+ 	YIndex+=s2;     
+        // loop along vertical positions
+        for(size_t iz=0;iz<detNZ;iz++)
           {
-           const std::string TT=IParam.getValue<std::string>("detType",n);
-           const std::string detKey1=preName+TT;
-           offSet3+=Control.EvalVar<double>(detKey1+"Thick");
-          }
-      	  offSet2=-offSet3+offSet1; 
-          detArray.back()->createAllAM(System,IParam,*Secondary,offSet2);
-      	}
-       else
-	 {
-          detArray.back()->createAllAM(System,IParam, *Secondary,offSet1);
-	 }
+ 	   ZIndex="Z";  
+           std::stringstream IS1("");
+           IS1<< iz;
+           std::string s1 = IS1.str();
+           ZIndex+=s1;
 
-    // ELog::EM<<"Active?? "<<preName+detType<<"  "<<i<<" "<<detArray.size()<<ELog::endDiag;
+           size_t id(0); 
+           if(detFlag=="Vertical")
+             id=iz+iy*(detNY);
+           if(detFlag=="Axial")
+ 	     id=iy;
+ 
+          // create the detector array 
+	   boost::shared_ptr<Detectors> detPtr
+	   (new Detectors(detKey+YIndex+ZIndex,id));
 
-      if (detArray.back()->isActiveY())
-	{
-	  ELog::EM<<" DET "<< preName+detType  <<" OFF "<<offSet1<<"  ActiveY "<<i<<"  "<<detArray.back()->isActiveY() <<ELog::endDiag;
+	   detArray.push_back(detPtr);
 
-	  attachSystem::addToInsertControl(System,*Secondary,*detPtr,*detPtr);
-	}
+	   // calculate offsets for axial pile-up and boral
+           size_t dS(0);
+           size_t dT(0);
+           for(size_t i1=0;i1<10;i1++)
+             {
+              dS = IParam.getValue<std::string>("axDet",i1).size();
+              if(dS!=0) dT=i1+1;
+             }
+            boralOffset=0.0;
+            if(iy==1&&detFlag=="Axial") 
+       	     {
+              for(size_t n=0;n<dT;n++)
+                {
+                 boralOffset+=Control.EvalVar<double>(preName+DT[n]+"Thick");
+                }
+       	     }
+            detOffset=0.0;
+            if(i>0)
+ 	      {
+ 	       for(size_t m=0;m<i;m++)
+ 	          {
+ 	           if(detArray[detArray.size()-(i-m)*detNY-1]->isActiveY() )
+ 	              {
+                       detOffset+=DO[m];
+                      }
+ 		  }
+ 	      }
+            else
+             {
+              detOffset+=0;
+ 	     }
+
+            if(iy==1&&detFlag=="Axial") 
+            detOffset=-boralOffset+detOffset; 
+
+
+	    // makeSinbad Secondary;
+
+	   detArray.back()->createAllAM(System,IParam,*shield,detOffset,detFlag);
+
+            if (detArray.back()->isActiveY()==1||detArray.back()->isActiveZ()==1)
+	      {
+		ELog::EM<<detKey<<" Insert Detector: "<<DT[i]<<"   Axial Position: "<<YIndex<<"   Vertical Position "<<ZIndex<<"   Scan: "<<DF[i]<<"   Detector Index "<<id<<ELog::endBasic;
+             attachSystem::addToInsertControl(System,*shield,*detPtr,*detPtr);
+	      }
+ 	   }
+ 	 }
+
     }
+
   return;
 }
+
 
 
 
@@ -266,54 +291,43 @@ makeSinbad::build(Simulation* SimPtr,
   // For output stream
   ELog::RegMethod RControl("makeSinbad","build");
 
-  ModelSupport::addSinbadMaterial();
-  int voidCell(74123);
-  int TT(0);
- 
-  Primary->addInsertCell(voidCell) ;
-  Primary->createAll(*SimPtr,World::masterOrigin(),0);
-
-  fPlate->addInsertCell(voidCell);
-  fPlate->createAll(*SimPtr,*Primary,2);
-
-  Secondary->addInsertCell(voidCell) ;
-  // Secondary->createAll(*SimPtr,*fPlate,2);
-
-  Secondary->createAllAM(*SimPtr,IParam,*fPlate,2);
+  std::string ND=IParam.getValue<std::string>("xs");
+  
+  ModelSupport::addSinbadMaterial(ND);
 
 
-  int t(0);
-  int  detI(0);
+  int voidCell(74123); 
 
-  while(t<10 && IParam.getValue<std::string>("detType",t).size()!=0)
-    {
-     const std::string detT=IParam.getValue<std::string>("detType",t);
-     detI=t;
-     buildDetectorsAM(*SimPtr,IParam,detT,detI);
-     t=t+1;
-    }
-
-  t=0;
-  detI=0 ;
-
-  while(t<10 && IParam.getValue<std::string>("ZScan",t).size()!=0)
-    {
-     const std::string detT=IParam.getValue<std::string>("detType",t);
-     detI=t;
-      
-     //     VscanNY=Control.EvalVar<size_t>(baseName+"VscanNY");
-     for(size_t i=0;i<10;i++)
-     buildDetectorsAM(*SimPtr,IParam,detT,detI);
-     t=t+1;
-    }
+  nestorSide->addInsertCell(voidCell) ;
+  nestorSide->createAll(*SimPtr,World::masterOrigin(),0);
 
 
-  //  buildDetectors(*SimPtr);  && IParam.getValue<std::string>("detType",t)!=""
+  fissionPlate->addInsertCell(voidCell);
+  fissionPlate->createAll(*SimPtr,*nestorSide,2);
 
-  //  ShieldArray->addInsertCell(voidCell) ;
-  //  ShieldArray->createAll(*SimPtr,World::masterOrigin());
+  shield->addInsertCell(voidCell);
+  shield->createAllAM(*SimPtr,IParam,*fissionPlate,2);
 
-  ELog::EM<<"WARNING EARLY RETURN"<<ELog::endCrit;
+
+
+    // const ModelSupport::objectRegister& OR=
+    // 	  ModelSupport::objectRegister::Instance();
+    //  int cellOff=OR.getCell("49FissionPlate");
+     //   int cellOn=OR.cell("49FissionPlate");
+          // const attachSystem::FixedComp* mainFC=
+    //          OR.getObject<attachSystem::FixedComp>(shield);
+    // int cellNum=OR.getRange("49FissionPlate");
+
+    // ELog::EM<<" NNNNN "<<cellNum<<"  "<<"  "<<cellOff<<ELog::endBasic;
+
+
+  // room->addInsertCell(voidCell) ;
+  // room->createAllAM(*SimPtr,World::masterOrigin(),0);
+
+  // build all detectors in one shot
+  buildDetectors(*SimPtr,IParam);
+
+
    
   return;
 }

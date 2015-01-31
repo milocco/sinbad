@@ -76,6 +76,9 @@ class Simulation
   typedef std::map<int,tallySystem::Tally*> TallyTYPE; ///< Tally type
   typedef std::map<int,Geometry::Transform> TransTYPE; ///< Transform type
 
+
+
+
  protected:
 
   int mcnpType;                         ///< MCNP(X) type
@@ -112,6 +115,7 @@ class Simulation
   void writeTally(std::ostream&) const;
   void writePhysics(std::ostream&) const;
   void writeVariables(std::ostream&) const;
+
 
   // The Cinder Write stuff
   void writeCinderMat() const;
@@ -238,6 +242,14 @@ class Simulation
   // Debug stuff
   
   void printVertex(const int) const;
+  //ALB
+  //  void writeSinbadTally(std::ostream&) const;
+  void writeSinbadWeights(std::ostream&) const;
+  void writeSinbadPhysics(std::ostream&) const;
+  void SinbadWriteX(const std::string&) const;
+  //ALB
+
+
 
 };
 

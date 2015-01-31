@@ -34,6 +34,11 @@ namespace StrFunc
   template<typename U> 
     std::string makeString(const char*,const U&);
 
+  template<typename U>
+    std::string makeString(const char*,const U&,const U&);
+
+
+
   size_t checkKey(const std::string&,const std::string&,
 		  const std::string&,const std::string&);
 }  // NAMESPACE StrFunc

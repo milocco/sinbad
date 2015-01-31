@@ -136,7 +136,7 @@ LayerPlate::getCellIndex(const size_t lNumber) const
   if (lNumber >= nSlab)
     throw ColErr::IndexError<size_t>
       (lNumber,nSlab,"lNumber");
-  
+  ELog::EM<<"INDEX "<<slabIndex+1+static_cast<int>(lNumber)<<ELog::endDiag;  
   return slabIndex+1+static_cast<int>(lNumber);
 }
 
@@ -196,13 +196,13 @@ LayerPlate::boralGap(const FuncDataBase& Control,
 
  int t(0);
   //  const std::string detT;
-  while(t<10 && IParam.getValue<std::string>("detType",t).size()!=0)
+  while(t<10 && IParam.getValue<std::string>("axDet",t).size()!=0)
     {
       //     ELog::EM<<" XX0 "<<bGap<<" c "<<cGap<<ELog::endDiag;
 
       //    const std::string detKey=preName+detType;
       //     const FuncDataBase& Control=System.getDataBase();  
-     const std::string detT=IParam.getValue<std::string>("detType",t);
+     const std::string detT=IParam.getValue<std::string>("axDet",t);
      const std::string preName=IParam.getValue<std::string>("preName");
 
      const std::string detKey=preName+detT;

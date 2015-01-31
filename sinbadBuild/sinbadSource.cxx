@@ -1,7 +1,7 @@
-/********************************************************************* 
+ /********************************************************************* 
   CombLayer : MNCPX Input builder
  
- * File:   source/SourceCreate.cxx
+ * File:   source/sinbadSource.cxx
  *
  * Copyright (c) 2004-2014 by Stuart Ansell
  *
@@ -19,6 +19,66 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
+// #include <fstream>
+// #include <iomanip>
+// #include <iostream>
+// #include <sstream>
+// #include <cmath>
+// #include <complex>
+// #include <list>
+// #include <vector>
+// #include <set>
+// #include <map>
+// #include <string>
+// #include <algorithm>
+// #include <boost/shared_ptr.hpp>
+// #include <boost/array.hpp>
+
+// #include "Exception.h"
+// #include "FileReport.h"
+// #include "GTKreport.h"
+// #include "NameStack.h"
+// #include "RegMethod.h"
+// #include "OutputLog.h"
+// #include "BaseVisit.h"
+// #include "BaseModVisit.h"
+// #include "support.h"
+// #include "stringCombine.h"
+// #include "MatrixBase.h"
+// #include "Matrix.h"
+// #include "Vec3D.h"
+// #include "Quaternion.h"
+// #include "doubleErr.h"
+// #include "Triple.h"
+// #include "NRange.h"
+// #include "NList.h"
+// #include "varList.h"
+// #include "Code.h"
+// #include "FuncDataBase.h"
+// #include "KCode.h"
+// #include "Source.h"
+// #include "SrcItem.h"
+// #include "SrcData.h"
+// #include "surfRegister.h"
+// #include "HeadRule.h"
+// #include "LinkUnit.h"
+// #include "FixedComp.h"
+// #include "LinearComp.h"
+// #include "SecondTrack.h"
+// #include "inputParam.h"
+// #include "PhysCard.h"
+// #include "LSwitchCard.h"
+// #include "ModeCard.h"
+// #include "PhysImp.h"
+// #include "PhysicsCards.h"
+// #include "Simulation.h"
+// #include "SourceCreate.h"
+// #include "localRotate.h"
+// #include "masterRotate.h"
+// #include "objectRegister.h"
+// #include "ChipIRSource.h"
+
+
 #include <fstream>
 #include <iomanip>
 #include <iostream>
@@ -34,6 +94,7 @@
 #include <numeric>
 #include <functional>
 #include <boost/shared_ptr.hpp>
+#include <boost/array.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -51,497 +112,107 @@
 #include "Vec3D.h"
 #include "Code.h"
 #include "varList.h"
+#include "MaterialSupport.h"
+#include "stringCombine.h"
 #include "FuncDataBase.h"
 #include "SrcData.h"
 #include "SrcItem.h"
 #include "DSTerm.h"
 #include "Source.h"
-#include "SourceCreate.h"
+#include "inputParam.h"
+#include "PhysCard.h"
+#include "LSwitchCard.h"
+#include "ModeCard.h"
+#include "PhysImp.h"
+#include "Simulation.h"
+// #include "PhysicsCards.h"
+// #include "NList.h"
+// #include "NRange.h"
+#include "varList.h"
+#include "Code.h"
+#include "FuncDataBase.h"
+#include "KCode.h"
+
+#include "stringCombine.h"
+
+
+#include "sinbadSource.h"
+
 
 namespace SDef
 {
 
-void
-createSimpleSource(Source& sourceCard,
-		   const double Einit,const double Eend)
-  /*!
-    Create a super simple source 
-    \param sourceCard :: Source system
-    \param Einit :: Energy [MeV]
-    \param Eend :: Energy [MeV]
-  */
-{
-  ELog::RegMethod RegA("SourceCreate[F]","createSimpleSource");
+// void 
+// setSinbadSource(Simulation& System,
+// 		const mainSystem::inputParam& IParam)
+//   /*!
+//     Build the source based on the input parameter table
+//     \param System :: Simulation to use
+//     \param IParam :: Input parameter
+//   */
+// {
+//   ELog::RegMethod RegA("SourceSelector","sourceSelection");
+//   const FuncDataBase& Control=System.getDataBase();
+//   SDef::Source& sourceCard=System.getPC().getSDefCard();
+//   const masterRotate& MR = masterRotate::Instance();
+//   ModelSupport::objectRegister& OR=
+//     ModelSupport::objectRegister::Instance();
 
-  sourceCard.setActive();
+//     const std::string expN=IParam.getValue<std::string>("preName");
+//    SDef::SinbadSource(Control,sourceCard,expN);
+//   return;
+// }
 
-  SDef::SrcData E1(1);
-  SDef::SrcInfo* SIE1=E1.getInfo();
-  SDef::SrcProb* SPE1=E1.getProb();
-  
-  const int NEPts(30);
-  const double ELA=log(Einit);       
-  const double ELB=log(Eend);        
 
-  const double Estep=(ELB-ELA)/NEPts;
-  double EWeight(0.0);
-  double Eval(0.0);
-  double width;
-  for(int i=0;i<NEPts;i++)
-    {
-      width= -Eval;
-      Eval=exp(ELA+Estep*i);
-      width+=Eval;
-      SIE1->addData(Eval);
-      SPE1->addData(EWeight);
-      EWeight=width*(1/Eval);
-    }
-  sourceCard.setData("erg",E1);
-  return;
-}
 
 void
-createBilbaoSource(const FuncDataBase& Control,Source& sourceCard)
-  /*!
-    Creates a target 1 proton source:
-    FWHM == 1.5*2.35482 ==> 3.53223
-    \param Control :: Control system
-    \param sourceCard :: Source system
-  */
-{
-  ELog::RegMethod RegA("SourceCreate","createTS2Source");
-
-  const double E=Control.EvalDefVar<double>("sdefEnergy",50.0);
-  const double yStart=Control.EvalDefVar<double>("sdefYPos",-10.0);
-
-  sourceCard.setActive();
-  sourceCard.setComp("dir",1.0);
-  sourceCard.setComp("vec",Geometry::Vec3D(-1,1,0).unit());
-  sourceCard.setComp("par",9);
-  sourceCard.setComp("erg",E);
-  //  sourceCard.setComp("ccc",76);
-  sourceCard.setComp("y",yStart);
-
-  SrcData D1(1);
-  SrcProb SP1(1);
-  SP1.setFminus(-41,5.887,0);
-  D1.addUnit(SP1);
-
-  SrcData D2(2);
-  SrcProb SP2(1);
-  SP2.setFminus(-41,8.326,0);
-  D2.addUnit(SP2);
-  sourceCard.setData("x",D1);
-  sourceCard.setData("z",D2);
-
-  return;
-}
-
-void
-createESSSource(const FuncDataBase& Control,Source& sourceCard)
-  /*!
-    Creates a target 1 proton source:
-    FWHM == 1.5*2.35482 ==> 3.53223
-    \param Control :: Control system
-    \param sourceCard :: Source system
-   */
-{
-  ELog::RegMethod RegA("SourceCreate","createESSSource");
-
-  const double E=Control.EvalDefVar<double>("sdefEnergy",2500.0);
-  const double yStart=Control.EvalDefVar<double>("sdefYPos",-10.0);
-
-  sourceCard.setActive();
-  sourceCard.setComp("dir",1.0);
-  sourceCard.setComp("vec",Geometry::Vec3D(0,1,0));
-  sourceCard.setComp("par",9);
-  sourceCard.setComp("erg",E);
-  //  sourceCard.setComp("ccc",76);
-  sourceCard.setComp("y",yStart);
-
-  const double xRange=Control.EvalDefVar<double>("sdefWidth",8.0);
-  const double step(0.5);  
-  std::vector<double> XPts;
-  std::vector<double> XProb;
-  double XValue= -xRange-step;
-  do
-    {
-      XValue+=step;
-      XPts.push_back(XValue);
-      XProb.push_back(1.0-(XValue*XValue)/(xRange*xRange));
-    } while (XValue<xRange);
-
-  const double zRange=Control.EvalDefVar<double>("sdefHeight",3.0);
-  std::vector<double> ZPts;
-  std::vector<double> ZProb;
-  double ZValue= -zRange-step;
-  do
-    {
-      ZValue+=step;
-      ZPts.push_back(ZValue);
-      ZProb.push_back(1.0-(ZValue*ZValue)/(zRange*zRange));
-    } while (ZValue<zRange);
-  
-  
-  SrcData D1(1);  
-  SrcData D2(2);
-  
-  SrcInfo SI1('A');
-  SrcInfo SI2('A');
-  SI1.setData(XPts);
-  SI2.setData(ZPts);
-
-  SrcProb SP1;
-  SrcProb SP2;
-  SP1.setData(XProb);
-  SP2.setData(ZProb);
-
-  D1.addUnit(SI1);
-  D2.addUnit(SI2);
-  D1.addUnit(SP1);
-  D2.addUnit(SP2);
-  sourceCard.setData("x",D1);
-  sourceCard.setData("z",D2);
-
-  return;
-}
-
-void
-createTS1Source(const FuncDataBase& Control,Source& sourceCard)
-  /*!
-    Creates a target 1 proton source:
-    FWHM == 1.5*2.35482 ==> 3.53223
-    \param Control :: Control system
-    \param sourceCard :: Source system
-  */
-{
-  ELog::RegMethod RegA("SourceCreate","createTS2Source");
-
-  const double E=Control.EvalDefVar<double>("sdefEnergy",800.0);
-  const double yStart=Control.EvalDefVar<double>("sdefYPos",-10.0);
-  const double xShift=Control.EvalDefVar<double>("sdefXOffset",0.0);
-  const double zShift=Control.EvalDefVar<double>("sdefZOffset",0.0);
-
-  sourceCard.setActive();
-  sourceCard.setComp("dir",1.0);
-  sourceCard.setComp("vec",Geometry::Vec3D(0,1,0));
-  sourceCard.setComp("par",9);
-  sourceCard.setComp("erg",E);
-  //  sourceCard.setComp("ccc",76);
-  sourceCard.setComp("y",yStart);
-
-  const double xRange=Control.EvalDefVar<double>("sdefWidth",4.5);
-  const double xStep(xRange/16.0);  
-  std::vector<double> XPts;
-  std::vector<double> XProb;
-  double XValue= -xRange-xStep;
-  do
-    {
-      XValue+=xStep;
-      XPts.push_back(XValue+xShift);
-      XProb.push_back(1.0-(XValue*XValue)/(xRange*xRange));
-    } while (XValue<xRange);
-
-  const double zRange=Control.EvalDefVar<double>("sdefHeight",4.5);
-  const double zStep(zRange/16.0);  
-  std::vector<double> ZPts;
-  std::vector<double> ZProb;
-  double ZValue= -zRange-zStep;
-  do
-    {
-      ZValue+=zStep;
-      ZPts.push_back(ZValue+zShift);
-      ZProb.push_back(1.0-(ZValue*ZValue)/(zRange*zRange));
-    } while (ZValue<zRange);
-
-  SrcData D1(1);  
-  SrcData D2(2);
-  
-  SrcInfo SI1('A');
-  SrcInfo SI2('A');
-  SI1.setData(XPts);
-  SI2.setData(ZPts);
-
-  SrcProb SP1;
-  SrcProb SP2;
-  SP1.setData(XProb);
-  SP2.setData(ZProb);
-
-  D1.addUnit(SI1);
-  D2.addUnit(SI2);
-  D1.addUnit(SP1);
-  D2.addUnit(SP2);
-  sourceCard.setData("x",D1);
-  sourceCard.setData("z",D2);
-
-  return;
-}
-
-void
-createGaussianSource(Source& sourceCard,
-		     const double E,
-		     const double yStart,
-		     const double width)
-  /*!
-    Creates a target 1 proton source [gaussian]
-    \param sourceCard :: Source system
-    \param E :: Energy [meV]
-    \param yStart :: y Position 
-    \param width :: fwhm
-   */
-{
-  ELog::RegMethod RegA("SourceCreate","createTS1GaussianSource");
-
-  sourceCard.setActive();
-  sourceCard.setComp("dir",1.0);
-  sourceCard.setComp("vec",Geometry::Vec3D(0,1,0));
-  sourceCard.setComp("par",9);
-  sourceCard.setComp("erg",E);
-  //  sourceCard.setComp("ccc",2570);
-  sourceCard.setComp("y",yStart);
-
-  SrcData D1(1);
-  SrcProb SP1(1);
-  SP1.setFminus(-41,width,0);  
-  D1.addUnit(SP1);
-
-  SrcData D2(2);
-  D2.addUnit(SP1);
-  sourceCard.setData("x",D1);
-  sourceCard.setData("z",D2);
-
-  return;
-}
-
-void
-createTS1GaussianSource(const FuncDataBase& Control,
-			Source& sourceCard)
-  /*!
-    Creates a target 1 proton source [gaussian]
-    FWHM == 1.5*2.35482 ==> 3.53223 <----------- "OLD" VALUE          
-    \param sourceCard :: Source system
-   */
-{
-  ELog::RegMethod RegA("SourceCreate","createTS1GaussianSource");
-
-  const double E=Control.EvalDefVar<double>("sdefEnergy",800.0);
-  const double yStart=Control.EvalDefVar<double>("sdefYPos",-20.0);
-
-  createGaussianSource(sourceCard,E,yStart,3.5322);
-  return;
-}
-
-void
-createTS1GaussianNewSource(const FuncDataBase& Control,
-			   Source& sourceCard)
-  /*
-    Creates a target 1 proton source [gaussian]
-    FWHM == 1.8*2.35482 ==> 4.23868 <----------- "NEW" VALUE  // Goran
-    (see B. Jones, D.J. Adams, Design and operational experience of delivering beam to ISIS TS1, November 2013)          
-    \param sourceCard :: Source system
-   */
-
-{
-  ELog::RegMethod RegA("SourceCreate","createTS1GaussianSource");
-
-  const double E=Control.EvalDefVar<double>("sdefEnergy",800.0);
-  const double yStart=Control.EvalDefVar<double>("sdefYPos",-20.0);
-
-  createGaussianSource(sourceCard,E,yStart,4.23868);
-  return;
-}
-
-void
-createTS1MuonSource(const FuncDataBase& Control,Source& sourceCard)
-  /*!
-    Creates a intermediate target proton source [gaussian]
-    FWHM == 0.5*2.35482 ==> 1.17741   // Goran
-    (see B. Jones, D.J. Adams, Design and operational experience of delivering beam to ISIS TS1, November 2013)          
-    \param sourceCard :: Source system
-   */
-{
-  ELog::RegMethod RegA("SourceCreate","TS1MuonSource");
-
-  const double E=Control.EvalDefVar<double>("sdefEnergy",800.0);
-  const double yStart=Control.EvalDefVar<double>("sdefYPos",-15.0);
-  createGaussianSource(sourceCard,E,yStart,1.17741);
-
-  return;
-}
-
-void
-createTS1EpbCollSource(const FuncDataBase& Control,Source& sourceCard)
-  /*!
-    Creates a proton source [gaussian] for 3rd collimator in TS1 EPB
-     FWHM == 1.0*2.35482 ==> 2.35482   // Goran - Find the value !!! 
-     \param Control :: Data base
-    \param sourceCard :: Source system
-   */
-{
-  ELog::RegMethod RegA("SourceCreate","createTS1EpbCollSource");
-
-
-  const double E=Control.EvalDefVar<double>("sdefEnergy",800.0);
-  const double yStart=Control.EvalDefVar<double>("sdefYPos",80.0);
-  createGaussianSource(sourceCard,E,yStart,2.35482);
-  return;
-}
-
-void
-createTS2Source(Source& sourceCard)
-  /*!
-    Creates a target 2 proton source
-    \param sourceCard :: Source system
-   */
-{
-  ELog::RegMethod RegA("SourceCreate","createTS2Source");
-
-  sourceCard.setActive();
-  sourceCard.setComp("dir",1.0);
-  sourceCard.setComp("vec",Geometry::Vec3D(0,0,-1));
-  sourceCard.setComp("par",9);
-  sourceCard.setComp("erg",800.0);
-  //  sourceCard.setComp("ccc",76);
-  sourceCard.setComp("z",5.0);
-
-  SrcData D1(1);
-  SrcProb SP1(1);
-  SP1.setFminus(-41,1.3344,0);
-  D1.addUnit(SP1);
-
-  SrcData D2(2);
-  D2.addUnit(SP1);
-  sourceCard.setData("x",D1);
-  sourceCard.setData("y",D2);
-
-  return;
-}
-
-void
-createSinbadSourceOLD(const FuncDataBase& Control,Source& sourceCard)
+SinbadSource(const FuncDataBase& Control,Source& sourceCard,const std::string& expN)
   /*!
     Create a fisson source for a cylinder/rectangular unit 
     \param Control :: Funcdat data base for values
     \param sourceCard :: Source system
   */
 {  
-  ELog::RegMethod RegA("SourceCreate","createSinbadSource");
- 
-  const size_t NX(15),NZ(15);     
-  // This data is horizontal : X [cm] and vertical : Z[cm]
-  const double XPts[NX+1]= 
-    { -49.75, -46.58, -43.32, -37.08, -33.92, 
-      -27.58, -11.75, -2.25,  7.25, 16.75, 
-      32.58, 38.92, 42.08, 48.42, 51.58, 54.75 };
-  const double ZRev[NZ+1]= 
-    {   51.44, 47.63, 40.64, 35.56, 31.75, 
-	19.69, 15.88, 5.29, -5.29, -15.88,
-	-19.69,-31.75, -35.56, -40.64, -47.63, 
-	-51.44};
-  std::vector<double> ZPts(ZRev,ZRev+NZ+1);
-  std::reverse(ZPts.begin(),ZPts.end());
+  ELog::RegMethod RegA("SinbadSource","createSinbadSource");
+  sourceCard.clear();
 
-   // Horrizontal is X
-   double sinbadSource[NZ][NX] = {
-     {    0  ,    0  ,    0  ,    0  ,    0  ,    0  , 2.935, 2.967, 2.861,   0  ,   0  ,   0  ,   0  ,   0  ,   0   },
-     {    0  ,    0  ,    0  ,    0  ,    0  ,  3.222, 3.529, 3.567, 3.446, 3.023,   0  ,   0  ,   0  ,   0  ,   0   },
-     {    0  ,    0  ,    0  ,    0  ,  3.228,  3.782, 4.152, 4.208, 4.082, 3.615, 2.959,   0  ,   0  ,   0  ,   0   },
-     {    0  ,    0  ,    0  ,  3.234,  3.566,  4.164, 4.575, 4.648, 4.523, 4.025, 3.317, 2.915,   0  ,   0  ,   0   },
-     {    0  ,    0  ,  3.350,  3.745,  4.099,  4.750, 5.220, 5.325, 5.205, 4.658, 3.867, 3.423, 2.916,   0  ,   0   },
-     {    0  ,  3.300,  3.756,  4.168,  4.538,  5.226, 5.743, 5.874, 5.760, 5.174, 4.315, 3.838, 3.305, 2.738,   0   },
-     {  3.172,  3.522,  3.990,  4.412,  4.790,  5.499, 6.042, 6.186, 6.076, 5.466, 4.569, 4.073, 3.526, 2.951, 2.558 },
-     {  3.281,  3.641,  4.119,  4.546,  4.928,  5.645, 6.199, 6.350, 6.239, 5.613, 4.690, 4.184, 3.631, 3.056, 2.670 },
-     {  3.145,  3.500,  3.967,  4.382,  4.750,  5.440, 5.972, 6.117, 6.003, 5.379, 4.466, 3.970, 3.433, 2.883, 2.519 },
-     {    0  ,  3.275,  3.721,  4.114,  4.461,  5.109, 5.611, 5.746, 5.632, 5.021, 4.132, 3.654, 3.142, 2.625,   0   },
-     {    0  ,    0  ,  3.294,  3.645,  3.954,  4.535, 4.990, 5.113, 5.003, 4.421, 3.583, 3.139, 2.674,   0  ,   0   },
-     {    0  ,    0  ,    0  ,  3.052,  3.317,  3.824, 4.229, 4.340, 4.236, 3.699, 2.937, 2.541,   0  ,   0  ,   0   },
-     {    0  ,    0  ,    0  ,    0  ,  2.888,  3.359, 3.739, 3.841, 3.742, 3.244, 2.545,   0  ,   0  ,   0  ,   0   },
-     {    0  ,    0  ,    0  ,    0  ,    0  ,  2.681, 3.036, 3.124, 3.032, 2.607,   0  ,   0  ,   0  ,   0  ,   0   },
-     {    0  ,    0  ,    0  ,    0  ,    0  ,    0  , 2.399, 2.470, 2.382,   0  ,   0  ,   0  ,   0  ,   0  ,   0   },
-  } ; 
+  const size_t NX=Control.EvalVar<size_t>(expN+"FissionPlateNXSpace");
+  const size_t NZ=Control.EvalVar<size_t>(expN+"FissionPlateNZSpace");
 
-  // REVERST ALL THE VALUES:
-  double tmpX;
-  for(size_t i=0;i<NZ/2;i++)
+  double PT;
+  std::vector<double> Xpt;
+  std::vector<double> Zpt;
+  std::vector<std::vector<double> > Ypt;  
+
+  for(size_t i=0;i<NX;i++)
     {
-      for(size_t j=0;j<NX;j++)
-	{
-	  tmpX=sinbadSource[i][j];
-	  sinbadSource[i][j]=sinbadSource[i][NZ-j];
-	  sinbadSource[i][NZ-j]=tmpX;
-	}
-    }	  
-
-
-// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-  sourceCard.setActive();
- 
-  SDef::SrcData D1(1);
-  SDef::SrcInfo SI1;
-  SDef::SrcProb SP1;
-
-  SI1.addData(-0.05);
-  SI1.addData(0.15);
-  SP1.addData(0);
-  SP1.addData(1.0);
-  D1.addUnit(SI1);  
-  D1.addUnit(SP1);  
-  sourceCard.setData("y",D1);  
-
-  // CARD 2 :: Z  card
-  SDef::SrcData D2(2);
-  SDef::SrcInfo SI2;
-  SDef::SrcProb SP2;
-
-  std::vector<int> zeroFlag(NZ,0);
-  // Check 
-  SP2.addData(0.0);  
-  SI2.addData(ZPts[0]);   
-  for(size_t iz=0;iz<NZ;iz++)   
-    {
-      SI2.addData(ZPts[iz+1]);   
-      double hVal(0.0);
-      for(size_t ix=0;ix<NX;ix++)
-	hVal+=sinbadSource[iz][ix]*(XPts[ix+1]-XPts[ix]);
-      if (hVal<1e-5) zeroFlag[iz]=1;
-      SP2.addData(hVal*(ZPts[iz+1]-ZPts[iz]));   
-    }  
-  D2.addUnit(SI2);  
-  D2.addUnit(SP2);  
-  sourceCard.setData("z",D2);  
-  
-  SDef::SrcData D3(3);
-
-  SDef::DSTerm<int>* DS3=D3.getDS<int>(); 
-  DS3->setType("z",'s');
-  for (size_t is=0;is<NX;is++) 
-    DS3->addData(static_cast<int>(is+3));
-
-  SDef::DSIndex DIZ(std::string("z"));
-
-   for(size_t iz=0;iz<NZ;iz++)
-    {
-      SDef::SrcInfo SIX;
-      SDef::SrcProb SPX;
-      SPX.addData(0.0);
-      SIX.addData(XPts[0]); 
-      for(size_t ix=0;ix<NX-1;ix++) 
-	{
-	  SIX.addData(XPts[ix+1]); 
-	  if (zeroFlag[iz])
-	    SPX.addData(1e-5);
-	  else
-	    SPX.addData(sinbadSource[iz][ix]*(XPts[ix+1]-XPts[ix]));
-	}
-      DIZ.addData(iz+4,&SIX,0,&SPX);
+      PT=Control.EvalVar<double>
+	(StrFunc::makeString(expN+"FissionPlateXPt",i));
+      Xpt.push_back(PT);
     }
-   
-  D3.addUnit(&DIZ);
-  sourceCard.setData("x",D3); 
 
+  for(size_t i=0;i<NZ;i++)
+    {
+      PT=Control.EvalVar<double>
+	(StrFunc::makeString(expN+"FissionPlateZPt",i));
+      Zpt.push_back(PT);
+    }
 
+  for(size_t ix=0;ix<NX-1;ix++)
+    {
+     std::vector<double> YPtsRow;
+     std::string SX=StrFunc::makeString("49SourceX",ix);
+     for(size_t iz=0;iz<NZ-1;iz++)
+     {
+      std::string SXZ=StrFunc::makeString(SX+"Z",iz);	
+      PT=Control.EvalVar<double>(SXZ);
+      YPtsRow.push_back(PT);
+     }
+     Ypt.push_back(YPtsRow);
+   }
 
+// 640 energy group structure
+ 
   const double XBase[]=  
     { 1.000000,  1.100000, 
       1.200000,   1.300000,  1.400000, 
@@ -628,7 +299,9 @@ createSinbadSourceOLD(const FuncDataBase& Control,Source& sourceCard)
   const size_t XTopSize=sizeof(XTop)/sizeof(double);
   for(size_t j=0;j<XTopSize;j++)
     Xerg7.push_back(XTop[j]);
-                    
+ 
+  // U-235 fission spectrum from ENDF/B-VII.1
+                   
   double Yerg7[]     =
        { 0.000000E+0 ,  1.850569E-9 ,  1.940894E-9  ,
          2.027196E-9 ,  2.109973E-9 ,  2.189621E-9  ,
@@ -847,18 +520,415 @@ createSinbadSourceOLD(const FuncDataBase& Control,Source& sourceCard)
 
   const size_t YSize(Xerg7.size());
 
-  SDef::SrcData D99(99);
-  SDef::SrcInfo SI99('A');
-  SDef::SrcProb SP99(' ');
+  // write source cards
 
- for(size_t ii=1;ii<YSize;ii++) 
+  sourceCard.setActive();
+  SDef::SrcData D1(1);
+  SDef::SrcInfo SI1('A');
+  SDef::SrcProb SP1(' ');
+
+   for(size_t ii=1;ii<YSize;ii++) 
    {  
-    SI99.addData(Xerg7[ii]);
-    SP99.addData(Yerg7[ii]);
-    D99.addUnit(SI99);  
-    D99.addUnit(SP99);
+    SI1.addData(Xerg7[ii]);
+    SP1.addData(Yerg7[ii]);
+    D1.addUnit(SI1);  
+    D1.addUnit(SP1);
    }  
-  sourceCard.setData("erg",D99);  
+
+   sourceCard.setData("1erg",D1);  
+
+
+// the NestorSide Y step is set so that the fission plate centre is at the origin, hence this is in the 3rd layer of the fission plate  
+
+
+  sourceCard.setComp("2vec",Geometry::Vec3D(0.0,1.0,0.0 ));
+
+
+  SDef::SrcData D2(2);
+  // SDef::SrcInfo SI2('A');
+  // SDef::SrcProb SP2(' ');
+  SDef::SrcBias SB2('A ');
+  //(' ');
+ 
+  // SI2.addData(-1);
+  // SI2.addData(1);
+  // SP2.addData(1);
+  // SP2.addData(1);  
+  SB2.addData(-31);
+  SB2.addData(1);
+  D2.addUnit(SB2);
+ 
+  sourceCard.setData("3dir",D2);
+  
+
+
+  size_t nSlab;
+  double Len(0.0);
+  int M(0);
+  std::vector<double> thick;
+
+  nSlab=Control.EvalVar<size_t>(expN+"FissionPlateNSlab");
+  for(size_t i=0;i<nSlab;i++)
+    {
+     const std::string NStr(StrFunc::makeString(i));
+     Len+=Control.EvalVar<double>(expN+"FissionPlateThick"+NStr);
+     if(ModelSupport::EvalMat<int>(Control,expN+"FissionPlateMat"+NStr)==4)
+       M=i;
+     thick.push_back(Len);   
+    }
+
+
+  SDef::SrcData D3(3);
+  SDef::SrcInfo SI3;
+  SDef::SrcProb SP3; 
+  SI3.addData(thick.at(M-1)-thick.back()/2);
+  SI3.addData(thick.at(M)-thick.back()/2);
+  SP3.addData(0);
+  SP3.addData(1.0);
+  D3.addUnit(SI3);  
+  D3.addUnit(SP3);  
+  sourceCard.setData("4y",D3);  
+
+
+
+
+
+
+  // CARD 2 :: Z  card
+  // // Check 
+
+  // model 0 (Stuart)
+
+
+  // SDef::SrcData D4(4);
+  // SDef::SrcInfo SI4('A');
+  // SDef::SrcProb SP4(' ');
+
+  // std::vector<int> zeroFlag(NZ,0);
+
+  // SP4.addData(0.0);  
+  // SI4.addData(Zpt[0]);   
+  // for(size_t iz=0;iz<NZ-1;iz++)   
+  //   {
+  //     SI4.addData(Zpt[iz+1]);   
+  //     double hVal(0.0);
+  //     for(size_t ix=0;ix<NX-1;ix++)
+  // 	hVal+=Ypt.at(iz).at(ix)*(Xpt[ix+1]-Xpt[ix]);
+  //     if (hVal<1e-5) zeroFlag[iz]=1;
+  //     SP4.addData(hVal*(Zpt[iz+1]-Zpt[iz]));   
+  //   }  
+
+
+
+  // model 1 (old)
+
+  SDef::SrcData D4(4);
+  SDef::SrcInfo SI4('A');
+  SDef::SrcProb SP4(' ');
+
+  std::vector<int> zeroFlag(NZ,0);
+
+  // SP4.addData(0.0);  
+  // SI4.addData(Zpt[0]);   
+  double YptO(0);
+  double YptS2 [2*(NX-1)][NZ-1];
+  
+ std::vector<double> YptS1;
+
+  std::vector<double> hVal1;
+  std::vector<double> hVal2;
+
+ for(int i=0;i<NX;i++)   
+    YptS1.push_back(0.0);
+    
+  for(int i=0;i<NZ;i++)   
+   {
+    hVal1.push_back(0.0);
+    hVal2.push_back(0.0);
+   }
+
+// brain-storming translation of an original excel table that models the sinbad source 
+// (the only model that in fact works fine: interpolate the pdf conserving areas and 
+// starting from the centre)
+
+// from centre to lowest value of z coord 
+  for(size_t iz=NZ/2-1;iz<NZ-1;iz++)   
+   {  
+// from centre to max x coord, calculate interpolation values
+    for(size_t ix=NX/2-1;ix<NX;ix++)
+     {
+      if(ix==NX/2-1||ix==NX/2)  
+       {
+        YptS1.at(NX/2)=(Ypt.at(NX/2-1).at(iz));
+        YptS1.at(NX/2-1)=(Ypt.at(NX/2-1).at(iz));
+       }
+      else
+       {
+        YptS1.at(ix)=2*Ypt.at(ix-1).at(iz)-YptS1.at(ix-1);
+        if(Ypt.at(ix-1).at(iz)==0) 
+         YptS1.at(ix)=0;
+       }
+ 
+//  from center to lowest x coord
+      for(size_t ix=0;ix<NX/2-1;ix++)
+       {
+	YptS1.at(NX/2-2-ix)=2*Ypt.at(NX/2-2-ix).at(iz)-YptS1.at(NX/2-1-ix);
+        if(Ypt.at(NX/2-2-ix).at(iz)==0)
+         YptS1.at(NX/2-2-ix)=0; 
+       }
+   }
+ 
+// create the arrows of the mcnp distribution for each row; double up points to conserve 
+// Monte Carlo areas in form of histogram
+
+ std::vector<double> YptS1R;
+
+    for(size_t ix=0;ix<NX;ix++)
+      {
+	if(ix!=NX/2)
+	  YptS1R.push_back(YptS1.at(ix));
+      }
+    for(size_t ix=0;ix<YptS1R.size();ix++)
+     {
+      if(ix==0)   
+       {
+        YptS2[2*ix][iz]=0;
+        YptS2[2*ix+1][iz]=YptS1R.at(ix);
+       }
+      else if(ix==YptS1R.size()-1)   
+       {
+        YptS2[2*ix][iz]=YptS1R.at(ix);
+        YptS2[2*ix+1][iz]=0;
+       }
+      else if (YptS1R.at(ix-1)==0 && YptS1R.at(ix)!=0 && ix<YptS1R.size() &&ix>0)
+       {   
+        YptS2[2*ix][iz]=0;
+        YptS2[2*ix+1][iz]=YptS1R.at(ix);
+       }
+      else if(YptS1R.at(ix)!=0 && YptS1R.at(ix+1)==0 && ix<YptS1R.size()-1 &&ix>0)   
+       {
+        YptS2[2*ix][iz]=YptS1R.at(ix);
+        YptS2[2*ix+1][iz]=0;
+       }
+      else
+       { 
+        YptS2[2*ix][iz]=YptS1R.at(ix);
+        YptS2[2*ix+1][iz]=YptS1R.at(ix);
+       }
+     }
+ 
+	// sums pdf's for y coord
+    if(iz==NZ/2-1)  
+     {
+      hVal1.at(iz)=0.0;
+      for(size_t ix=0;ix<NX-1;ix++)
+       hVal1.at(iz)+=Ypt.at(ix).at(NZ/2-1);
+      hVal2.at(iz)=hVal1.at(NZ/2-1);
+      ELog::EM<<" AAAA "<<iz<<" "<<hVal2.at(iz)<<ELog::endDiag;
+     }
+    else if(iz==NZ/2)  
+     {
+        hVal1.at(iz)=0.0;
+      for(size_t ix=0;ix<NX-1;ix++)
+      hVal1.at(iz)+=Ypt.at(ix).at(NZ/2);
+      hVal2.at(iz)=hVal1.at(NZ/2-1);
+     }
+    else
+     {
+      hVal1.at(iz)=0.0;
+      for(size_t ix=0;ix<NX-1;ix++)
+       hVal1.at(iz)+=Ypt.at(ix).at(iz); 
+      hVal2.at(iz)=2*hVal1.at(iz-1)-hVal2.at(iz-1);    
+     }
+   }
+  
+// last line 
+  hVal2.at(NZ-1)=2*hVal1.at(NZ-2)-hVal2.at(NZ-2);    
+
+// lower part of the excel table
+  for(size_t iz=0;iz<NZ/2-1;iz++)   
+   {
+
+    for(size_t ix=NX/2-1;ix<NX;ix++)
+     {
+      if(ix==NX/2-1||ix==NX/2)  
+       {
+	YptS1.at(NX/2)=(Ypt.at(NX/2-1).at(NZ/2-1-iz-1));
+	YptS1.at(NX/2-1)=(Ypt.at(NX/2-1).at(NZ/2-1-iz-1));
+       }
+      else
+       {
+	YptS1.at(ix)=2*Ypt.at(ix-1).at(NZ/2-1-iz-1)-YptS1.at(ix-1);
+        if(Ypt.at(ix-1).at(NZ/2-1-iz-1)==0) 
+	 YptS1.at(ix)=0;
+       }
+     }
+    for(size_t ix=0;ix<NX/2-1;ix++)
+     {
+      YptS1.at(NX/2-2-ix)=2*Ypt.at(NX/2-2-ix).at(NZ/2-1-iz-1)-YptS1.at(NX/2-ix-1);
+      if(Ypt.at(NX/2-2-ix).at(NZ/2-1-iz-1)==0)
+       YptS1.at(NX/2-2-ix)=0; 
+       ELog::EM<<" A02 "<<iz<<" "<<ix<<" "<<YptS1.at(NX/2-2-ix)<<" "<<Ypt.at(NX/2-2-ix).at(NZ/2-1-iz-1)<<" "<<YptS1.at(NX/2-ix-1)<<ELog::endDiag;
+     }
+
+    // dist rows
+ std::vector<double> YptS1S;
+
+    for(size_t ix=0;ix<NX;ix++)
+      {
+	if(ix!=NX/2)
+	  YptS1S.push_back(YptS1.at(ix));
+      }
+
+    for(size_t ix=0;ix<YptS1S.size();ix++)
+     {
+
+      if(ix==0)   
+       {
+        YptS2[2*ix][NZ/2-2-iz]=0;
+        YptS2[2*ix+1][NZ/2-2-iz]=YptS1S.at(ix);
+       }
+      else if(ix==YptS1S.size()-1)   
+       {
+        YptS2[2*ix][NZ/2-2-iz]=YptS1S.at(ix);
+        YptS2[2*ix+1][NZ/2-2-iz]=0;
+       }
+      else if (YptS1S.at(ix-1)==0 && YptS1S.at(ix)!=0 && ix<YptS1S.size() && ix>0)
+       {   
+        YptS2[2*ix][NZ/2-2-iz]=0;
+        YptS2[2*ix+1][NZ/2-2-iz]=YptS1S.at(ix);
+       }
+      else if(YptS1S.at(ix)!=0 && YptS1S.at(ix+1)==0 && ix<YptS1S.size()-1 &&ix>0)   
+       {
+        YptS2[2*ix][NZ/2-2-iz]=YptS1S.at(ix);
+        YptS2[2*ix+1][NZ/2-2-iz]=0;
+       }
+      else
+       { 
+        YptS2[2*ix][NZ/2-2-iz]=YptS1S.at(ix);
+        YptS2[2*ix+1][NZ/2-2-iz]=YptS1S.at(ix);
+       }
+      ELog::EM<< "XX "<<YptS1S.at(ix)<<" "<<YptS2[2*ix][NZ/2-2-iz]<<"  "<<YptS2[2*ix+1][NZ/2-2-iz]<<ELog::endDiag;
+
+      }
+ 
+	// sums
+      hVal1.at(NZ/2-2-iz)=0.0;        
+      for(size_t ix=0;ix<NX-1;ix++)
+	{
+       hVal1.at(NZ/2-2-iz)+=Ypt.at(ix).at(NZ/2-2-iz);
+ 
+	}
+      hVal2.at(NZ/2-2-iz)=2*hVal1.at(NZ/2-2-iz)-hVal2.at(NZ/2-1-iz);    
+  }  
+
+   for(size_t iz=0;iz<NZ;iz++)   
+    {
+     SI4.addData(Zpt[iz]);
+    }   
+
+   double hVal(0.0);
+   for(size_t iz=0;iz<NZ;iz++)   
+    {
+     hVal=hVal2.at(NZ-1-iz);   
+     SP4.addData(hVal);
+    }   
+
+   D4.addUnit(SI4 );  
+   D4.addUnit(SP4);  
+   sourceCard.setData("5z",D4);  
+
+   SDef::SrcData D5(5);
+   SDef::DSTerm<int>* DS5=D5.getDS<int>(); 
+   DS5->setType("z",'s');
+   SDef::DSIndex DIZ(std::string("z"));
+
+   std::vector<double> Xpt1;
+   double x1;
+   double x2;
+   std::vector<double> Ypt1;
+   for(size_t ix=0;ix<NX-1;ix++)
+     {
+      x1=Xpt[ix]-0.01;
+      x2=Xpt[ix]+0.01;
+      Xpt1.push_back(x1);
+      Xpt1.push_back(x2);
+     }
+
+
+   for(size_t iz=0;iz<NZ-1;iz++)
+    {
+     SDef::SrcInfo SIX;
+     SDef::SrcProb SPX;
+     //     SPX.addData(0.0);
+     for(size_t ix=0;ix<Xpt1.size();ix++) 
+      {
+       SIX.addData(Xpt1[ix]); 
+       SPX.addData(YptS2[ix][iz]);
+      }
+      DIZ.addData(iz+6,&SIX,0,&SPX);
+    }
+   
+   D5.addUnit(&DIZ);
+   sourceCard.setData("6x",D5); 
+
+
+
+
+
+
+  //model 2 ()
+
+
+
+ 
+  size_t S=Control.EvalVar<size_t>(expN+"ShieldNSlab");
+  size_t NS=Control.EvalVar<size_t>(expN+"NestorSideNSlab");
+  size_t FPX=Control.EvalVar<size_t>(expN+"FissionPlateNXSpace");
+  size_t FPZ=Control.EvalVar<size_t>(expN+"FissionPlateNZSpace");
+  size_t cellStart=3+NS+S+10;
+  size_t cellEnd=cellStart+(FPX-1)*(FPZ-1); 
+//  ELog::EM<<" SO "<<cellStart<<" "<<cellEnd<<ELog::endDiag;
+  
+
+
+
+   // SDef::SrcData D5(5);
+   // SDef::DSTerm<int>* DS5=D5.getDS<int>(); 
+   // DS5->setType("z",'s');
+   // SDef::DSIndex DIZ(std::string("z"));
+
+   // for(size_t iz=0;iz<NZ-1;iz++)
+   //  {
+   //   SDef::SrcInfo SIX;
+   //   SDef::SrcProb SPX;
+   //   SPX.addData(0.0);
+   //   SIX.addData(Xpt[0]); 
+   //   for(size_t ix=0;ix<NX-1;ix++) 
+   //    {
+   //     SIX.addData(Xpt[ix+1]); 
+   //     if (zeroFlag[iz])
+   //      SPX.addData(1e-5);
+   //     else
+   //      SPX.addData(Ypt.at(iz).at(ix)*(Xpt[ix+1]-Xpt[ix]));
+   //    }
+   //    DIZ.addData(iz+6,&SIX,0,&SPX);
+   //  }
+   
+   // D5.addUnit(&DIZ);
+   // sourceCard.setData("6x",D5); 
+
+
+
+
+
+
+
+  sourceCard.setComp("7eff", 0.00000001);
+
+
+  // sourceCard.write(std::ostream& OX);
+
   return;
 }  
 
@@ -868,3 +938,17 @@ createSinbadSourceOLD(const FuncDataBase& Control,Source& sourceCard)
 
 
 }  // NAMESPACE SDef
+
+
+
+  // REVERST ALL THE VALUES:
+  // double tmpX;
+  // for(size_t i=0;i<NZ/2;i++)
+  //   {
+  //     for(size_t j=0;j<NX;j++)
+  // 	{
+  // 	  tmpX=sinbadSource[i][j];
+  // 	  sinbadSource[i][j]=sinbadSource[i][NZ-j];
+  // 	  sinbadSource[i][NZ-j]=tmpX;
+  // 	}
+  //   }	  

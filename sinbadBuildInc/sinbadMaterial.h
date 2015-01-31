@@ -2,15 +2,21 @@
 #define ModelSupport_sinbadMaterial_h
 
 
-namespace scatterSystem
-{
-  class neutMaterial;
-}
+/* namespace scatterSystem */
+/* { */
+/*   class neutMaterial; */
+/* } */
 
 namespace ModelSupport
 {
+  // const std::string lib;
+  void addSinbadMaterial(std::string&);
 
-  void addSinbadMaterial();
+  int setMaterial(const int,std::string&, const std::string&);
+
+
+
+
 }
 
 #endif

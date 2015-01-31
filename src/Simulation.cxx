@@ -442,6 +442,7 @@ Simulation::addCell(const int cellNumber,const MonteCarlo::Qhull& A)
   ELog::RegMethod RegA("Simulation","addCell(int,Qhull)");
 
   OTYPE::iterator mpt=OList.find(cellNumber);
+
   
   // Adding existing cell:
   if (mpt!=OList.end())
@@ -1510,6 +1511,7 @@ Simulation::writeTally(std::ostream& OX) const
 	   boost::bind(&tallySystem::Tally::write,
 		       boost::bind(MapSupport::PSecond<TallyTYPE>(),_1),
 		       boost::ref(OX)));
+
   return;
 }
 
@@ -2006,7 +2008,7 @@ Simulation::renumberCells(const std::vector<int>& cOffset,
 
   WeightSystem::weightManager& WM=
     WeightSystem::weightManager::Instance();
-
+ 
   //Offset index  
   const int cIndex(10000);
 

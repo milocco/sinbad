@@ -115,7 +115,7 @@ fluxConstruct::processFlux(Simulation& System,
 
   // PARTICLE TYPE
   const std::string PType(IParam.getCompValue<std::string>("tally",Index,1)); 
-  
+
   if (PType=="help")  // 
     {
       if (!renumberFlag)
@@ -137,17 +137,17 @@ fluxConstruct::processFlux(Simulation& System,
 	}
       return 0;
     }
-
   if (NItems<3)
     throw ColErr::IndexError<size_t>(NItems,3,
 				     "Insufficient items for tally");
 
   const std::string MType(IParam.getCompValue<std::string>("tally",Index,2)); 
+ 
   if (MType=="cell")
     return processFluxCell(System,IParam,Index,renumberFlag);
   // Process a Ranged Heat:
- 
-  boost::format Cmt("tally: %d Mat %d Range(%d,%d)");
+
+  boost::format Cmt("tallly: %d Mat %d Range(%d,%d)");
   int matN(0);
 
   // Get Material number:
@@ -159,6 +159,7 @@ fluxConstruct::processFlux(Simulation& System,
     }
 
   int RA,RB;
+ 
   // if flag true : then valid range
   const int flag=
     convertRegion(IParam,"tally",Index,3,RA,RB);
@@ -229,6 +230,7 @@ fluxConstruct::processFluxCell(Simulation& System,
       if (StrFunc::convert(CVal,cellNum) &&
 	  System.existCell(cellNum+cellOffset))
 	cellVec.push_back(cellNum+cellOffset);
+
       else if (basicConstruct::convertRange(CVal,RA,RB)) // X-Y
 	{
 	  RB=std::max<int>(cellRange,RB);
@@ -247,14 +249,12 @@ fluxConstruct::processFluxCell(Simulation& System,
     }  
 
   const int nTally=System.nextTallyNum(4);
-
   tallySystem::addF4Tally(System,nTally,PType,cellVec);
   tallySystem::Tally* TX=System.getTally(nTally); 
   TX->setPrintField("e f");
   boost::format Cmt("tally: %d Cell %s ");
   const std::string Comment=(Cmt % nTally % CellRegion ).str();
   TX->setComment(Comment);
-
   return 0;
 }
 

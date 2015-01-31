@@ -187,6 +187,9 @@ cellFluxTally::addCells(const std::vector<int>& AVec)
   */
 {
   cellList.addComp(AVec);
+  ELog::EM<<" AAAAAAAA "<<AVec[0]<<" "<<AVec[1]<<" "<<AVec[2]<<ELog::endDiag;
+
+
   return;
 }
 

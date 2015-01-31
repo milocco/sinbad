@@ -713,11 +713,14 @@ SrcBias::write(const size_t Index,std::ostream& OX) const
     }
   else
     {
-      cx<<"sb"<<Index<<" "<<minusF<<" ";
+      // ALB temp modification
+      //      cx<<"sb"<<Index<<" "<<minusF<<" ";
+      cx<<"sb"<<Index<<" ";
       copy(Values.begin(),Values.end(),
 	   std::ostream_iterator<double>(cx," "));
     }
-  StrFunc::writeMCNPX(cx.str(),OX);
+
+ StrFunc::writeMCNPX(cx.str(),OX);
   return;
 }
 

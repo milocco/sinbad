@@ -90,6 +90,8 @@ makeString(const T& A,const U& B)
   return cx.str();
 }
 
+
+
 template<typename U>
 std::string
 makeString(const char* A,const U& B)
@@ -104,6 +106,8 @@ makeString(const char* A,const U& B)
   cx<<A<<B;
   return cx.str();
 }
+
+
 
 size_t
 checkKey(const std::string& M,const std::string& X,
@@ -134,6 +138,7 @@ template std::string makeString(const std::string&,const size_t&);
 template std::string makeString(const std::string&,const long int&);
 template std::string makeString(const char*,const int&);
 template std::string makeString(const char*,const size_t&);
+
 
 ///\endcond TEMPLATE
 

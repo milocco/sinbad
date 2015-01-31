@@ -476,13 +476,13 @@ setEssPhysics(Simulation& System,
   return; 
 }
 
-void 
-setSinbadPhysics(Simulation& System,
-		  const mainSystem::inputParam& IParam)
-{
+// void 
+// setSinbadPhysics(Simulation& System,
+// 		  const mainSystem::inputParam& IParam)
+// {
 
-  return; 
-}
+//   return; 
+// }
 
 
 

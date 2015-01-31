@@ -24,6 +24,7 @@
 
 
 class Simulation;
+class simSinbad;
 
 namespace MonteCarlo
 {

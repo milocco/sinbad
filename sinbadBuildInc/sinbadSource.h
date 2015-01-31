@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MNCPX Input builder
  
- * File:   processInc/SimInput.h
+ * File:   sourceInc/sinbadSource.h
 *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2013 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,24 +19,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef SimProcess_SimInput_h
-#define SimProcess_SimInput_h
+#ifndef sinbadSource_h
+#define sinbadSource_h
 
 class Simulation;
+//  class PhysicsCards;
+/* namespace physicsSystem */
+/* { */
+/*   class PhysicsCards; */
+/* } */
+class Source;
 
-namespace mainSystem
+namespace SDef
 {
-  class inputParam;
+
+  //  class PhysicsCards;
+
+  void setSinbadSource(Simulation&,const mainSystem::inputParam&);
+  void SinbadSource(const FuncDataBase&,Source&,const std::string&);
+  // std::vector<double> *YptS1 = new std::vector<double>;
+  // std::vector<double> YptS1;
+
 }
 
-namespace SimProcess
-{
-
-  void importanceSim(Simulation&,const mainSystem::inputParam&);
-  void inputPatternSim(Simulation&,const mainSystem::inputParam&);
-  int processExitChecks(Simulation&,const mainSystem::inputParam&);
-
-  
-}  // namespace SimProcess
 
 #endif
+ 

@@ -137,7 +137,9 @@ setWeights(Simulation& System,const std::string& Type)
   return;
 }
 
-void
+
+
+void 
 setWeights(Simulation& System,const std::vector<double>& Eval,
 	   const std::vector<double>& WT,
 	   const std::set<std::string>& excludeBoundary)
@@ -165,6 +167,7 @@ setWeights(Simulation& System,const std::vector<double>& Eval,
   WF->setEnergy(Eval);
   System.populateWCells();
   WF->balanceScale(WT);
+
   const Simulation::OTYPE& Cells=System.getCells();
   Simulation::OTYPE::const_iterator oc;
   for(oc=Cells.begin();oc!=Cells.end();oc++)

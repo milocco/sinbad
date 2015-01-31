@@ -236,9 +236,8 @@ addF4Tally(Simulation& System,const int tallyNum,
   TX.addCells(Units);
   TX.setCinderEnergy(pType);
   System.addTally(TX);
-
   System.getPC().addHistpCells(Units);
-
+  ELog::EM<<" CCCCCC "<<ELog::endDiag;
   return;
 }
 

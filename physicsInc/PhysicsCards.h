@@ -123,6 +123,11 @@ class PhysicsCards
   void substituteSurface(const int,const int); 
 
   void write(std::ostream&,const std::vector<int>&) const;   
+
+  //ALB
+  void sinbadPhysicsCards(std::ostream&,const std::vector<int>&) const;   
+  //ALB
+
 };
 
 }

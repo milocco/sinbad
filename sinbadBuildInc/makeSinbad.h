@@ -14,10 +14,11 @@
 namespace sinbadSystem
 {
   class Cave;
-  class sinbadShield;
+  //  class sinbadShield;
   class LayerPlate;
   class FissionPlate;
-  class sbadDetector;
+  //  class sbadDetector;
+  class Detectors;
 
 /*!
   \class makeSinbad
@@ -32,25 +33,17 @@ class makeSinbad
  private:
 
   const std::string preName;          ///< Initializtion ta
-  const std::string detType;
-  std::string detT;
-  //  std::string detT;
 
-  int detI;
+  boost::shared_ptr<Cave> room;   
+  boost::shared_ptr<LayerPlate> shield;     ///< Initial beam control
+  boost::shared_ptr<LayerPlate> nestorSide;   ///< Stopping volume
 
-  double offSet1;
+  boost::shared_ptr<FissionPlate> fissionPlate;   ///< Fission Plate object
 
-  boost::shared_ptr<Cave> Surround;   
+  std::vector<boost::shared_ptr<Detectors> > detArray;
 
-  boost::shared_ptr<LayerPlate> Primary;     ///< Initial beam control
-  boost::shared_ptr<LayerPlate> Secondary;   ///< Stopping volume
+  void buildDetectors(Simulation&, const mainSystem::inputParam&);
 
-  boost::shared_ptr<FissionPlate> fPlate;   ///< Fission Plate object
-
-  std::vector<boost::shared_ptr<sbadDetector> > detArray;
-
-  void buildDetectors(Simulation&);
-  void buildDetectorsAM(Simulation&, const mainSystem::inputParam&, const std::string&, const int&);
 
  public:
   

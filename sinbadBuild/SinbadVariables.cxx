@@ -68,51 +68,51 @@ SinbadVariables(FuncDataBase& Control)
   Control.addVariable("49ShieldThick2",0.0);
   Control.addVariable("49ShieldMat2","Void");
   Control.addVariable("49ShieldThick3",5.08); 
-  Control.addVariable("49ShieldMat3","49MildSteel1");  
+  Control.addVariable("49ShieldMat3","49MildSteel7");  
   Control.addVariable("49ShieldThick4",0.70); 
   Control.addVariable("49ShieldMat4","Void");  
   Control.addVariable("49ShieldThick5",5.08); 
-  Control.addVariable("49ShieldMat5","49MildSteel1");  
+  Control.addVariable("49ShieldMat5","49MildSteel7");  
   Control.addVariable("49ShieldThick6",0.70); 
   Control.addVariable("49ShieldMat6","Void");  
   Control.addVariable("49ShieldThick7",5.08); 
-  Control.addVariable("49ShieldMat7","49MildSteel1");  
+  Control.addVariable("49ShieldMat7","49MildSteel7");  
   Control.addVariable("49ShieldThick8",0.70); 
   Control.addVariable("49ShieldMat8","Void");  
   Control.addVariable("49ShieldThick9",3.00); 
-  Control.addVariable("49ShieldMat9","Stainless304");  
+  Control.addVariable("49ShieldMat9","49StainlessSteel");  
   Control.addVariable("49ShieldThick10",18.31); 
-  Control.addVariable("49ShieldMat10","H2O");  
+  Control.addVariable("49ShieldMat10","49Water");  
   Control.addVariable("49ShieldThick11",3.00); 
-  Control.addVariable("49ShieldMat11","Stainless304");  
+  Control.addVariable("49ShieldMat11","49StainlessSteel");  
   Control.addVariable("49ShieldThick12",0.70); 
   Control.addVariable("49ShieldMat12","Void");  
   Control.addVariable("49ShieldThick13",5.08); 
-  Control.addVariable("49ShieldMat13","49MildSteel1");  
+  Control.addVariable("49ShieldMat13","49MildSteel7");  
   Control.addVariable("49ShieldThick14",0.70); 
   Control.addVariable("49ShieldMat14","Void");  
   Control.addVariable("49ShieldThick15",2.50); 
-  Control.addVariable("49ShieldMat15","Void");
+  Control.addVariable("49ShieldMat15","49MildSteel10");
   Control.addVariable("49ShieldThick16",19.80); 
-  Control.addVariable("49ShieldMat16","H2O");  
+  Control.addVariable("49ShieldMat16","49Water");  
   Control.addVariable("49ShieldThick17",2.50); 
-  Control.addVariable("49ShieldMat17","Stainless304");  
+  Control.addVariable("49ShieldMat17","49StainlessSteel");  
   Control.addVariable("49ShieldThick18",0.70); 
   Control.addVariable("49ShieldMat18","Void");  
   Control.addVariable("49ShieldThick19",5.08); 
-  Control.addVariable("49ShieldMat19","49MildSteel1");  
+  Control.addVariable("49ShieldMat19","49MildSteel7");  
   Control.addVariable("49ShieldThick20",0.70); 
   Control.addVariable("49ShieldMat20","Void");  
   Control.addVariable("49ShieldThick21",5.08); 
-  Control.addVariable("49ShieldMat21","49MildSteel1");  
+  Control.addVariable("49ShieldMat21","49MildSteel7");  
   Control.addVariable("49ShieldThick22",30.70); 
   Control.addVariable("49ShieldMat22","Void");  
   Control.addVariable("49ShieldThick23",15.24); 
-  Control.addVariable("49ShieldMat23","Concrete");  
+  Control.addVariable("49ShieldMat23","49Concrete");  
   Control.addVariable("49ShieldThick24",2.00); 
   Control.addVariable("49ShieldMat24","Void");  
   Control.addVariable("49ShieldThick25",15.24); 
-  Control.addVariable("49ShieldMat25","Concrete");  
+  Control.addVariable("49ShieldMat25","49Concrete");  
 
 
 
@@ -151,7 +151,7 @@ SinbadVariables(FuncDataBase& Control)
 
   Control.addVariable("49FissionPlateXStep",0.0);  
   Control.addVariable("49FissionPlateYStep",0.0);   
-  Control.addVariable("49FissionPlateZStep",0.0);   
+  Control.addVariable("49FissionPlateZStep",0.0);  
   Control.addVariable("49FissionPlateXYAngle",0.0);   
   Control.addVariable("49FissionPlateZAngle",0.0);   
   //fission plate layers  
@@ -223,30 +223,33 @@ SinbadVariables(FuncDataBase& Control)
   //   }
 
   int i(0);
+  size_t nx1(10);
+  size_t nz1(10);
+  const size_t ix(10);
+  const unsigned long iz(10);
+  std::string bz;
+
   for(size_t ix=0;ix<nx-1;ix++)
-    for(size_t iz=0;iz<nz-1;iz++)
-     {
-      const std::string baseKey=
-      StrFunc::makeString("49FissionPlateYPt",i);
-      Control.addVariable(baseKey,fissionSource49[iz][ix]);
-      i+=1;
-	// ELog::EM<<" ix "<<ix<<" iz "<<iz<<" i "<<i<<" 49FissionPlateYpt "<<baseKey<<" fissionSource49[ix][iz]) "<<fissionSource49[ix][iz]<<ELog::endWarn;
-     }
-  //     const std::string baseKeyxz=
-  // 	StrFunc::makeString(ix,iz);
-  //     // BeamLine in guide bay
-  //     const std::string baseKey=
-  // 	StrFunc::makeString("49FissionPlatePt",ix,iz);
-  //     Control.addVariable(baseKey,fissionSource49[ix][iz]);  
+    {
+     std::string SX=StrFunc::makeString("49SourceX",ix);
+     for(size_t iz=0;iz<nz-1;iz++)
+       {
+	 //        std::string bz=StrFunc::makeString(iz);
+        std::string SXZ=StrFunc::makeString(SX+"Z",iz);
+        Control.addVariable(SXZ,fissionSource49[iz][ix]);
+	//  ELog::EM<<" KZ "<<SXZ<<ELog::endDiag;
+
+      }
+    }
 
   Control.addVariable("49FissionPlateMatInL0","49Fuel");   
   Control.addVariable("49FissionPlateMatOutL0","49Aluminium");   
   Control.addVariable("49FissionPlateMatTempL0",300.0);   
-  // Control.addVariable("49FissionPlateMatL1","Aluminium");   
-  // Control.addVariable("49FissionPlateMatTempL1",300.0);   
+  Control.addVariable("49FissionPlateMatL1","Aluminium");   
+  Control.addVariable("49FissionPlateMatTempL1",300.0);   
 
 
-  //////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////
   // DETECTORS
 
 
@@ -439,8 +442,9 @@ SinbadVariables(FuncDataBase& Control)
   Control.addVariable("49MnActiveY4",1);   
   Control.addVariable("49MnActiveY5",1);   
   Control.addVariable("49MnActiveY6",0);   
-  Control.addVariable("49MnActiveY7",1);   
-  Control.addVariable("49MnActiveY8",1);   
+  Control.addVariable("49MnActiveY7",1); 
+  // deactivate next if performing axial and vertical scan at the same time  
+  Control.addVariable("49MnActiveY8",0);   
   Control.addVariable("49MnActiveY9",1);   
   Control.addVariable("49MnActiveY10",0);   
   Control.addVariable("49MnActiveY11",1);   
@@ -470,7 +474,7 @@ SinbadVariables(FuncDataBase& Control)
   // Axial offset for vertical scan
   Control.addVariable("49MnVscanY0",29.44);   
   // active detectors along vertical direction
-  Control.addVariable("49MnVscanNZ",7);           
+  // Control.addVariable("49MnVscanNY",7);           
   Control.addVariable("49MnY0ActiveZ0",1);   
   Control.addVariable("49MnY0ActiveZ1",1);   
   Control.addVariable("49MnY0ActiveZ2",1);   
@@ -482,7 +486,7 @@ SinbadVariables(FuncDataBase& Control)
   //TLD
   Control.addVariable("49TldMat","49Tld");  
   Control.addVariable("49TldDiam",1.27);   
-  Control.addVariable("49TldThick",0.015); 
+  Control.addVariable("49TldThick",0.415); 
   // active detectors along axial direction
   Control.addVariable("49TldActiveY0",0);   
   Control.addVariable("49TldActiveY1",0);   
@@ -518,12 +522,12 @@ SinbadVariables(FuncDataBase& Control)
   Control.addVariable("49TldActiveY31",0);   
   Control.addVariable("49TldActiveY32",0);   
   // number of vertical scans
-  Control.addVariable("49TldZscanN",4);           
+  Control.addVariable("49TldVscanNY",4);           
   // Axial offset for vertical scan
-  Control.addVariable("49TldZscanY0",21.74);   
-  Control.addVariable("49TldZscanY1",39.24);   
-  Control.addVariable("49TldZscanY2",39.74);   
-  Control.addVariable("49TldZscanY3",40.24);   
+  Control.addVariable("49TldVscanY0",21.74);   
+  Control.addVariable("49TldVscanY1",39.24);   
+  Control.addVariable("49TldVscanY2",39.74);   
+  Control.addVariable("49TldVscanY3",40.24);   
   // active detectors along vertical direction
   Control.addVariable("49TldY0ActiveZ0",1);   
   Control.addVariable("49TldY0ActiveZ1",1);   
@@ -743,6 +747,6 @@ SinbadVariables(FuncDataBase& Control)
 
 
   return;
-}
+ }
 
 }  // NAMESPACE setVariable

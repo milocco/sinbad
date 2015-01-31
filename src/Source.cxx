@@ -74,22 +74,22 @@ Source::populate()
 
   sdMap.insert(sdMapTYPE::value_type("cel",SBasePtr(new SrcItem<int>("cel"))));
   sdMap.insert(sdMapTYPE::value_type("sur",SBasePtr(new SrcItem<int>("sur"))));
-  sdMap.insert(sdMapTYPE::value_type("erg",SBasePtr(new SrcItem<double>("erg"))));
+  sdMap.insert(sdMapTYPE::value_type("1erg",SBasePtr(new SrcItem<double>("erg"))));
   sdMap.insert(sdMapTYPE::value_type("tme",SBasePtr(new SrcItem<double>("tme"))));
-  sdMap.insert(sdMapTYPE::value_type("dir",SBasePtr(new SrcItem<double>("dir"))));
-  sdMap.insert(sdMapTYPE::value_type("vec",SBasePtr(new SrcItem<Geometry::Vec3D>("vec"))));
+  sdMap.insert(sdMapTYPE::value_type("3dir",SBasePtr(new SrcItem<double>("dir"))));
+  sdMap.insert(sdMapTYPE::value_type("2vec",SBasePtr(new SrcItem<Geometry::Vec3D>("vec"))));
   sdMap.insert(sdMapTYPE::value_type("nrm",SBasePtr(new SrcItem<double>("nrm"))));
   sdMap.insert(sdMapTYPE::value_type("pos",SBasePtr(new SrcItem<Geometry::Vec3D>("pos"))));
   sdMap.insert(sdMapTYPE::value_type("rad",SBasePtr(new SrcItem<double>("rad"))));
   sdMap.insert(sdMapTYPE::value_type("ext",SBasePtr(new SrcItem<double>("ext"))));  
   sdMap.insert(sdMapTYPE::value_type("axs",SBasePtr(new SrcItem<Geometry::Vec3D>("axs"))));
-  sdMap.insert(sdMapTYPE::value_type("x",SBasePtr(new SrcItem<double>("x"))));
-  sdMap.insert(sdMapTYPE::value_type("y",SBasePtr(new SrcItem<double>("y"))));
-  sdMap.insert(sdMapTYPE::value_type("z",SBasePtr(new SrcItem<double>("z"))));
+  sdMap.insert(sdMapTYPE::value_type("6x",SBasePtr(new SrcItem<double>("x"))));
+  sdMap.insert(sdMapTYPE::value_type("4y",SBasePtr(new SrcItem<double>("y"))));
+  sdMap.insert(sdMapTYPE::value_type("5z",SBasePtr(new SrcItem<double>("z"))));
   sdMap.insert(sdMapTYPE::value_type("ccc",SBasePtr(new SrcItem<int>("ccc"))));
   sdMap.insert(sdMapTYPE::value_type("ara",SBasePtr(new SrcItem<double>("ara"))));
   sdMap.insert(sdMapTYPE::value_type("wgt",SBasePtr(new SrcItem<double>("wgt"))));
-  sdMap.insert(sdMapTYPE::value_type("eff",SBasePtr(new SrcItem<double>("eff"))));
+  sdMap.insert(sdMapTYPE::value_type("7eff",SBasePtr(new SrcItem<double>("eff"))));
   sdMap.insert(sdMapTYPE::value_type("par",SBasePtr(new SrcItem<int>("par"))));
   sdMap.insert(sdMapTYPE::value_type("tr",SBasePtr(new SrcItem<int>("tr"))));
   return;
@@ -249,7 +249,7 @@ Source::write(std::ostream& OX) const
       std::string out("sdef ");
       sdMapTYPE::const_iterator mc;
       for(mc=sdMap.begin();mc!=sdMap.end();mc++)
-	out+=mc->second->getString();
+    	out+=mc->second->getString();
       if (transPTR)
 	out+=StrFunc::makeString(std::string(" tr="),
 				 transPTR->getName());

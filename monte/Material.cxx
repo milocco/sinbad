@@ -385,6 +385,7 @@ Material::setMaterial(const int MIndex,
   std::vector<std::string>::iterator vc;
   int typeFlag(0);
   // skip first item
+
   for(vc=Items.begin();vc!=Items.end();vc++)
     {
       if (!typeFlag)

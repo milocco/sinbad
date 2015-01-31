@@ -134,8 +134,12 @@ Zaid::setZaid(const std::string& A)
    */
 {
   ELog::RegMethod RegA("Zaid","setZaid");
-  boost::regex Re("(\\d+)\\.(\\d\\d)(\\S)",boost::regex::perl);
-  
+  // ORI
+  //  boost::regex Re("(\\d+)\\.(\\d\\d)(\\S)",boost::regex::perl);
+  // ++++ALB (slight mod to use also ENDF/B-VII.1 extension .710c)
+  boost::regex Re("(\\d+)\\.(\\d+)(\\S)",boost::regex::perl);
+  // ++++ALB
+
   std::vector<std::string> Out;
   int Z;
   int tItem;
@@ -143,6 +147,7 @@ Zaid::setZaid(const std::string& A)
       !StrFunc::convert(Out[0],Z) ||
       !StrFunc::convert(Out[1],tItem))
     return 0;
+  // ELog::EM<<" ZZZ1 "<<Out<<" "<<Re<<" "<<Z<<ELog::endDiag;
   
   index=Z;
   tag=tItem;

@@ -152,6 +152,7 @@ SimPHITS::writeTally(std::ostream& OX) const
   OX<<"c -----------------------------------------------------------"<<std::endl;
   OX<<"c ------------------- TALLY CARDS ---------------------------"<<std::endl;
   OX<<"c -----------------------------------------------------------"<<std::endl;
+
   // The totally insane line below does the following
   // It iterats over the Titems and since they are a map
   // uses the mathSupport:::PSecond

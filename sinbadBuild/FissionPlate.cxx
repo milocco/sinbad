@@ -267,16 +267,35 @@ FissionPlate::populate(const FuncDataBase& Control)
   std::sort(ZPts.begin(),ZPts.end());
 
   //read source distribution values
+  // for(size_t ix=0;ix<nXSpace-1;ix++)
+  //  {
+  //   std::vector<double> YPtsRow;
+  //   for(size_t iz=0;iz<nZSpace-1;iz++)
+  //    {
+  //     YV=Control.EvalVar<double>(keyName+"YPt"+StrFunc::makeString(ix+iz*(nZSpace-1)));
+  //     YPtsRow.push_back(YV);
+  //    }
+  //    YPts.push_back(YPtsRow);
+  //  }
+
+  //new
   for(size_t ix=0;ix<nXSpace-1;ix++)
    {
     std::vector<double> YPtsRow;
+    std::string SX=StrFunc::makeString("49SourceX",ix);
+
     for(size_t iz=0;iz<nZSpace-1;iz++)
      {
-      YV=Control.EvalVar<double>(keyName+"YPt"+StrFunc::makeString(ix+iz*(nZSpace-1)));
+      std::string SXZ=StrFunc::makeString(SX+"Z",iz);
+      YV=Control.EvalVar<double>(StrFunc::makeString(SX+"Z",iz));
+      //      YV=Control.EvalVar<double>(keyName+"YPt"+StrFunc::makeString(ix+iz*(nZSpace-1)));
       YPtsRow.push_back(YV);
      }
      YPts.push_back(YPtsRow);
    }
+
+
+
 
 
 

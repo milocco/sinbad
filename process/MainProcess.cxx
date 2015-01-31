@@ -371,35 +371,6 @@ createSiliconInputs(inputParam& IParam)
 }
 
 void 
-createSinbadInputs(inputParam& IParam)
-  /*!
-    Set the specialise inputs for sinbad
-    \param IParam :: Input Parameters
-  */
-{
-  ELog::RegMethod RegA("MainProcess::","createSinbadInputs");
-
-  createInputs(IParam);
-  IParam.setValue("sdefType",std::string("sinbad"));    
-
-  IParam.regDefItem<std::string>("preName","preName",1,"490");
-  //  IParam.regDefItem<std::string>("detType","detector type",3,"");
-  std::vector<std::string> DItems(10,"");
-
-  IParam.regDefItemList<std::string>("detType","detector type",10,DItems);
-
-  IParam.regDefItemList<std::string>("ZScan"," vertical scan",10,DItems);
-
-  IParam.setDesc("preName","Experiment number for sinbad configuration");
-
-  IParam.setDesc("detType","Select detector type (for axial scan only). Possibilities are: S == Solphur (cast, except for the first one, the monitor, which is pressed), Rh == Rhodium, Mn == Manganese, Au == Gold, Tld == Thermoluminiscent detector, IC == Ionisation chamber. Combinations of them are possible just adding items (e.g. --detType Rh S Au). Please ascertain that measurements were performed with selected detector.");
-
-  IParam.setDesc("ZScan","Define detectors used in vertical scans. Possibilities are: Mn == Manganese, Tld == Thermoluminiscent detector.");
-
-  return;
-}
-
-void 
 createDelftInputs(inputParam& IParam)
   /*!
     Set the specialise inputs
