@@ -78,7 +78,7 @@
 #include "objectRegister.h"
 #include "ChipIRSource.h"
 //ALB
-#include "sinbadSource.h"
+// #include "sinbadSource.h"
 
 namespace SDef
 {
@@ -183,13 +183,13 @@ sourceSelection(Simulation& System,
     SDef::createBilbaoSource(Control,sourceCard);
   else if (sdefType=="ess")
     SDef::createESSSource(Control,sourceCard);
-  else if (sdefType=="Sinbad" || sdefType=="sinbad")
-    {
-      const std::string expN=IParam.getValue<std::string>("preName");
+  // else if (sdefType=="Sinbad" || sdefType=="sinbad")
+  //   {
+  //     const std::string expN=IParam.getValue<std::string>("preName");
 
-    //   SDef::createSinbadSource(Control,sourceCard);
-      SDef::SinbadSource(Control,sourceCard,expN);
-    }
+  //   //   SDef::createSinbadSource(Control,sourceCard);
+  //     //      SDef::SinbadSource(Control,sourceCard,expN);
+  //   }
  else if (sdefType=="TS2")
     {
   // Basic TS2 source

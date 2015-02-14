@@ -279,9 +279,10 @@ WCells::setWeights(const std::vector<double>& WT)
 {
   ELog::RegMethod RegA("WCells","setWeights");
 
-  ELog::EM<<"Cell Weighting system: "<<ELog::endDiag
-	  <<"  Cells == "<<WVal.size()<<"   Particle = "
-	  <<ptype<<ELog::endDiag;
+  //ALB (I DO NOT LIKE THIS!
+  // ELog::EM<<"Cell Weighting system: "<<ELog::endDiag
+  // 	  <<"  Cells == "<<WVal.size()<<"   Particle = "
+  // 	  <<ptype<<ELog::endDiag;
 
   if (WT.size()!=Energy.size())
     throw ColErr::MisMatch<size_t>(WT.size(),Energy.size(),

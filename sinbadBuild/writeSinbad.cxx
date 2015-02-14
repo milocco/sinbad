@@ -105,7 +105,7 @@
 #include "ReadFunctions.h"
 #include "SimTrack.h"
 #include "Simulation.h"
-
+#include "stringCombine.h"
 // #include "simulateSinbad.h"
 // #include "PhysicsCards.h"
 #include "DefPhysics.h"
@@ -120,6 +120,9 @@
 #include "makeSinbad.h"
 #include "writeSinbad.h"
 // #include "LayerPlate.h"
+#include <boost/lexical_cast.hpp>
+// using namespace physicsSystem;
+
 
 namespace mainSystem
 {
@@ -136,28 +139,32 @@ namespace mainSystem
 
 
   std::vector<std::string> RItems(10,"");
-  IParam.regDefItemList<std::string>("imp","importance",10,RItems);
+  std::vector<std::string> DItems(10,"");
+
+  IParam.regDefItem<int>("imp","importance",1,0);
   IParam.regDefItem<int>("n","nps",1,1000000);
   IParam.regDefItemList<std::string>("r","renum",10,RItems);
-  IParam.regDefItem<std::string>("preName","preName",1,"33");
-  std::vector<std::string> DItems(10,"");
+  IParam.regDefItem<std::string>("preName","preName",1,"35");
   IParam.regDefItemList<std::string>("axDet","detector type (axial scan)",10,DItems);
   IParam.regDefItemList<std::string>("vertDet","detector type (vertical scan)",10,DItems);
-  IParam.regDefItem<std::string>("xs","nuclear data library",1,".");
+  IParam.regDefItem<std::string>("xs","nuclear data library",1,".80c");
+  IParam.regDefItem<std::string>("sdefType","sdefType",1,"sinbad");
+  IParam.regItem<double>("ec","Ecut");
 
-  IParam.regDefItem<std::string>("sdefType","sdefType",1,"");
-  IParam.regFlag("sdefVoid","sdefVoid");
-  IParam.regItem<std::string>("SF","sdefFile");
-
-
+  IParam.setDesc("Ecut","Cut energy");
   IParam.setDesc("n","Number of starting particles (default 1.e6).\n");
   IParam.setDesc("r","Renumber cells and surfaces (recommended).\n");
-  IParam.setDesc("preName","Experiment number from SINBAD compilation.\n                    Choose between: \n                     34 == Winfrith Iron Benchmark Experiment (ASPIS), \n                     35 == Winfrith Graphite Benchmark Experiment (ASPIS), \n                     36 == Winfrith Graphite Benchmark Experiment (ASPIS), \n                     37 == Winfrith Water Benchmark Experiment (ASPIS), \n                     41 == JANUS Phase I (Neutron Transport Through Mild and Stainless Steel), \n                     42 == JANUS Phase VIII (Neutron Transport Through Sodium and Mild Steel), \n                     44 == NESDIP-2 Benchmark Experiment (ASPIS), \n                     45 == 18/20 NESDIP-3 Benchmark Experiment (ASPIS), \n                     49 == ASPIS Neutron/Gamma-Ray Transport Through Water/Steel Arrays, \n                     75 ==Winfrith Water/Iron Benchmark Experiment (PCA Replica). \n ");
+  IParam.setDesc("preName","Experiment number from SINBAD compilation.\n                    Choose between: \n                     34 == Winfrith Iron Benchmark Experiment (ASPIS), \n                     35 == Winfrith Iron 88 Benchmark(ASPIS), \n                     36 == Winfrith Graphite Benchmark Experiment (ASPIS), \n                     37 == Winfrith Water Benchmark Experiment (ASPIS), \n                     41 == JANUS Phase I (Neutron Transport Through Mild and Stainless Steel), \n                     42 == JANUS Phase VIII (Neutron Transport Through Sodium and Mild Steel), \n                     44 == NESDIP-2 Benchmark Experiment (ASPIS), \n                     45 == 18/20 NESDIP-3 Benchmark Experiment (ASPIS), \n                     49 == ASPIS Neutron/Gamma-Ray Transport Through Water/Steel Arrays, \n                     75 ==Winfrith Water/Iron Benchmark Experiment (PCA Replica). \n ");
   IParam.setDesc("xs","append standard extension in material cards.\n                    Possible choices are: \n                     ENDF/B-VII.1 == .80c, \n                     ENDF/B-VII.0 == .70c, \n                     JEFF3.2 == .31c, \n                     TENDL == . \n                     user extension == .XXc, \n No check on the availability of the elements in the xsdir file  \n");
 
   IParam.setDesc("axDet","Select detector type (for axial scan only).\n                    Possible choices are: \n                     S == Solphur (cast, except for the first one, the monitor, which is pressed), \n                     Rh == Rhodium, \n                     Mn == Manganese, \n                     Au == Gold, \n                     Tld == Thermoluminiscent detector, \n                     IC == Ionisation chamber. \n Combinations of them are possible just adding items (e.g. --detType Rh S Au). \n Please ascertain that measurements were performed with selected detector.\n");
 
   IParam.setDesc("vertDet","Define detectors used in vertical scans. \n                    Possibilities are: \n                     Mn == Manganese,\n                     Tld == Thermoluminiscent detector. \n");
+
+  IParam.setDesc("imp","importance card.\n                    Choose between: \n                     0 == energy and cell weight windows (the default), \n                     1 == no action; importance 1 in any cell at any energy, \n                     2 == split and kill based on cell but not on energy. \n");
+
+  IParam.setDesc("sdefType","source model.\n                    Choose between: \n                     0 == U-235 fission spectrum from ENDF/B-VII.0 and area-conservinfg interpolation (the default), \n                     1 == U-235 fission spectrum from MCNP + area-conserving interpolation, \n                     2 == not yet defined. \n");
+
 
   return;
 }
@@ -176,12 +183,12 @@ namespace mainSystem
 namespace sinbadSystem
 {
   writeSinbad::writeSinbad(const std::string& Key): Simulation()
-  // : 
-    //cellS("")
   {}
 
   writeSinbad::writeSinbad(const writeSinbad& A):Simulation(A),cellS(A.cellS),
-  DT1(A.DT1),DT2(A.DT2)
+						 cellI1(A.cellI1),cellI2(A.cellI2),WFlag(A.WFlag),
+						 EC(A.EC),DN(A.DN),
+                                                 DT1(A.DT1),DT2(A.DT2),NP(A.NP)
   /*!
     Copy constructor
     \param A :: writeSinbad to copy
@@ -199,10 +206,16 @@ writeSinbad::operator=(const writeSinbad& A)
   if (this!=&A)
     {
       Simulation::operator=(A);
+      //      PhysicsCards::operator=(A);
       cellS=A.cellS;
+      cellI1=A.cellI1;
+      cellI2=A.cellI2;
+      WFlag=A.WFlag;
+      EC=A.EC;
+      DN=A.DN;
       DT1=A.DT1;
       DT2=A.DT2;
-
+      NP=A.NP;
     }
   return *this;
 }
@@ -226,83 +239,88 @@ writeSinbad::~writeSinbad()
 
 
 
-
-
-void
-writeSinbad::SinbadWrite(Simulation& System,const std::string& Fname)
-// const
-  /*!
-    Write out all the system (in MCNPX output format)
-    \param Fname :: Output file 
-  */
+ void 
+ writeSinbad::setSinbadPhysics(Simulation& System,
+		  const mainSystem::inputParam& IParam)
 {
-  System.prepareWrite();
+  std::string WEC("");
+  if(IParam.flag("vertDet")==1)
+  WEC=IParam.getValue<std::string>("vertDet",0);
+  else if(IParam.flag("axDet")==1)
+  WEC=IParam.getValue<std::string>("axDet",0);
 
-  std::ofstream OX(Fname.c_str());
-    OX<<"Input File:"<<inputFile<<std::endl;
-    StrFunc::writeMCNPXcomment("RunCmd:"+cmdLine,OX);
-    //  writeVariables(OX);
-    // writeSinbadCells(OX);
-  writeCells(OX);
-  writeSurfaces(OX);
-  writeMaterial(OX);
-  writeSinbadWeights(OX);
-  writeSinbadTally(OX);
-  writeSinbadPhysics(OX);
-  OX.close();
-  return;
+
+
+  if(WEC=="S" && IParam.getValue<std::string>("axDet",1)=="")
+    {
+     EC=0.01;
+     DN=5.e+6;
+    }
+  else if(WEC=="In" && IParam.getValue<std::string>("axDet",1)=="")
+    {
+     EC=0.01;
+     DN=1.e+7;
+    }
+  else if(WEC=="Rh" && IParam.getValue<std::string>("axDet",1)=="")
+    {
+     EC=0.01;
+     DN=1.e+7;
+    }
+  else if(WEC=="Al" && IParam.getValue<std::string>("axDet",1)=="")
+    {
+     EC=1.0;
+     DN=1.e+7;
+    }
+  else
+    {
+     EC=0.0;
+     DN=1.e+7;
+    }
+
+
+  if(IParam.getValue<std::string>("axDet",1)=="Au")
+    {
+     EC=0.0;
+     DN=1.e+8;
+    }
+
+
+
+
+ System.getPC().setMode("n");
+
+ if(IParam.flag("n")==1) 
+    DN= IParam.getValue<int>("nps");
+
+ if(IParam.flag("ec")==1) 
+    EC= IParam.getValue<double>("Ecut");
+
+ // System.getPC().setNPS(12.e+6);
+  System.getPC().setRND(3469871871985);	
+
+
+  // physicsSystem::PhysCard& cpi=System.getPC().addPhysCard("cut","/");
+  // cpi.setValues("j 0.0");
+
+  // physicsSystem::PhysicsCards& PC=System.getPC();
+  // physicsSystem::PhysCard& NCut=PC.addPhysCard("cut","n");
+  // NCut.setValues(4,1e+8,0.0,0.4,-0.1);
+
+
+
+
+//  System.processCellsImp();
+//  System.getPC().setCells("imp",1,0);   
+//  // System.getPC().setEnergyCut(98.0);
+// System.getPC().addPhysImp("imp","n");
+
+
+//  System.getPC().setPrintNum("-30 ");
+
+
+
+  return; 
 }
-
-
-
-
-void
-writeSinbad::writeSinbadCells(std::ostream& OX) const
-  /*!
-    Write all the cells in standard MCNPX output 
-    type.
-    \param OX :: Output stream
-  */
-
-{
-  //  OX<<"c -------------------------------------------------------"<<std::endl;
-  OX<<"c --------------- CELL CARDS --------------------------"<<std::endl;
-  //  OX<<"c -------------------------------------------------------"<<std::endl;
-
-   OTYPE::const_iterator mp;
-   for(mp=OList.begin();mp!=OList.end();mp++)
-     {
-       mp->second->write(OX);
-     }
-  OX<<"c ++++++++++++++++++++++ END ++++++++++++++++++++++++++++"<<std::endl;
-  OX<<std::endl;  // Empty line manditory for MCNPX
-  return;
-}
-
-
-
-
-
-void
-writeSinbad::writeSinbadWeights(std::ostream& OX) const
-  /*!
-    Write all the used Weight in standard MCNPX output 
-    type.
-    \param OX :: Output stream
-  */
-
-{
-  WeightSystem::weightManager& WM=
-  WeightSystem::weightManager::Instance();  
-  OX<<"c -------------------------------------------------------"<<std::endl;
-  OX<<"c --------------- WEIGHT CARDS --------------------------"<<std::endl;
-  OX<<"c -------------------------------------------------------"<<std::endl;
-  WM.write(OX);
-  OX<<"c ++++++++++++++++++++++ END ++++++++++++++++++++++++++++"<<std::endl;
-  return;
-}
-
-
 
 
 
@@ -320,33 +338,65 @@ writeSinbad::setSinbadWeights(Simulation& System,
   System.populateCells();
   System.createObjSurfMap();
 
- 
-  const std::string WType=IParam.getValue<std::string>("axDet",0);
+  std::string WType("neutral");
+
+  if(IParam.flag("imp")==0)
+    WFlag=0;
+  if(IParam.flag("imp")==1)
+    WFlag=IParam.getValue<int>("imp");
+
+  if(IParam.flag("vertDet")==1)
+  WType=IParam.getValue<std::string>("vertDet",0);
+  else if(IParam.flag("axDet")==1)
+  WType=IParam.getValue<std::string>("axDet",0);
+  else
+    ELog::EM<<"NO DETECTORS INCLUDED !!! "<<ELog::endDiag;
+
+  // Manganese or gold between Cd covers
+  if(IParam.getValue<std::string>("axDet",0)=="Cd"&&IParam.getValue<std::string>("axDet",1)=="Mn")
+  WType=IParam.getValue<std::string>("axDet",1);
+
+  if(IParam.getValue<std::string>("vertDet",0)=="Cd"&&IParam.getValue<std::string>("vertDet",1)=="Mn")
+  WType=IParam.getValue<std::string>("vertDet",1);
+
+  if(IParam.getValue<std::string>("axDet",0)=="Cd"&&IParam.getValue<std::string>("axDet",1)=="Au")
+  WType=IParam.getValue<std::string>("axDet",1);
+
+  if(IParam.getValue<std::string>("vertDet",0)=="Cd"&&IParam.getValue<std::string>("vertDet",1)=="Au")
+  WType=IParam.getValue<std::string>("vertDet",1);
+
+  // detector pile up
+  if(IParam.flag("axDet")==1 && IParam.getValue<std::string>("axDet",1)!="" && WType!="Mn")
+  WType="neutral";
+  if(IParam.flag("vertDet")==1 && IParam.getValue<std::string>("vertDet",1)!="" && WType!="Mn")
+  WType="neutral";
+
+
+  if(IParam.flag("axDet")==1 && IParam.getValue<std::string>("axDet",1)!="" && WType!="Au")
+  WType="neutral";
+  if(IParam.flag("vertDet")==1 && IParam.getValue<std::string>("vertDet",1)!="" && WType!="Au")
+  WType="neutral";
+  
+
 
   std::vector<double> Eval(6);
-  // Eval[0]=1.e-11;
-  // Eval[1]=1.e-9;
-  // Eval[2]=1.e-6;
-  // Eval[3]=1.e-3;
-  // Eval[4]=1.0;
-  // Eval[5]=31.0;
-
   Eval[0]=1.e-9;
   Eval[1]=1.e-7;
   Eval[2]=1.e-5;
   Eval[3]=1.e-2;
-  Eval[4]=1.e+1;
+  Eval[4]=1.0;
   Eval[5]=31.0;
 
- std::vector<double> WT(6);
+  std::vector<double> WT(6);
+  ELog::EM<<"Weight Type: "<<WType<<ELog::endDiag;
 
-  if (WType=="Mn")
+  if (WType=="Mn"||WType=="Au")
     {
   // no action
  WT[0]=0.5;WT[1]=0.5;WT[2]=0.5;
  WT[3]=0.5;WT[4]= 0.5;WT[5]= 0.5;
     }
-  else if (WType=="S")
+  else if (WType=="S"||WType=="Al")
     {
   WT[0]=16;WT[1]=4;WT[2]=1;
   WT[3]=0.25;WT[4]= 0.05;WT[5]= 0.05;
@@ -362,17 +412,17 @@ writeSinbad::setSinbadWeights(Simulation& System,
      WT[0]=8.0;WT[1]=4.0;WT[2]=2.0;
      WT[3]=0.5;WT[4]= 0.5;WT[5]= 1.0;
     }
+  else if (WType=="neutral")
+    {
+     WT[0]=0.5;WT[1]=0.5;WT[2]=0.5;
+     WT[3]=0.5;WT[4]= 0.5;WT[5]= 0.5;
+    }
   else
     throw ColErr::InContainerError<std::string>(WType,"Unknown weight type");
 
-  // WeightSystem::weightManager& WM=
-  // WeightSystem::weightManager::Instance();  
-
- std::set<std::string> EmptySet;
- // setWeights(System,Eval,WT,EmptySet);
 
   WeightSystem::weightManager& WM=
-    WeightSystem::weightManager::Instance();  
+  WeightSystem::weightManager::Instance();  
 
   WM.addParticle<WeightSystem::WCells>('n');
   WeightSystem::WCells* WF=
@@ -383,74 +433,810 @@ writeSinbad::setSinbadWeights(Simulation& System,
   WF->setEnergy(Eval);
   System.populateWCells();
   WF->balanceScale(WT);
-  WF-> setWeights(WT);
- 
+  WF-> setWeights(WT);  //dropped log from this! w
+
   const FuncDataBase& Control=System.getDataBase();  
   const std::string preName=IParam.getValue<std::string>("preName");
-  size_t cellOffset(3);
+  int cellOffset(3);
 
- size_t S=Control.EvalVar<size_t>(preName+"ShieldNSlab");
- for(size_t i=0;i<S;i+=4)
+ std::vector<double> WT0(6);
+
+ WT0[0]=-1;
+ WT0[1]=-1;
+ WT0[2]=-1;
+ WT0[3]=-1;
+ WT0[4]=-1;
+ WT0[5]=-1;
+
+ WF-> setWeights(1,WT0);  //dropped log from this! 
+
+ 
+  // std::stringstream IS2(" ");
+  cellI1 = "imp:n 0 1 1 ";
+  cellI2 = "imp:n 0 1 1 ";
+
+  
+  std::vector<double> distW(6);
+  double cumThick(0.0);
+
+  if(preName=="49")
+   {
+    distW[0]=10;
+    distW[1]=25;
+    distW[2]=50;
+    distW[3]=80;
+    distW[4]=95;
+    distW[5]=140;
+   }
+  else  if(preName=="35")
+   {
+    distW[0]=10;
+    distW[1]=30;
+    distW[2]=50;
+    distW[3]=80;
+    distW[4]=100;
+    distW[5]=140;
+   }
+  else  if(preName=="75")
+   {
+    distW[0]=10;
+    distW[1]=20;
+    distW[2]=40;
+    distW[3]=55.3;
+    distW[4]=85;
+    distW[5]=150;
+   }
+  else if(preName=="36")
+   {
+     // this should not be changed, slab thicknesses are set already for wr
+    distW[0]=21;
+    distW[1]=41;
+    distW[2]=71;
+    distW[3]=150;
+    distW[4]=190;
+    distW[5]=190;
+   }
+  else
+   {
+    distW[0]=10;
+    distW[1]=30;
+    distW[2]=60;
+    distW[3]=90;
+    distW[4]=120;
+    distW[5]=150;
+   }
+
+
+
+
+ int S=Control.EvalVar<size_t>(preName+"ShieldNSlab");
+ int SN(0);
+ int SC(0);
+
+ for(int i=0;i<S;i++)
   {   
-   int SF=pow(4,i/4-4);
-   int RF=pow(2,i/4); 
-   if(i>16) RF=pow(2,i/4)/pow(4,i/4-4);
-   WF->rescale(cellOffset+i,cellOffset+i+3,RF);   
+   const std::string NStr(StrFunc::makeString(i));
+   cumThick+=Control.EvalVar<double>(preName+"ShieldThick"+NStr);
+   double RF(0);
+
+   if(cumThick<=distW[0])
+      {
+       if(preName=="36")
+	{
+         SN=Control.EvalVar<int>(preName+"Shield"+NStr+"SlotN");
+         SC=Control.EvalVar<int>(preName+"ShieldCutN"+NStr);
+
+         RF=pow(2,0);
+         WF->rescale(cellOffset+i,cellOffset+i,RF);   
+         cellI1 += boost::lexical_cast<std::string>(1);
+         cellI1 += " ";
+         cellI2 += boost::lexical_cast<std::string>(RF);
+         cellI2 += " ";
+
+         for (int n=0;n<SN;n++)
+	  {
+            RF=pow(2,0);
+            WF->rescale(cellOffset+i+1+n,cellOffset+i+1+n,RF);   
+            cellI1 += boost::lexical_cast<std::string>(1);
+            cellI1 += " ";
+            cellI2 += boost::lexical_cast<std::string>(RF);
+            cellI2 += " ";
+	  }
+
+          RF=pow(2,0);
+          WF->rescale(cellOffset+i+SN+1,cellOffset+i+SN+1,RF);   
+          cellI1 += boost::lexical_cast<std::string>(1);
+          cellI1 += " ";
+          cellI2 += boost::lexical_cast<std::string>(RF);
+          cellI2 += " ";
+
+          RF=pow(2,0);
+          WF->rescale(cellOffset+i+SN+2,cellOffset+i+SN+2,RF);   
+          cellI1 += boost::lexical_cast<std::string>(1);
+          cellI1 += " ";
+          cellI2 += boost::lexical_cast<std::string>(RF);
+          cellI2 += " ";
+
+          RF=pow(2,0);
+          WF->rescale(cellOffset+i+SN+3,cellOffset+i+SN+3,RF);
+          cellI1 += boost::lexical_cast<std::string>(1);
+          cellI1 += " ";
+          cellI2 += boost::lexical_cast<std::string>(RF);
+          cellI2 += " ";
+	}
+       else
+	{
+         RF=pow(2,0);
+         WF->rescale(cellOffset+i,cellOffset+i,RF);   
+         cellI1 += boost::lexical_cast<std::string>(1);
+         cellI1 += " ";
+         cellI2 += boost::lexical_cast<std::string>(RF);
+         cellI2 += " ";
+        }
+      }
+   else if(cumThick>distW[0] && cumThick<=distW[1])
+      {
+       if(preName=="75")
+       // because of cuts
+	{
+         RF=pow(2,1);
+         WF->rescale(cellOffset+2*i-1,cellOffset+2*i-1,RF);   
+         cellI1 += boost::lexical_cast<std::string>(1);
+         cellI1 += " ";
+         cellI2 += boost::lexical_cast<std::string>(RF);
+         cellI2 += " ";
+
+         RF=pow(2,0);
+         WF->rescale(cellOffset+2*i,cellOffset+2*i,RF);   
+         cellI1 += boost::lexical_cast<std::string>(1);
+         cellI1 += " ";
+         cellI2 += boost::lexical_cast<std::string>(RF);
+         cellI2 += " ";
+	}
+       else if(preName=="36")
+	{
+         SN=Control.EvalVar<int>(preName+"Shield"+NStr+"SlotN");
+         SC=Control.EvalVar<int>(preName+"ShieldCutN"+NStr);
+         RF=pow(2,0);
+         WF->rescale(cellOffset+i,cellOffset+i,RF);   
+         cellI1 += boost::lexical_cast<std::string>(1);
+         cellI1 += " ";
+         cellI2 += boost::lexical_cast<std::string>(RF);
+         cellI2 += " ";
+         for (int n=0;n<SN;n++)
+	  {
+            RF=pow(2,0);
+            WF->rescale(cellOffset+i+1,cellOffset+i+1+n,RF);   
+            cellI1 += boost::lexical_cast<std::string>(1);
+            cellI1 += " ";
+            cellI2 += boost::lexical_cast<std::string>(RF);
+            cellI2 += " ";
+	  }
+
+          RF=pow(2,0);
+          WF->rescale(cellOffset+i+SN+1,cellOffset+i+SN+1,RF);   
+          cellI1 += boost::lexical_cast<std::string>(1);
+          cellI1 += " ";
+          cellI2 += boost::lexical_cast<std::string>(RF);
+          cellI2 += " ";
+
+          RF=pow(2,1);
+          WF->rescale(cellOffset+i+SN+2,cellOffset+i+SN+2,RF);   
+          cellI1 += boost::lexical_cast<std::string>(1);
+          cellI1 += " ";
+          cellI2 += boost::lexical_cast<std::string>(RF);
+          cellI2 += " ";
+
+          RF=pow(2,0);
+          WF->rescale(cellOffset+i+SN+3,cellOffset+i+SN+3,RF);
+          cellI1 += boost::lexical_cast<std::string>(1);
+          cellI1 += " ";
+          cellI2 += boost::lexical_cast<std::string>(RF);
+          cellI2 += " ";
+	}
+       else 
+	{
+         RF=pow(2,1);
+         WF->rescale(cellOffset+i,cellOffset+i,RF);
+         cellI1 += boost::lexical_cast<std::string>(1);
+         cellI1 += " ";
+         cellI2 += boost::lexical_cast<std::string>(RF);
+         cellI2 += " ";
+	}   
+      }
+   else if(cumThick>distW[1] && cumThick<=distW[2])
+      {
+       if(preName=="75")
+       // because of cuts
+	{
+         RF=pow(2,2);
+         WF->rescale(cellOffset+2*i-1,cellOffset+2*i-1,RF);   
+         cellI1 += boost::lexical_cast<std::string>(1);
+         cellI1 += " ";
+         cellI2 += boost::lexical_cast<std::string>(RF);
+         cellI2 += " ";
+
+         RF=pow(2,1);
+         WF->rescale(cellOffset+2*i,cellOffset+2*i,RF);   
+         cellI1 += boost::lexical_cast<std::string>(1);
+         cellI1 += " ";
+         cellI2 += boost::lexical_cast<std::string>(RF);
+         cellI2 += " ";
+	}
+       else if(preName=="36")
+	{
+         SN=Control.EvalVar<int>(preName+"Shield"+NStr+"SlotN");
+         SC=Control.EvalVar<int>(preName+"ShieldCutN"+NStr);
+         RF=pow(2,0);
+         WF->rescale(cellOffset+i,cellOffset+i,RF);   
+         cellI1 += boost::lexical_cast<std::string>(1);
+         cellI1 += " ";
+         cellI2 += boost::lexical_cast<std::string>(RF);
+         cellI2 += " ";
+         for (int n=0;n<SN;n++)
+	  {
+            RF=pow(2,0);
+            WF->rescale(cellOffset+i+1,cellOffset+i+1+n,RF);   
+            cellI1 += boost::lexical_cast<std::string>(1);
+            cellI1 += " ";
+            cellI2 += boost::lexical_cast<std::string>(RF);
+            cellI2 += " ";
+	  }
+
+          RF=pow(2,0);
+          WF->rescale(cellOffset+i+SN+1,cellOffset+i+SN+1,RF);   
+          cellI1 += boost::lexical_cast<std::string>(1);
+          cellI1 += " ";
+          cellI2 += boost::lexical_cast<std::string>(RF);
+          cellI2 += " ";
+
+          RF=pow(2,1);
+          WF->rescale(cellOffset+i+SN+2,cellOffset+i+SN+2,RF);   
+          cellI1 += boost::lexical_cast<std::string>(1);
+          cellI1 += " ";
+          cellI2 += boost::lexical_cast<std::string>(RF);
+          cellI2 += " ";
+
+          RF=pow(2,0);
+          WF->rescale(cellOffset+i+SN+3,cellOffset+i+SN+3,RF);
+          cellI1 += boost::lexical_cast<std::string>(1);
+          cellI1 += " ";
+          cellI2 += boost::lexical_cast<std::string>(RF);
+          cellI2 += " ";
+	}
+       else
+	{
+         RF=pow(2,2);
+         WF->rescale(cellOffset+i,cellOffset+i,RF);   
+         cellI1 += boost::lexical_cast<std::string>(1);
+         cellI1 += " ";
+         cellI2 += boost::lexical_cast<std::string>(RF);
+         cellI2 += " ";
+        }
+      }
+   else if(cumThick>distW[2] && cumThick<=distW[3])
+      {
+       if(preName=="75")
+       // because of cuts
+	{
+         RF=pow(2,3);
+         WF->rescale(cellOffset+2*i-1,cellOffset+2*i-1,RF);   
+         cellI1 += boost::lexical_cast<std::string>(1);
+         cellI1 += " ";
+         cellI2 += boost::lexical_cast<std::string>(RF);
+         cellI2 += " ";
+         RF=pow(2,2);
+         WF->rescale(cellOffset+2*i,cellOffset+2*i,RF);   
+         cellI1 += boost::lexical_cast<std::string>(1);
+         cellI1 += " ";
+         cellI2 += boost::lexical_cast<std::string>(RF);
+         cellI2 += " "; 
+	}
+       else if(preName=="36")
+	{
+         SN=Control.EvalVar<int>(preName+"Shield"+NStr+"SlotN");
+         SC=Control.EvalVar<int>(preName+"ShieldCutN"+NStr);
+         RF=pow(2,0);
+         WF->rescale(cellOffset+i,cellOffset+i,RF);   
+         cellI1 += boost::lexical_cast<std::string>(1);
+         cellI1 += " ";
+         cellI2 += boost::lexical_cast<std::string>(RF);
+         cellI2 += " ";
+         for (int n=0;n<SN;n++)
+	  {
+            RF=pow(2,0);
+            WF->rescale(cellOffset+i+1,cellOffset+i+1+n,RF);   
+            cellI1 += boost::lexical_cast<std::string>(1);
+            cellI1 += " ";
+            cellI2 += boost::lexical_cast<std::string>(RF);
+            cellI2 += " ";
+	  }
+
+          RF=pow(2,0);
+          WF->rescale(cellOffset+i+SN+1,cellOffset+i+SN+1,RF);   
+          cellI1 += boost::lexical_cast<std::string>(1);
+          cellI1 += " ";
+          cellI2 += boost::lexical_cast<std::string>(RF);
+          cellI2 += " ";
+
+          RF=pow(2,1);
+          WF->rescale(cellOffset+i+SN+2,cellOffset+i+SN+2,RF);   
+          cellI1 += boost::lexical_cast<std::string>(1);
+          cellI1 += " ";
+          cellI2 += boost::lexical_cast<std::string>(RF);
+          cellI2 += " ";
+
+          RF=pow(2,0);
+          WF->rescale(cellOffset+i+SN+3,cellOffset+i+SN+3,RF);
+          cellI1 += boost::lexical_cast<std::string>(1);
+          cellI1 += " ";
+          cellI2 += boost::lexical_cast<std::string>(RF);
+          cellI2 += " ";
+	}   
+       else
+	{
+         RF=pow(2,3);
+         WF->rescale(cellOffset+i,cellOffset+i,RF);
+         cellI1 += boost::lexical_cast<std::string>(1);
+         cellI1 += " ";
+         cellI2 += boost::lexical_cast<std::string>(RF);
+         cellI2 += " ";
+        }
+     }
+   else if(cumThick>distW[3] && cumThick<=distW[4])
+      {
+       if(preName=="75")
+       // because of cuts
+	{
+         RF=pow(2,4);
+         WF->rescale(cellOffset+2*i-1,cellOffset+2*i-1,RF);   
+         cellI1 += boost::lexical_cast<std::string>(1);
+         cellI1 += " ";
+         cellI2 += boost::lexical_cast<std::string>(RF);
+         cellI2 += " ";
+
+	 RF=pow(2,3);
+         WF->rescale(cellOffset+2*i,cellOffset+2*i,RF);   
+         cellI1 += boost::lexical_cast<std::string>(1);
+         cellI1 += " ";
+         cellI2 += boost::lexical_cast<std::string>(RF);
+         cellI2 += " "; 
+	}
+       else if(preName=="36")
+	{
+         SN=Control.EvalVar<int>(preName+"Shield"+NStr+"SlotN");
+         SC=Control.EvalVar<int>(preName+"ShieldCutN"+NStr);
+         RF=pow(2,0);
+         WF->rescale(cellOffset+i,cellOffset+i,RF);   
+         cellI1 += boost::lexical_cast<std::string>(1);
+         cellI1 += " ";
+         cellI2 += boost::lexical_cast<std::string>(RF);
+         cellI2 += " ";
+         for (int n=0;n<SN;n++)
+	  {
+            RF=pow(2,0);
+            WF->rescale(cellOffset+i+1,cellOffset+i+1+n,RF);   
+            cellI1 += boost::lexical_cast<std::string>(1);
+            cellI1 += " ";
+            cellI2 += boost::lexical_cast<std::string>(RF);
+            cellI2 += " ";
+	  }
+
+          RF=pow(2,0);
+          WF->rescale(cellOffset+i+SN+1,cellOffset+i+SN+1,RF);   
+          cellI1 += boost::lexical_cast<std::string>(1);
+          cellI1 += " ";
+          cellI2 += boost::lexical_cast<std::string>(RF);
+          cellI2 += " ";
+
+          RF=pow(2,1);
+          WF->rescale(cellOffset+i+SN+2,cellOffset+i+SN+2,RF);   
+          cellI1 += boost::lexical_cast<std::string>(1);
+          cellI1 += " ";
+          cellI2 += boost::lexical_cast<std::string>(RF);
+          cellI2 += " ";
+
+          RF=pow(2,0);
+          WF->rescale(cellOffset+i+SN+3,cellOffset+i+SN+3,RF);
+          cellI1 += boost::lexical_cast<std::string>(1);
+          cellI1 += " ";
+          cellI2 += boost::lexical_cast<std::string>(RF);
+          cellI2 += " ";
+	}
+       else
+	{
+         RF=pow(2,2);
+         WF->rescale(cellOffset+i,cellOffset+i,RF);
+         cellI1 += boost::lexical_cast<std::string>(1);
+         cellI1 += " ";
+         cellI2 += boost::lexical_cast<std::string>(RF);
+         cellI2 += " "; 
+        }
+    }
+   else if(cumThick>distW[4] && cumThick<=distW[5])
+      {
+       if(preName=="75")
+       // because of cuts
+	{
+         RF=pow(2,0);
+         WF->rescale(cellOffset+2*i-1,cellOffset+2*i-1,RF);   
+         cellI1 += boost::lexical_cast<std::string>(1);
+         cellI1 += " ";
+         cellI2 += boost::lexical_cast<std::string>(RF);
+         cellI2 += " ";
+
+         RF=pow(2,0);
+         WF->rescale(cellOffset+2*i,cellOffset+2*i,RF);   
+         cellI1 += boost::lexical_cast<std::string>(1);
+         cellI1 += " ";
+         cellI2 += boost::lexical_cast<std::string>(RF);
+         cellI2 += " ";
+	}
+       else if(preName=="36")
+	{
+         SN=Control.EvalVar<int>(preName+"Shield"+NStr+"SlotN");
+         SC=Control.EvalVar<int>(preName+"ShieldCutN"+NStr);
+         RF=pow(2,0);
+         WF->rescale(cellOffset+i,cellOffset+i,RF);   
+         cellI1 += boost::lexical_cast<std::string>(1);
+         cellI1 += " ";
+         cellI2 += boost::lexical_cast<std::string>(RF);
+         cellI2 += " ";
+         for (int n=0;n<SN;n++)
+	  {
+            RF=pow(2,0);
+            WF->rescale(cellOffset+i+1,cellOffset+i+1+n,RF);   
+            cellI1 += boost::lexical_cast<std::string>(1);
+            cellI1 += " ";
+            cellI2 += boost::lexical_cast<std::string>(RF);
+            cellI2 += " ";
+	  }
+
+          RF=pow(2,0);
+          WF->rescale(cellOffset+i+SN+1,cellOffset+i+SN+1,RF);   
+          cellI1 += boost::lexical_cast<std::string>(1);
+          cellI1 += " ";
+          cellI2 += boost::lexical_cast<std::string>(RF);
+          cellI2 += " ";
+
+          RF=pow(2,1);
+          WF->rescale(cellOffset+i+SN+2,cellOffset+i+SN+2,RF);   
+          cellI1 += boost::lexical_cast<std::string>(1);
+          cellI1 += " ";
+          cellI2 += boost::lexical_cast<std::string>(RF);
+          cellI2 += " ";
+
+          RF=pow(2,0);
+          WF->rescale(cellOffset+i+SN+3,cellOffset+i+SN+3,RF);
+          cellI1 += boost::lexical_cast<std::string>(1);
+          cellI1 += " ";
+          cellI2 += boost::lexical_cast<std::string>(RF);
+          cellI2 += " ";
+	}
+       else
+        {
+         RF=pow(2,1);
+         WF->rescale(cellOffset+i,cellOffset+i,RF);
+         cellI1 += boost::lexical_cast<std::string>(1);
+         cellI1 += " ";
+         cellI2 += boost::lexical_cast<std::string>(RF);
+         cellI2 += " ";   
+        }
+
+     }
+    else
+      {
+      if(preName=="75")
+       // because of cuts
+	{
+         RF=pow(2,0);
+         WF->rescale(cellOffset+2*i-1,cellOffset+2*i-1,RF);   
+         cellI1 += boost::lexical_cast<std::string>(1);
+         cellI1 += " ";
+         cellI2 += boost::lexical_cast<std::string>(RF);
+         cellI2 += " ";
+         RF=pow(2,0);
+         WF->rescale(cellOffset+2*i,cellOffset+2*i,RF);   
+         cellI1 += boost::lexical_cast<std::string>(1);
+         cellI1 += " ";
+         cellI2 += boost::lexical_cast<std::string>(RF);
+         cellI2 += " ";
+	}
+       else if(preName=="36")
+	{
+         SN=Control.EvalVar<int>(preName+"Shield"+NStr+"SlotN");
+         SC=Control.EvalVar<int>(preName+"ShieldCutN"+NStr);
+         RF=pow(2,0);
+         WF->rescale(cellOffset+i,cellOffset+i,RF);   
+         cellI1 += boost::lexical_cast<std::string>(1);
+         cellI1 += " ";
+         cellI2 += boost::lexical_cast<std::string>(RF);
+         cellI2 += " ";
+         for (int n=0;n<SN;n++)
+	  {
+            RF=pow(2,0);
+            WF->rescale(cellOffset+i+1,cellOffset+i+1+n,RF);   
+            cellI1 += boost::lexical_cast<std::string>(1);
+            cellI1 += " ";
+            cellI2 += boost::lexical_cast<std::string>(RF);
+            cellI2 += " ";
+	  }
+
+          RF=pow(2,0);
+          WF->rescale(cellOffset+i+SN+1,cellOffset+i+SN+1,RF);   
+          cellI1 += boost::lexical_cast<std::string>(1);
+          cellI1 += " ";
+          cellI2 += boost::lexical_cast<std::string>(RF);
+          cellI2 += " ";
+
+          RF=pow(2,1);
+          WF->rescale(cellOffset+i+SN+2,cellOffset+i+SN+2,RF);   
+          cellI1 += boost::lexical_cast<std::string>(1);
+          cellI1 += " ";
+          cellI2 += boost::lexical_cast<std::string>(RF);
+          cellI2 += " ";
+
+          RF=pow(2,0);
+          WF->rescale(cellOffset+i+SN+3,cellOffset+i+SN+3,RF);
+          cellI1 += boost::lexical_cast<std::string>(1);
+          cellI1 += " ";
+          cellI2 += boost::lexical_cast<std::string>(RF);
+          cellI2 += " ";
+	}
+      else
+       {   
+        RF=pow(2,0);
+        WF->rescale(cellOffset+i,cellOffset+i,RF);   
+        cellI1 += boost::lexical_cast<std::string>(1);
+        cellI1 += " ";
+        cellI2 += boost::lexical_cast<std::string>(RF);
+        cellI2 += " "; 
+	}
+     }
   }
 
+
   cellOffset=3+S+1;
+  if(preName=="36")
+   cellOffset=cellOffset+S-1+SN+3;
+  if(preName=="75")
+   cellOffset=cellOffset+2*S-1;
 
-
-  size_t NS=Control.EvalVar<size_t>(preName+"NestorSideNSlab");
-  for(size_t i=0;i<NS-1;i+=2)
+  int NS=Control.EvalVar<size_t>(preName+"NestorSideNSlab");
+  for(int i=0;i<NS-1;i+=2)
    {   
     double SF=(NS/2+1);
     double RF=i/SF/2; 
     if(i==0) RF=1/SF/2;
     WF->rescale(cellOffset+i,cellOffset+i+1,RF);  
-    //  ELog::EM<<" RRRFF "<<RF<<"  "<<SF<<" "<<cellOffset+i<<ELog::endDiag; 
    }
 
- size_t FPL=Control.EvalVar<size_t>(preName+"FissionPlateNSlab");
- size_t FPX=Control.EvalVar<size_t>(preName+"FissionPlateNXSpace");
- size_t FPZ=Control.EvalVar<size_t>(preName+"FissionPlateNZSpace");
- size_t FPN=FPL+(FPZ-1)*(FPX-1)+3;
- size_t D=Control.EvalVar<size_t>(preName+"DetNY");
- std::string DT=IParam.getValue<std::string>("axDet",0);
- cellOffset=3+NS+S+1+FPN;
-
- for(size_t i=0;i<9;i+=2)
+  for(int i=0;i<NS-1;i++)
    {   
-    int RF=pow(2,i/2); 
-    WF->rescale(cellOffset+i,cellOffset+i+1,RF);   
+    cellI1 += boost::lexical_cast<std::string>(1);
+    cellI1 += " ";
+    // no n-killing with imp option 2 (there is source bias anyway)
+    cellI2 += boost::lexical_cast<std::string>(1);
+    cellI2 += " ";   
    }
 
-   cellOffset=3+NS+S+1+FPN+9;
-   const std::vector<int> CL=getCellVector();
-    int RF=pow(2,4); 
-
-   WF->rescale(cellOffset,CL.size(),RF);   
-
-  //  const ModelSupport::objectRegister& OR=
-  // 	  ModelSupport::objectRegister::Instance();
-  //    int cellOff1=OR.getCell("49FissionPlate");
-  //    int cellNum1=OR.getRange("49FissionPlate");
-  //    int cellOff2=OR.getCell("49Shield");
-  //    int cellNum2=OR.getRange("49Shield");
-
-  //    int cellOff3=OR.getCell("49NestorSide");
-  //    int cellNum3=OR.getRange("49NestorSide");
-  // OTYPE::const_iterator vc;  
-  // for(vc=OList.begin();vc!=OList.end();vc++)
-  //   {
-  //     const int cNum=vc->second->getName();
-  //     //      const std::vector<const Geometry::Surface*>& cPt=vc->second->getSurList();
-  // const int cMat=vc->second->getMat();
-  // const int cImp=vc->second->getImp();
-  //     ELog::EM<<" NNNNN "<<cellOff1<<"  "<<cellOff2<<"  "<<cellOff3<<"  "<<cMat<<"  "<<cImp<<" "<<cNum<<ELog::endBasic;
 
 
-  //   }
+ size_t FPL1=Control.EvalVar<size_t>(preName+"FissionPlateNSlab");
+ size_t FPX1=Control.EvalVar<size_t>(preName+"FissionPlateNXSpace");
+ size_t FPZ1=Control.EvalVar<size_t>(preName+"FissionPlateNZSpace");
+ size_t FPN1=FPL1+(FPZ1-1)*(FPX1-1)+3;
+
+ std::string DTV=IParam.getValue<std::string>("axDet",0);
+ int FPN=static_cast<int>(FPN1);
+
+  for(int i=0;i<FPN+1;i++)
+   {   
+    cellI1 += boost::lexical_cast<std::string>(1);
+    cellI1 += " ";
+    cellI2 += boost::lexical_cast<std::string>(1);
+    cellI2 += " ";   
+   }
+
+ cellOffset=3+NS+S+FPN;
+
+  std::vector<std::string> DT;
+  std::vector<std::string> DF;
+  std::vector<double> DO;
+
+  size_t t(0);
+  while(t<10 && IParam.getValue<std::string>("axDet",t).size()!=0)
+    {
+     DT.push_back(IParam.getValue<std::string>("axDet",t));
+     DF.push_back("Axial");
+     t=t+1;
+    }
+  t=0;
+  while(t<10 && IParam.getValue<std::string>("vertDet",t).size()!=0)
+    {
+     DT.push_back(IParam.getValue<std::string>("vertDet",t));
+     DF.push_back("Vertical");
+     t=t+1;
+    }
+
+
+
+
+  // support vector dor detector pile-up
+  std::vector<double> CumOffset;  
+
+  // insert a row/column of detectors
+  for(size_t i=0;i<DT.size();i++)
+    {
+     // detector key (e.g. 49S)
+
+     const std::string detKey=preName+DT[i];
+     const std::string detFlag=DF[i];
+
+
+     // number of axial/vertical detectors
+     size_t detNY(0);
+     size_t detNZ(0);
+     if(detFlag=="Axial")
+       {
+        detNY=Control.EvalVar<size_t>(preName+"DetNY");
+        detNZ=1;
+       }
+     if(detFlag=="Vertical")
+       {
+
+
+        detNY =Control.EvalVar<size_t>(detKey+"VscanNY");
+        detNZ=Control.EvalPair<int>(detKey,preName,"DetNZ");
+	//  detNZ =Control.EvalVar<size_t>(preName+"DetNZ");
+       }
+
+     double detOffset(0.0);
+     // loop along axial positions
+     std::string YIndex("");
+     std::string ZIndex("");
+     for(size_t iy=0;iy<detNY;iy++)
+       {
+
+ 	YIndex="Y";  
+ 	std::stringstream IS2("");
+        IS2<< iy;
+        std::string s2 = IS2.str();
+ 	YIndex+=s2;     
+        // loop along vertical positions
+        for(size_t iz=0;iz<detNZ;iz++)
+          {
+ 	   ZIndex="Z";  
+           std::stringstream IS1("");
+           IS1<< iz;
+           std::string s1 = IS1.str();
+           ZIndex+=s1;
+
+           size_t id(0); 
+           if(detFlag=="Vertical")
+             id=iz+iy*(detNY);
+           if(detFlag=="Axial")
+ 	     id=iy;
+ 
+          // create the detector array 
+
+	    // makeSinbad Secondary;
+	   if(Control.EvalVar<double>(detKey+"Active"+YIndex)==1)
+	    {
+	     detOffset=Control.EvalVar<double>(preName+"Step"+YIndex);
+	     cellOffset=cellOffset+1;
+	     double RD(0.0);
+
+             if(detFlag=="Axial" && detOffset<=distW[0])
+              {
+               RD=pow(2,0);
+               WF->rescale(cellOffset,cellOffset,RD);
+               cellI1 += boost::lexical_cast<std::string>(1);
+               cellI1 += " ";
+               cellI2 += boost::lexical_cast<std::string>(RD);
+               cellI2 += " ";   
+              }
+
+             else if(detFlag=="Axial" && detOffset>distW[0] && detOffset<=distW[1])
+              {
+               RD=pow(2,1);
+               WF->rescale(cellOffset,cellOffset,RD);   
+               cellI1 += boost::lexical_cast<std::string>(1);
+               cellI1 += " ";
+               cellI2 += boost::lexical_cast<std::string>(RD);
+               cellI2 += " ";   
+              }
+
+             else if(detFlag=="Axial" && detOffset>distW[1] && detOffset<=distW[2])
+              {
+               RD=pow(2,2);
+               WF->rescale(cellOffset,cellOffset,RD);   
+               cellI1 += boost::lexical_cast<std::string>(1);
+               cellI1 += " ";
+               cellI2 += boost::lexical_cast<std::string>(RD);
+               cellI2 += " ";   
+              }
+
+           else if(detFlag=="Axial" && detOffset>distW[2] && detOffset<distW[3])
+              {
+               RD=pow(2,3);
+               WF->rescale(cellOffset,cellOffset,RD);   
+               cellI1 += boost::lexical_cast<std::string>(1);
+               cellI1 += " ";
+               cellI2 += boost::lexical_cast<std::string>(RD);
+               cellI2 += " ";   
+              }
+
+           else if(detFlag=="Axial" && detOffset>distW[3] && detOffset<=distW[4])
+              {
+               RD=pow(2,2);
+               WF->rescale(cellOffset,cellOffset,RD);   
+               cellI1 += boost::lexical_cast<std::string>(1);
+               cellI1 += " ";
+               cellI2 += boost::lexical_cast<std::string>(RD);
+               cellI2 += " ";   
+              }
+           else if(detFlag=="Axial" && detOffset>distW[4] && detOffset<=distW[5])
+              {
+               RD=pow(2,1);
+               WF->rescale(cellOffset,cellOffset,RD);   
+               cellI1 += boost::lexical_cast<std::string>(1);
+               cellI1 += " ";
+               cellI2 += boost::lexical_cast<std::string>(RD);
+               cellI2 += " ";   
+              }
+            else
+              {
+	       if(detFlag=="Axial") 
+		{ 
+                 RD=pow(2,0);
+                 WF->rescale(cellOffset,cellOffset,RD);
+                 cellI1 += boost::lexical_cast<std::string>(1);
+                 cellI1 += " ";
+                 cellI2 += boost::lexical_cast<std::string>(RD);
+                 cellI2 += " ";   
+		}
+		if(detFlag=="Vertical") 
+		 {
+		 if(preName=="49")
+                 RD=pow(2,2);
+		 if(preName=="75")
+                 RD=pow(2,2);
+                 WF->rescale(cellOffset,cellOffset,RD);
+               cellI1 += boost::lexical_cast<std::string>(1);
+               cellI1 += " ";
+               cellI2 += boost::lexical_cast<std::string>(RD);
+               cellI2 += " ";   
+		 }
+              }
+ 
+	    }
+
+ 	   }
+ 	 }
+    }
+
+  // temp fix: assume remaing detector cells (for some reason not parsed above)
+  // are vertical detectors (like TLD) and rescale to 4
+ const std::vector<int> CD=System.getCellVector();
+ size_t RST(0);
+ RST=CD.size()-cellOffset;
+ RST=0;
+ ELog::EM<<" DDD "<<RST<<" "<<CD.size()<<" "<<cellOffset<<ELog::endDiag;
+
+ 
+if (RST>0)
+  {
+   for(size_t i=0;i<RST;i++)
+    {
+     cellOffset+=1;                 
+     WF->rescale(cellOffset,cellOffset,4);
+     cellI1 += boost::lexical_cast<std::string>(1);
+     cellI1 += " ";
+     cellI2 += boost::lexical_cast<std::string>(4);
+     cellI2 += " ";   
+    }
+  }
 
 
 
@@ -460,10 +1246,6 @@ writeSinbad::setSinbadWeights(Simulation& System,
 
 
 
-
-
-
-  // std::string
 void
 writeSinbad::setSinbadTally(Simulation& System,
 			       const mainSystem::inputParam& IParam)
@@ -487,15 +1269,69 @@ writeSinbad::setSinbadTally(Simulation& System,
 
  for(size_t i=cellOffset;i<CL.size()+1;i++)
    {
-    IS2<<" ";
-    IS2<< i;
-    DT1.push_back(i);
     DT2.push_back(System.getCellMaterial(i));
+    DT1.push_back(i);
+
+    // exclude cells of cadmium (always mat 106),
+    if(DT2[i-cellOffset]!=106)
+      {
+       IS2<<" ";
+       IS2<< i;
+      }
    }
  std::string s2 = IS2.str();
  cellS=s2;
 
  return; 
+}
+
+
+
+
+  /////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////
+
+
+
+void
+writeSinbad::writeSinbadPhysics(std::ostream& OX) const
+  /*!
+    Write all the used Weight in standard MCNPX output 
+    type. Note that it also has to add the rdum cards
+    to the physics
+    \param OX :: Output stream
+  */
+{
+  ELog::RegMethod RegA("Simulation","writePhysics");
+
+  OX<<"c --------------- PHYSICS CARDS --------------------------"<<std::endl;
+
+    PhysPtr->getMode().write(OX);
+    OX<<"cut:n  j "<<EC<<std::endl;
+
+  OX<<"c --------------- SOURCE CARDS --------------------------"<<std::endl;
+
+    PhysPtr-> getSDefCard().write(OX);
+
+  OX<<"c --------------- PERIPHERAL CARDS --------------------------"<<std::endl;
+
+ // OX<<"c  +++ peripheral cards +++"<<std::endl;
+
+
+ OX<<"nps "<<DN<<std::endl;
+ OX<<"dbcn "<<3469871871985<<std::endl;
+ OX<<"prdmp "<<std::endl;
+   //<<DN/2<<" "<<DN/2<<std::endl;
+
+ OX<<"print -10 -20 -30 -70 -98 -120 -126 -130 -140 -170 "<<std::endl;
+
+
+
+  // Remaining Physics cards
+      //  PhysPtr->sinbadPhysicsCards(OX,cellOutOrder);
+  OX<<std::endl;  // MCNPX requires a blank line to terminate
+  return;
 }
 
 
@@ -509,9 +1345,7 @@ writeSinbad::writeSinbadTally(std::ostream& OX) const
     \param OX :: Output stream
    */
 {
-  OX<<"c -------------------------------------------------------------------"<<std::endl;
-  OX<<"c ------------------- TALLY CARDSXXX ---------------------------"<<std::endl;
-  OX<<"c -----------------------------------------------------------"<<std::endl;
+  OX<<"c ------------------- TALLY CARDS ---------------------------"<<std::endl;
   // The totally insane line below does the following
   // It iterats over the Titems and since they are a map
   // uses the mathSupport:::PSecond
@@ -545,60 +1379,31 @@ writeSinbad::writeSinbadTally(std::ostream& OX) const
   OX<<"        2.4000E-01  1i  2.7000E-01  2.8000E-01  5i  4.0000E-01  7i     "<<std::endl;
   OX<<"        6.0000E-01  3i  7.2000E-01  6i  1.0000E-00  189i  20.0         "<<std::endl;
 
-  std::string cellS1("");
-  std::string cellS2("");
-  std::string cellS3("");
- 
- if(cellS.size()<65)
-   OX<<" f4:n ("<<cellS<<")"<<std::endl;
- else if(cellS.size()>=65&&cellS.size()<130)
-   {
-   for(size_t i1=0;i1<65;i1++)
-     cellS1+=cellS[i1];
-   OX<<" f4:n ("<<cellS1<<std::endl;
- 
-   for(size_t i2=60;i2<cellS.size();i2++)
-     cellS2+=cellS[i2];
-   OX<<"       "<<cellS2<<" )"<<std::endl;
-   }
- else 
-   {
-   for(size_t i1=0;i1<65;i1++)
-     cellS1+=cellS[i1];
-   OX<<" f4:n ("<<cellS1<<std::endl;
- 
-   for(size_t i2=60;i2<124;i2++)
-     cellS2+=cellS[i2];
-   OX<<"       "<<cellS2<<std::endl;
 
-   for(size_t i3=124;i3<cellS.size();i3++)
-     cellS3+=cellS[i3];
-   OX<<"       "<<cellS3<<" )"<<std::endl;
-  ELog::EM<<" lots of tally 4 cells. Check if all are present! Only 3 f4 lines allowed"<<ELog::endDiag; 
+  std::string cellS4(" f4:n  ");
+  StrFunc::writeMCNPX(cellS4+cellS,OX);
+     OX<<" fq4 e f "<<std::endl;
 
-   }
-
- ELog::EM<<" MTTT "<<DT1.size()<<ELog::endDiag; 
+     // mat 101: S
+     // mat 103: Rh
+     // mat 104: Mn 
+     // mat 105: Au
+     // mat 107: In
+     // mat 109: Al
 
      std::stringstream is101(" ");
      std::stringstream is103(" ");
      std::stringstream is104(" ");
      std::stringstream is105(" ");
      std::stringstream is107(" ");
+     std::stringstream is109(" ");
 
      std::string s101(" ");
-     std::string s101a(" ");
-     std::string s101b(" ");
      std::string s103(" ");     
-     std::string s103a(" ");     
-     std::string s103b(" ");     
      std::string s104(" ");     
-     std::string s104a(" ");     
-     std::string s104b(" ");     
      std::string s105(" ");
-     std::string s105a(" ");
-     std::string s105b(" ");
      std::string s107(" ");
+     std::string s109(" ");
 
  for(size_t i=0;i<DT1.size();i++)
    {
@@ -626,11 +1431,18 @@ writeSinbad::writeSinbadTally(std::ostream& OX) const
       is105<< DT1[i];
       s105 = is105.str();
      }
+    //In
     if(DT2[i]==107)
      {
       is107<<" ";
       is107<< DT1[i];
       s107 = is107.str();
+     }
+    if(DT2[i]==109)
+     {
+      is109<<" ";
+      is109<< DT1[i];
+      s109 = is109.str();
      }
    }
 
@@ -638,81 +1450,209 @@ writeSinbad::writeSinbadTally(std::ostream& OX) const
 
   if(s101!=" ")
    {
-    LL=s101.size(); 
-    if(LL<65)
-      OX<<" f104:n ("<<s101<<" )"<<std::endl;
-    else
-      {
-	for(size_t i=0;i<65;i++)
-	  s101a+=s101[i];
-	for(size_t i=65;i<LL;i++)
-	  s101b+=s101[i];
-      OX<<"f104:n ("<<s101a<<std::endl;
-      OX<<"          "<<s101b<<" )"<<std::endl;
-      }
-    OX<<" m201  16032. 1 "<<std::endl;
-    OX<<" fm104:n ( 1 "<<201<<" "<<103<<" )"<<std::endl;
+    StrFunc::writeMCNPX(" f114:n "+s101+" ",OX);
+    OX<<" fq114 e f "<<std::endl;
+    OX<<" m201  16032.10y 1 "<<std::endl;
+    OX<<" fm114:n ( 1 "<<201<<" "<<103<<" )"<<std::endl;
    }
 
   if(s103!=" ")
    {
-    LL=s103.size(); 
-    if(LL<65)
-      OX<<" f114:n ("<<s103<<" )"<<std::endl;
-    else
-      {
-	for(size_t i=0;i<65;i++)
-	  s103a+=s103[i];
-	for(size_t i=65;i<LL;i++)
-	  s103b+=s103[i];
-      OX<<"f114:n ("<<s103a<<std::endl;
-      OX<<"          "<<s103b<<" )"<<std::endl;
-      }
-    OX<<" m203  45103. 1 "<<std::endl;
-    OX<<" fm114:n ( 1 "<<203<<" "<<10004<<" )"<<std::endl;
+    StrFunc::writeMCNPX(" f134:n "+s103+" ",OX);
+    OX<<" fq134 e f "<<std::endl;
+    OX<<" m203  45103.10y 1 "<<std::endl;
+    OX<<" fm134:n ( 1 "<<203<<" "<<11004<<" )"<<std::endl;
    }
 
   if(s104!=" ")
    {
-    LL=s104.size(); 
-    if(LL<65)
-      OX<<" f124:n ("<<s104<<" )"<<std::endl;
-    else
-      {
-	for(size_t i=0;i<65;i++)
-	  s104a+=s104[i];
-	for(size_t i=65;i<LL;i++)
-	  s104b+=s104[i];
-      OX<<"f124:n ("<<s104a<<std::endl;
-      OX<<"          "<<s104b<<" )"<<std::endl;
-      }
-    OX<<" m204  25055. 1 "<<std::endl;
-    OX<<" fm124:n ( 1 "<<204<<" "<<102<<" )"<<std::endl;
+    StrFunc::writeMCNPX(" f144:n "+s104+" ",OX);
+    OX<<" fq144 e f "<<std::endl;
+    OX<<" m204  25055.10y 1 "<<std::endl;
+    OX<<" fm144:n ( 1 "<<204<<" "<<102<<" )"<<std::endl;
    }
 
   if(s105!=" ")
    {
-    LL=s105.size(); 
-    if(LL<65)
-      OX<<" f134:n ("<<s105<<" )"<<std::endl;
-    else
-      {
-	for(size_t i=0;i<65;i++)
-	  s105a+=s105[i];
-	for(size_t i=65;i<LL;i++)
-	  s105b+=s105[i];
-      OX<<"f134:n ("<<s105a<<std::endl;
-      OX<<"          "<<s105b<<" )"<<std::endl;
-      }
-    OX<<" m205  79197. 1 "<<std::endl;
-    OX<<" fm134:n ( 1 "<<105<<" "<<102<<" )"<<std::endl;
+    StrFunc::writeMCNPX(" f154:n "+s105+" ",OX);
+    OX<<" fq154 e f "<<std::endl;
+    OX<<" m205  79197.10y  1 "<<std::endl;
+    OX<<" fm154:n ( 1 "<<205<<" "<<102<<" )"<<std::endl;
    }
 
   if(s107!=" ")
    {
-    OX<<" f144:n ("<<s107<<" )"<<std::endl;
-    //  OX<<" fm144:n ( 1 "<<107<<" "<<"???)"<<std::endl;
+    StrFunc::writeMCNPX(" f174:n "+s107+" ",OX);
+    OX<<" fq174 e f "<<std::endl;
+    OX<<" m207  49115.10y 1. "<<std::endl;
+    OX<<" fm174:n ( 1 "<<207<<" "<<10004<<" )"<<std::endl;
    }
+
+ if(s109!=" ")
+  {
+   StrFunc::writeMCNPX(" f194:n "+s109+" ",OX);
+   OX<<" fq194 e f "<<std::endl;
+   OX<<" m209  13027.10y 1. "<<std::endl;
+   OX<<" fm194:n ( 1 "<<209<<" "<<107<<" )"<<std::endl;
+  }
+
+
+  return;
+}
+
+
+
+
+void
+writeSinbad::writeSinbadWeights(std::ostream& OX) const
+  /*!
+    Write all the used Weight in standard MCNPX output 
+    type.
+    \param OX :: Output stream
+  */
+
+{
+
+  WeightSystem::weightManager& WM=
+  WeightSystem::weightManager::Instance();  
+  OX<<"c --------------- WEIGHT CARDS --------------------------"<<std::endl;
+  if(WFlag==0)
+  WM.write(OX);
+  if(WFlag==1)
+  StrFunc::writeMCNPX(cellI1,OX);
+  if(WFlag==2)
+  StrFunc::writeMCNPX(cellI2,OX);
+
+
+
+  return;
+}
+
+  
+
+
+void
+writeSinbad::writeSinbadMaterial(std::ostream& OX) const
+  /*!
+    Write all the used Materials in standard MCNPX output 
+    type.
+    \param OX :: Output stream
+  */
+
+{
+  OX<<"c -------------------------------------------------------"<<std::endl;
+  ModelSupport::DBMaterial& DB=ModelSupport::DBMaterial::Instance();  
+  DB.resetActive();
+
+  OTYPE::const_iterator mp;
+  for(mp=OList.begin();mp!=OList.end();mp++)
+    DB.setActive(mp->second->getMat());
+
+  DB.writeMCNPX(OX);
+
+
+
+
+  //  OX<<"c ++++++++++++++++++++++ END ++++++++++++++++++++++++++++"<<std::endl;
+  return;
+}
+
+
+
+
+
+
+void
+writeSinbad::writeSinbadSurfaces(std::ostream& OX) const
+  /*!
+    Write all the surfaces in standard MCNPX output 
+    type.
+    \param OX :: Output stream
+  */
+
+{
+  OX<<"c --------------- SURFACE CARDS -------------------------"<<std::endl;
+
+  const ModelSupport::surfIndex::STYPE& SurMap =
+    ModelSupport::surfIndex::Instance().surMap();
+
+  std::map<int,Geometry::Surface*>::const_iterator mp;
+  for(mp=SurMap.begin();mp!=SurMap.end();mp++)
+    {
+      (mp->second)->write(OX);
+    }
+  //  OX<<"c ++++++++++++++++++++++ END ++++++++++++++++++++++++++++"<<std::endl;
+  OX<<std::endl;
+  return;
+}
+
+
+
+
+void
+writeSinbad::writeSinbadCells(std::ostream& OX) const
+  /*!
+    Write all the cells in standard MCNPX output 
+    type.
+    \param OX :: Output stream
+  */
+
+{
+  //  OX<<"c -------------------------------------------------------"<<std::endl;
+  OX<<"c --------------- CELL CARDS --------------------------"<<std::endl;
+  //  OX<<"c -------------------------------------------------------"<<std::endl;
+
+   OTYPE::const_iterator mp;
+   for(mp=OList.begin();mp!=OList.end();mp++)
+     {
+       mp->second->write(OX);
+     }
+   //  OX<<"c ++++++++++++++++++++++ END ++++++++++++++++++++++++++++"<<std::endl;
+  OX<<std::endl;  // Empty line manditory for MCNPX
+  return;
+}
+
+
+    
+
+void
+writeSinbad::SinbadWrite(Simulation& System,const std::string& Fname)
+// const
+  /*!
+    Write out all the system (in MCNPX output format)
+    \param Fname :: Output file 
+  */
+{
+  System.prepareWrite();
+
+  std::ofstream OX(Fname.c_str());
+  OX<<"Input File:"<<inputFile<<std::endl;
+  StrFunc::writeMCNPXcomment("RunCmd:"+cmdLine,OX);
+
+  writeSinbadCells(OX);
+  writeSinbadSurfaces(OX);
+  writeSinbadMaterial(OX);
+  writeSinbadWeights(OX);
+  writeSinbadTally(OX);
+  writeSinbadPhysics(OX);
+  OX.close();
+  return;
+}
+
+
+
+
+
+}
+
+
+
+
+
+
+
+
+
 
 
 
@@ -732,388 +1672,167 @@ writeSinbad::writeSinbadTally(std::ostream& OX) const
   //     //      const std::vector<const Geometry::Surface*>& cPt=vc->second->getSurList();
   // const int cMat=vc->second->getMat();
   // const int cImp=vc->second->getImp();
+
+
+  //  const ModelSupport::objectRegister& OR=
+  // 	  ModelSupport::objectRegister::Instance();
+  //    int cellOff1=OR.getCell("49FissionPlate");
+  //    int cellNum1=OR.getRange("49FissionPlate");
+  //    int cellOff2=OR.getCell("49Shield");
+  //    int cellNum2=OR.getRange("49Shield");
+
+  //    int cellOff3=OR.getCell("49NestorSide");
+  //    int cellNum3=OR.getRange("49NestorSide");
+  // OTYPE::const_iterator vc;  
+  // for(vc=OList.begin();vc!=OList.end();vc++)
+  //   {
+  //     const int cNum=vc->second->getName();
+  //     //      const std::vector<const Geometry::Surface*>& cPt=vc->second->getSurList();
+  // const int cMat=vc->second->getMat();
+  // const int cImp=vc->second->getImp();
   //     ELog::EM<<" NNNNN "<<cellOff1<<"  "<<cellOff2<<"  "<<cellOff3<<"  "<<cMat<<"  "<<cImp<<" "<<cNum<<ELog::endBasic;
 
 
-
- // OX<<" fm4:n ( 1 "<<201<<" "<<103<<")"<<std::endl;
-
-
-
-  return;
-}
+  //   }
 
 
 
 
 
 
-} //end namespace sinbad
+
+
+  // if(s101!=" ")
+  //  {
+
+  //   LL=s101.size(); 
+  //   if(LL<65)
+  //     OX<<" f104:n ("<<s101<<" )"<<std::endl;
+  //   else
+  //     {
+  // 	for(size_t i=0;i<65;i++)
+  // 	  s101a+=s101[i];
+  // 	for(size_t i=65;i<LL;i++)
+  // 	  s101b+=s101[i];
+  //     OX<<"f104:n ("<<s101a<<std::endl;
+  //     OX<<"          "<<s101b<<" )"<<std::endl;
+  //     }
+  //   OX<<" m201  16032. 1 "<<std::endl;
+  //   OX<<" fm104:n ( 1 "<<201<<" "<<103<<" )"<<std::endl;
+  //  }
+
+  // if(s103!=" ")
+  //  {
+  //   LL=s103.size(); 
+  //   if(LL<65)
+  //     OX<<" f114:n ("<<s103<<" )"<<std::endl;
+  //   else
+  //     {
+  // 	for(size_t i=0;i<65;i++)
+  // 	  s103a+=s103[i];
+  // 	for(size_t i=65;i<LL;i++)
+  // 	  s103b+=s103[i];
+  //     OX<<"f114:n ("<<s103a<<std::endl;
+  //     OX<<"          "<<s103b<<" )"<<std::endl;
+  //     }
+  //   OX<<" m203  45103. 1 "<<std::endl;
+  //   OX<<" fm114:n ( 1 "<<203<<" "<<10004<<" )"<<std::endl;
+  //  }
+
+  // if(s104!=" ")
+  //  {
+  //   LL=s104.size(); 
+  //   if(LL<65)
+  //     OX<<" f124:n ("<<s104<<" )"<<std::endl;
+  //   else
+  //     {
+  // 	for(size_t i=0;i<65;i++)
+  // 	  s104a+=s104[i];
+  // 	for(size_t i=65;i<LL;i++)
+  // 	  s104b+=s104[i];
+  //     OX<<"f124:n ("<<s104a<<std::endl;
+  //     OX<<"          "<<s104b<<" )"<<std::endl;
+  //     }
+  //   OX<<" m204  25055. 1 "<<std::endl;
+  //   OX<<" fm124:n ( 1 "<<204<<" "<<102<<" )"<<std::endl;
+  //  }
+
+  // if(s105!=" ")
+  //  {
+  //   LL=s105.size(); 
+  //   if(LL<65)
+  //     OX<<" f134:n ("<<s105<<" )"<<std::endl;
+  //   else
+  //     {
+  // 	for(size_t i=0;i<65;i++)
+  // 	  s105a+=s105[i];
+  // 	for(size_t i=65;i<LL;i++)
+  // 	  s105b+=s105[i];
+  //     OX<<"f134:n ("<<s105a<<std::endl;
+  //     OX<<"          "<<s105b<<" )"<<std::endl;
+  //     }
+  //   OX<<" m205  79197. 1 "<<std::endl;
+  //   OX<<" fm134:n ( 1 "<<105<<" "<<102<<" )"<<std::endl;
+  //  }
+
+  // if(s107!=" ")
+  //  {
+  //   OX<<" f144:n ("<<s107<<" )"<<std::endl;
+  //   //  OX<<" fm144:n ( 1 "<<107<<" "<<"???)"<<std::endl;
+  //  }
 
 
 
 
 
-
-namespace physicsSystem
-{
-
-
-void 
-PhysicsCards::sinbadPhysicsCards(std::ostream& OX,
-		    const std::vector<int>& cellOutOrder) const 
-  /*!
-    Write out each of the cards
-    \param OX :: Output stream
-    \param cellOutOrder :: Cell List
-    \todo Check that histp does not need a line cut.
-  */
-{
-  ELog::RegMethod RegA("PhyiscsCards","write");
-  mode.write(OX);
-
-
- OX<<"c  +++ source cards +++"<<std::endl;
-
- sdefCard.write(OX);
- // sourceCard.write(OX);
-
- OX<<"c  +++ peripheral cards +++"<<std::endl;
-
-  OX<<"nps "<<nps<<std::endl;
-  OX<<"dbcn "<<rndSeed<<std::endl;
-
-  // Volume.write(OX,cellOutOrder);
-  
-  // for_each(ImpCards.begin(),ImpCards.end(),
-  // 	   boost::bind<void>(&PhysImp::write,_1,boost::ref(OX),
-  // 			     boost::ref(cellOutOrder)));
-
-  // for_each(PhysCards.begin(),PhysCards.end(),
-  // 	   boost::bind<void>(&PhysCard::write,_1,boost::ref(OX)));
-  
-  // for_each(Basic.begin(),Basic.end(),
-  // 	   boost::bind2nd(&StrFunc::writeMCNPX,OX));
-
-
-  std::string prdmp(" j j j j j ");
-   StrFunc::writeMCNPX("prdmp "+prdmp,OX);
-  
-  if (!printNum.empty())
-    {
-      std::ostringstream cx;
-      cx<<"print ";
-      copy(printNum.begin(),printNum.end(),
-	   std::ostream_iterator<int>(cx," "));
-      StrFunc::writeMCNPX(cx.str(),OX);
-    }
-
-
-  
-
-
-  return;
-}
-
-
-} // NAMESPACE PhysicsCards	
-      
-
-
-namespace WeightSystem
-{ 
-
-// void
-// sinbadWeights(Simulation& System,
-// 		 const mainSystem::inputParam& IParam)
-//   /*!
-//     Set individual weights based on temperature/cell
-//     \param System :: Simulation
-//     \param IParam :: input stream
-//    */
-// {
-//   ELog::RegMethod RegA("BasicWWE","simulationWeights");
-
-//   System.populateCells();
-//   System.createObjSurfMap();
-
-//   // WEIGHTS:
-//   if (IParam.flag("weight") || IParam.flag("tallyWeight"))
-//     System.calcAllVertex();
-
-//   //  const std::string WType=IParam.getValue<std::string>("weightType");
-//   const std::string WType=IParam.getValue<std::string>("detType",0);
-//   //  setWeights(System,WType);
-
-//   // ELog::RegMethod RegA("SBasicWWE","setSinbadWeights");
-
-//   std::vector<double> Eval(6);
-//   // Eval[0]=1.e-11;
-//   // Eval[1]=1.e-9;
-//   // Eval[2]=1.e-6;
-//   // Eval[3]=1.e-3;
-//   // Eval[4]=1.0;
-//   // Eval[5]=31.0;
-
-//   Eval[0]=1.e-9;
-//   Eval[1]=1.e-7;
-//   Eval[2]=1.e-5;
-//   Eval[3]=1.e-2;
-//   Eval[4]=1.e+1;
-//   Eval[5]=31.0;
-
-//  std::vector<double> WT(6);
-
-//   if (WType=="Mn")
-//     {
-//   // no action
-//  WT[0]=0.5;WT[1]=0.5;WT[2]=0.5;
-//  WT[3]=0.5;WT[4]= 0.5;WT[5]= 0.5;
-//       //    setWeightsBasic(System);
-//     }
-//   else if (WType=="S")
-//     {
-//   // S 
-//   WT[0]=16;WT[1]=4;WT[2]=1;
-//   WT[3]=0.25;WT[4]= 0.05;WT[5]= 0.05;
-//   //  setWeightsHighE(System);
-
-//     }
-//   else if (WType=="mid")
-//     {
-//   // Rh (and In good???)
-//    WT[0]=16;WT[1]=4;WT[2]=2;
-//    WT[3]=0.05;WT[4]= 0.05;WT[5]= 0.25;
-
-//       //    setWeightsMidE(System);
-//     }
-//   else if (WType=="help")
-//     {
-//       ELog::EM<<"Basic weight energy types == \n"
-// 	"High -- High energy\n"
-// 	"Mid -- Mid/old point energy\n"
-// 	"Basic -- Cold spectrum energy"<<ELog::endBasic;
-//       throw ColErr::ExitAbort("End Help");
-//     }
-//   else
-//     throw ColErr::InContainerError<std::string>(WType,"Unknown weight type");
-
-//   // spectra
-//   // WT[0]=8.0;WT[1]=4.0;WT[2]=2.0;
-//   // WT[3]=0.5;WT[4]= 0.5;WT[5]= 1.0;
-
-//  std::set<std::string> EmptySet;
-// //  setWeights(System,Eval,WT,EmptySet);
-
-//   WeightSystem::weightManager& WM=
-//     WeightSystem::weightManager::Instance();  
-
-//   WM.addParticle<WeightSystem::WCells>('n');
-//   WeightSystem::WCells* WF=
-//     dynamic_cast<WeightSystem::WCells*>(WM.getParticle('n'));
-//   if (!WF)
-//     throw ColErr::InContainerError<std::string>("n","WCell - WM");
-
-//   WF->setEnergy(Eval);
-//   System.populateWCells();
-//  WF->balanceScale(WT);
-
+ // if(cellS.size()<65)
+ //   OX<<" f4:n ("<<cellS<<")"<<std::endl;
+ // else if(cellS.size()>=65&&cellS.size()<130)
+ //   {
+ //   for(size_t i1=0;i1<65;i1++)
+ //     cellS1+=cellS[i1];
+ //   OX<<" f4:n ("<<cellS1<<std::endl;
  
-//  WF-> setWeights(WT);
+ //   for(size_t i2=60;i2<cellS.size();i2++)
+ //     cellS2+=cellS[i2];
+ //   OX<<"       "<<cellS2<<" )"<<std::endl;
+ //   }
+ // else 
+ //   {
+ //   for(size_t i1=0;i1<65;i1++)
+ //     cellS1+=cellS[i1];
+ //   OX<<" f4:n ("<<cellS1<<std::endl;
+ 
+ //   for(size_t i2=60;i2<124;i2++)
+ //     cellS2+=cellS[i2];
+ //   OX<<"       "<<cellS2<<std::endl;
 
-//   const FuncDataBase& Control=System.getDataBase();  
-//   const std::string preName=IParam.getValue<std::string>("preName");
+ //   for(size_t i3=124;i3<cellS.size();i3++)
+ //     cellS3+=cellS[i3];
+ //   OX<<"       "<<cellS3<<" )"<<std::endl;
+ //  ELog::EM<<" lots of tally 4 cells. Check if all are present! Only 3 f4 lines allowed"<<ELog::endDiag; 
 
-//  size_t NS=Control.EvalVar<size_t>(preName+"NestorSideNSlab");
-//  size_t cellOffset(3);
-// // double RF(0.0);
-//  for(size_t i=0;i<NS-1;i+=2)
-//    {   
-//     double SF=(NS/2+1);
-//     double RF=i/SF; 
-//     if(i==0) RF=1/SF;
-//     WF->rescale(cellOffset+i,cellOffset+i+1,RF);   
-//    }
-
-//  size_t S=Control.EvalVar<size_t>(preName+"ShieldNSlab");
-//  cellOffset=3+NS+1;
-//  for(size_t i=0;i<S;i+=4)
-//   {   
-//    int SF=pow(4,i/4-4);
-//    int RF=pow(2,i/4); 
-//    if(i>16) RF=pow(2,i/4)/pow(4,i/4-4);
-
-//    WF->rescale(cellOffset+i,cellOffset+i+3,RF);   
-//   }
-
-//  size_t FPL=Control.EvalVar<size_t>(preName+"FissionPlateNSlab");
-//  size_t FPX=Control.EvalVar<size_t>(preName+"FissionPlateNXSpace");
-//  size_t FPZ=Control.EvalVar<size_t>(preName+"FissionPlateNZSpace");
-
-
-//  size_t FPN=FPL+(FPZ-1)*(FPX-1)+3;
-
-//  size_t D=Control.EvalVar<size_t>(preName+"DetNY");
-//   std::string DT=IParam.getValue<std::string>("detType",0);
-
-//  cellOffset=3+NS+S+1+FPN;
-
-//  for(size_t i=0;i<9;i+=2)
-//    {   
-//    int RF=pow(2,i/2); 
-
-//    WF->rescale(cellOffset+i,cellOffset+i+1,RF);   
-// ELog::EM<<"i "<<i<<" cellOffset+i "<<cellOffset+i<<" RF "<<RF<<ELog::endDiag;
-
-//    }
-
-
-//   const Simulation::OTYPE& Cells=System.getCells();
-//   Simulation::OTYPE::const_iterator oc;
-//   for(oc=Cells.begin();oc!=Cells.end();oc++)
-//     {
-//       if(!oc->second->getImp())
-//   	WF->maskCell(oc->first);      
-//     }
-//   WF->maskCell(1);
-
-
-//   return;
-// }
-
-
-}
-
-
-
-namespace SimProcess
-{
-
-
-}
-
-
-
-   
-namespace ModelSupport
-{
- void 
-setSinbadPhysics(Simulation& System,
-		  const mainSystem::inputParam& IParam)
-{
-
- System.getPC().setMode("n");
-  // System.getPC().setNPS(IParam.getValue<int>("nps"));
-  // System.getPC().setRND(IParam.getValue<long int>("random"));	
-
-  System.getPC().setNPS(12.e+6);
-  System.getPC().setRND(3469871871985);	
-  physicsSystem::PhysCard& cpi=System.getPC().addPhysCard("cut","/");
-  cpi.setValues("j 0.0");
- System.processCellsImp();
-   System.getPC().setCells("imp",1,0);   
-   //System.getPC().setEnergyCut(98.0);
-
- System.getPC().setPrintNum("-30 ");
-
-
-
-  return; 
-}
-
-
-
-} //endNamespace ModelSupport
-
-
-
-namespace StrFunc
-{
-
-
-void
-writeMCNPXsinbad(const std::string& Line,std::ostream& OX)
-/*!
-  Write out the line in the limited form for MCNPX
-  ie initial line from 0::72 after that 8 to 72
-  (split on a space or comma)
-  \param Line :: full MCNPX line
-  \param OX :: ostream to write to
-*/
-{
-  writeControl(Line,OX,72,8);
-  return;
-}
-
-}
-
-
-
-//////////////////////////////////////////////////////
-
-
-// void
-// Simulation::writeSinbadWeights(std::ostream& OX) const
-//   /*!
-//     Write all the used Weight in standard MCNPX output 
-//     type.
-//     \param OX :: Output stream
-//   */
-
-// {
-//   WeightSystem::weightManager& WM=
-//     WeightSystem::weightManager::Instance();  
-//   OX<<"c -------------------------------------------------------"<<std::endl;
-//   OX<<"c --------------- WEIGHT CARDS --------------------------"<<std::endl;
-//   OX<<"c -------------------------------------------------------"<<std::endl;
-//   WM.write(OX);
-//   OX<<"c ++++++++++++++++++++++ END ++++++++++++++++++++++++++++"<<std::endl;
-//   return;
-// }
+ //   }
 
 
 
 
-void
-Simulation::writeSinbadPhysics(std::ostream& OX) const
-  /*!
-    Write all the used Weight in standard MCNPX output 
-    type. Note that it also has to add the rdum cards
-    to the physics
-    \param OX :: Output stream
-  */
-{
-  ELog::RegMethod RegA("Simulation","writePhysics");
-
-  OX<<"c -------------------------------------------------------"<<std::endl;
-  OX<<"c --------------- PHYSICS CARDS --------------------------"<<std::endl;
-  OX<<"c -------------------------------------------------------"<<std::endl;
-
-
-  // physicsSystem::PhysicsCards& PC=System.getPC();  
-  // PC.setNPS(IParam.getValue<int>("nps"));
-  // PC.setRND(IParam.getValue<long int>("random"));	
-  // PC.setVoidCard(IParam.flag("void"));
-
-  // OX<<"dbcnCCC "<<std::endl;
-  // OX<<"npsCCC "<<std::endl;
-
-  // if (mcnpType!=1)
-  //   {
-      // Processing for point tallies
-      std::map<int,tallySystem::Tally*>::const_iterator mc;
-      std::vector<int> Idum;
-      std::vector<Geometry::Vec3D> Rdum;
-
-
-  // Remaining Physics cards
-     PhysPtr->sinbadPhysicsCards(OX,cellOutOrder);
-  OX<<"c ++++++++++++++++++++++ END ++++++++++++++++++++++++++++"<<std::endl;
-  OX<<std::endl;  // MCNPX requires a blank line to terminate
-  return;
-}
+ // for(size_t i=cellOffset;i<CL.size()+1;i++)
+ //   {
+ //    IS2<<" ";
+ //    IS2<< i;
+ //    DT1.push_back(i);
+ //    DT2.push_back(System.getCellMaterial(i));
+ //   }
+ // std::string s2 = IS2.str();
+ // cellS=s2;
 
 
 
-
-
+ // for(size_t i=0;i<S;i+=4)
+ //  {   
+ //   int SF=pow(4,i/4-4);
+ //   int RF=pow(2,i/4); 
+ //   if(i>16) RF=pow(2,i/4)/pow(4,i/4-4);
+ //   WF->rescale(cellOffset+i,cellOffset+i+3,RF);   
+ //  }

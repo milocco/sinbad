@@ -34,7 +34,7 @@
 namespace ModelSupport
 {
 
-void addSinbadMaterial(std::string& lib)
+  void addSinbadMaterial(std::string& lib,std::string& expNum)
   /*!
      Initialize the database of materials
    */
@@ -54,7 +54,339 @@ void addSinbadMaterial(std::string& lib)
   ELog::EM<<" lib "<<lib<<"  "<<ext<<ELog::endDiag;
 
   MonteCarlo::Material MObj;
-  MObj.setMaterial(1,"49MildSteel1", 
+
+
+  ///////////////////////  EXPERIMENT 35 /////////////////////////////
+  if(expNum=="35")
+    {
+  MObj.setMaterial(1,"35MildSteel1", 
+     "  6000"+ext+"  8.6424E-04 "
+     " 14028"+ext+"  6.1977E-05 "
+     " 14029"+ext+"  3.1470E-06 "
+     " 14030"+ext+"  2.0745E-06 "
+     " 25055"+ext+"  9.3612E-04 "
+     " 26054"+ext+"  4.8717E-03 "
+     " 26056"+ext+"  7.6475E-02 "
+     " 26057"+ext+"  1.7661E-03 "
+     " 26058"+ext+"  2.3504E-04 ",
+ 		        "","");
+
+  DBObj.resetMaterial(MObj);
+  MObj.setMaterial(2,"35Aluminium2",
+    " 13027"+ext+"  6.0261E-02 " ,
+              	         "","");
+
+  DBObj.resetMaterial(MObj);
+  MObj.setMaterial(3,"35Graphite",
+    "  6000"+ext+"  8.2729E-02 ",
+ 	       "grph.20t","");
+
+  DBObj.resetMaterial(MObj);
+  MObj.setMaterial(4,"35Fuel",
+     " 13027"+ext+"  5.8122E-02 "
+     " 92235"+ext+"  1.5550E-03 "
+     " 92238"+ext+"  1.1367E-04 " ,
+           	        "","");
+
+  DBObj.resetMaterial(MObj);
+  MObj.setMaterial(5,"35Aluminium5",
+    " 13027"+ext+"  5.9080E-02 "
+     " 14028"+ext+"  7.9083E-05 "
+     " 14029"+ext+"  4.0156E-06 "
+     " 14030"+ext+"  2.6471E-06 "
+     " 26054"+ext+"  9.4100E-06 "
+     " 26056"+ext+"  1.4772E-04 "
+     " 26057"+ext+"  3.4114E-06 "
+     " 26058"+ext+"  4.5400E-07 ",
+                         "","");
+ 
+  DBObj.resetMaterial(MObj);
+  MObj.setMaterial(6,"35MildSteel6",
+     " 26054"+ext+"  4.8998E-03 "
+     " 26056"+ext+"  7.6916E-02 "
+     " 26057"+ext+"  1.7763E-03 "
+     " 26058"+ext+"  2.3640E-04 "
+     " 25055"+ext+"  6.3675E-04 "
+     "  6000"+ext+"  9.0525E-04 ",
+                        "","");
+
+  DBObj.resetMaterial(MObj);
+  MObj.setMaterial(7,"35StainlessSteel",
+     "  6000"+ext+"  9.0525E-04 "
+     " 14028"+ext+"  7.8282E-04 "
+     " 14029"+ext+"  3.9750E-05 "
+     " 14030"+ext+"  2.6203E-05 "
+     " 15031"+ext+"  4.6177E-05 "
+     " 16032"+ext+"  2.8230E-05 "
+     " 16033"+ext+"  2.2600E-07 "
+     " 16034"+ext+"  1.2757E-06 "
+     " 16036"+ext+"  5.9474E-09 "
+     " 24050"+ext+"  6.6812E-04 "
+     " 24052"+ext+"  1.2884E-02 "
+     " 24053"+ext+"  1.4609E-03 "
+     " 24054"+ext+"  3.6366E-04 "
+     " 25055"+ext+"  1.3625E-03 "
+     " 26054"+ext+"  3.3408E-03 "
+     " 26056"+ext+"  5.2444E-02 "
+     " 26057"+ext+"  1.2112E-03 "
+     " 26058"+ext+"  1.6118E-04 "
+     " 28058"+ext+"  6.4478E-03 "
+     " 28060"+ext+"  2.4837E-03 "
+     " 28061"+ext+"  1.0796E-04 "
+     " 28062"+ext+"  3.4424E-04 "
+     " 28064"+ext+"  8.7667E-05 "
+     " 42092"+ext+"  1.7994E-04 "
+     " 42094"+ext+"  1.1216E-04 "
+     " 42095"+ext+"  1.9303E-04 "
+     " 42096"+ext+"  2.0225E-04 "
+     " 42097"+ext+"  1.1580E-04 "
+     " 42098"+ext+"  2.9258E-04 "
+     " 42100"+ext+"  1.1677E-04 ",
+             	             "","");
+
+  DBObj.resetMaterial(MObj);
+  MObj.setMaterial(8,"35Concrete",
+     "  1001"+ext+"  1.3420E-02 " 
+     "  1002"+ext+"  1.5435E-06 " 
+     "  8016"+ext+"  4.4621E-02 "
+     "  8017"+ext+"  1.0869E-04 "
+     //8018 added to 8017
+     // "  8017.71c  1.6997E-05 "
+     // "  8018.71c  9.1696E-05 "
+     " 11023"+ext+"  9.4741E-04 "
+     " 13027"+ext+"  1.7047E-03 "
+     " 14028"+ext+"  1.4967E-02 "
+     " 14029"+ext+"  7.5999E-04 "
+     " 14030"+ext+"  5.0099E-04 "
+     " 19039"+ext+"  6.4536E-04 "
+     " 19040"+ext+"  8.0966E-08 "
+     " 19041"+ext+"  4.6574E-05 "
+     " 20040"+ext+"  1.2402E-03 "
+     " 20042"+ext+"  8.2772E-06 "
+     " 20043"+ext+"  1.7271E-06 "
+     " 20044"+ext+"  2.6687E-05 "
+     " 20046"+ext+"  5.1173E-08 "
+     " 20048"+ext+"  2.3923E-06 "
+     " 26054"+ext+"  1.9965E-05 "
+     " 26056"+ext+"  3.1340E-04 "
+     " 26057"+ext+"  7.2379E-06 "
+     " 26058"+ext+"  9.6323E-07 ",
+                	         "","");
+
+  DBObj.resetMaterial(MObj);
+  MObj.setMaterial(101,"35S",
+     " 16032"+ext+"  3.4287E-02 "
+     " 16033"+ext+"  2.7450E-04 "
+     " 16034"+ext+"  1.5495E-03 "
+     " 16036"+ext+"  7.2236E-06 ",
+ 		   "",MLib);
+  //  MObj.setDensity(3.6118E-02);
+ 
+  DBObj.resetMaterial(MObj);
+  MObj.setMaterial(102,"35Spressed",
+     " 16032"+ext+"  3.2443E-02 "
+     " 16033"+ext+"  2.5974E-04 "
+     " 16034"+ext+"  1.4661E-03 "
+     " 16036"+ext+"  6.8352E-06 ",
+ 		      "",MLib);
+  //  MObj.setDensity(3.4176E-02);
+
+  DBObj.resetMaterial(MObj);
+  MObj.setMaterial(103,"35Rh",
+    " 45103"+ext+"  7.2625e-02 ",
+		     "",MLib);
+  //  MObj.setDensity(7.2625E-02);
+
+  DBObj.resetMaterial(MObj);
+  MObj.setMaterial(104,"35Mn",
+    " 25055"+ext+"  7.9034E-02 ",
+		     "",MLib);
+  //  MObj.setDensity(7.9034E-02);
+
+  DBObj.resetMaterial(MObj);
+  MObj.setMaterial(105,"35Au",
+    " 79197"+ext+"  5.9009E-02 ",
+		     "",MLib);
+  //  MObj.setDensity(5.9009E-02);
+
+  DBObj.resetMaterial(MObj);
+  MObj.setMaterial(106,"35Cd",
+     " 48106"+ext+"  5.7925E-04 "  
+     " 48108"+ext+"  4.1243E-04 "
+     " 48110"+ext+"  5.7879E-03 " 
+     " 48111"+ext+"  5.9315E-03 "
+     " 48112"+ext+"  1.1182E-02 "
+     " 48113"+ext+"  5.6628E-03 "  
+     " 48114"+ext+"  1.3314E-02 " 
+     " 48116"+ext+"  3.4709E-03 ",
+         	     "",MLib);
+  //  MObj.setDensity(4.6340E-02);
+ 
+  DBObj.resetMaterial(MObj);
+  MObj.setMaterial(107,"35In",
+      " 49113"+ext+"  1.5568E-03 "
+      " 49115"+ext+"  3.4731E-02 ",
+		     "",MLib);
+
+  DBObj.resetMaterial(MObj);
+  MObj.setMaterial(108,"35AlHolder",
+    " 13027"+ext+"  6.0261E-02 ",
+ 		     "",MLib);
+
+  DBObj.resetMaterial(MObj);
+  MObj.setMaterial(109,"35AlDet",
+  " 13027"+ext+"  6.1308E-02 ",
+ 		     "",MLib);
+  DBObj.resetMaterial(MObj);
+
+    }
+  ///////////////////////  EXPERIMENT 36 /////////////////////////////
+
+  if(expNum=="36")
+    {
+  MObj.setMaterial(1,"36Graphite1", 
+         "  6000"+ext+"  8.2729E-02 ",
+ 	   	    "grph.20t","");
+
+  DBObj.resetMaterial(MObj);
+  MObj.setMaterial(2,"36Graphite2",
+         "  6000"+ext+"  8.0723E-02 ",
+              	    "grph.20t","");
+
+  DBObj.resetMaterial(MObj);
+  MObj.setMaterial(3,"36Graphite3",
+         "  6000"+ext+"  8.8545E-02 ",
+     	            "grph.20t","");
+
+  DBObj.resetMaterial(MObj);
+  MObj.setMaterial(4,"36Aluminium",
+         " 13027"+ext+"  6.0261E-02 ",
+              	            "","");
+ 
+  DBObj.resetMaterial(MObj);
+  MObj.setMaterial(5,"36Fuel",
+          " 13027"+ext+"  5.8122E-02 "
+          " 92235"+ext+"  1.5516E-03 "
+          " 92238"+ext+"  1.1531E-04 ",
+                        "","");
+
+  DBObj.resetMaterial(MObj);
+  MObj.setMaterial(6,"36MildSteel",
+        "  6000"+ext+"  8.6426E-04 "
+        " 15031"+ext+"  1.5233E-05 "
+        " 16032"+ext+"  4.4700E-05 "
+        " 16033"+ext+"  3.5787E-07 "
+        " 16034"+ext+"  2.0201E-06 "
+        " 16036"+ext+"  9.4176E-09 "
+        " 25055"+ext+"  9.3615E-04 "
+        " 26054"+ext+"  4.8717E-03 "
+        " 26056"+ext+"  7.6475E-02 "
+        " 26057"+ext+"  1.7661E-03 "
+        " 26058"+ext+"  2.3504E-04 ",
+             	             "","");
+
+  DBObj.resetMaterial(MObj);
+  MObj.setMaterial(7,"36Concrete",
+     "  1001"+ext+"  1.3740E-02 " 
+     "  1002"+ext+"  1.5803E-06 "
+     "  8016"+ext+"  4.5685E-02 "
+     "  8017"+ext+"  1.1129E-04 "
+     // "  8017"+ext+"  1.7403E-05 "
+     // "  8018"+ext+"  9.3882E-05 "
+     " 11023"+ext+"  9.6397E-04 "
+     " 13027"+ext+"  1.7454E-03 "
+     " 14028"+ext+"  1.5328E-02 "
+     " 14029"+ext+"  7.7834E-04 "
+     " 14030"+ext+"  5.1309E-04 "
+     " 19039"+ext+"  5.2860E-04 "
+     " 19040"+ext+"  6.6317E-08 "
+     " 19041"+ext+"  3.8148E-05 "
+     " 20040"+ext+"  1.4741E-03 "
+     " 20042"+ext+"  9.8385E-06 "
+     " 20043"+ext+"  2.0529E-06 "
+     " 20044"+ext+"  3.1720E-05 "
+     " 20046"+ext+"  6.0825E-08 "
+     " 20048"+ext+"  2.8436E-06 "
+     " 26054"+ext+"  2.0296E-05 "
+     " 26056"+ext+"  3.1860E-04 "
+     " 26057"+ext+"  7.3579E-06 "
+     " 26058"+ext+"  9.7920E-07 ",
+             	         "","");
+  //detectors
+  DBObj.resetMaterial(MObj);
+  MObj.setMaterial(101,"36S",
+     " 16032"+ext+"  3.4287E-02 "
+     " 16033"+ext+"  2.7450E-04 "
+     " 16034"+ext+"  1.5495E-03 "
+     " 16036"+ext+"  7.2236E-06 ",
+ 		   "",MLib);
+  //  MObj.setDensity(3.6118E-02);
+ 
+  DBObj.resetMaterial(MObj);
+  MObj.setMaterial(102,"36Spressed",
+     " 16032"+ext+"  3.2443E-02 "
+     " 16033"+ext+"  2.5974E-04 "
+     " 16034"+ext+"  1.4661E-03 "
+     " 16036"+ext+"  6.8352E-06 ",
+ 		      "",MLib);
+  //  MObj.setDensity(3.4176E-02);
+
+  DBObj.resetMaterial(MObj);
+  MObj.setMaterial(103,"36Rh",
+    " 45103"+ext+"  7.2625e-02 ",
+		     "",MLib);
+  //  MObj.setDensity(7.2625E-02);
+
+  DBObj.resetMaterial(MObj);
+  MObj.setMaterial(104,"36Mn",
+    " 25055"+ext+"  7.9034E-02 ",
+		     "",MLib);
+  //  MObj.setDensity(7.9034E-02);
+
+  DBObj.resetMaterial(MObj);
+  MObj.setMaterial(105,"36Au",
+    " 79197"+ext+"  5.9009E-02 ",
+		     "",MLib);
+  //  MObj.setDensity(5.9009E-02);
+
+  DBObj.resetMaterial(MObj);
+  MObj.setMaterial(106,"36Cd",
+     " 48106"+ext+"  5.7925E-04 "  
+     " 48108"+ext+"  4.1243E-04 "
+     " 48110"+ext+"  5.7879E-03 " 
+     " 48111"+ext+"  5.9315E-03 "
+     " 48112"+ext+"  1.1182E-02 "
+     " 48113"+ext+"  5.6628E-03 "  
+     " 48114"+ext+"  1.3314E-02 " 
+     " 48116"+ext+"  3.4709E-03 ",
+         	     "",MLib);
+  //  MObj.setDensity(4.6340E-02);
+ 
+  DBObj.resetMaterial(MObj);
+  MObj.setMaterial(107,"36In",
+      " 49113"+ext+"  1.5568E-03 "
+      " 49115"+ext+"  3.4731E-02 ",
+		     "",MLib);
+
+  DBObj.resetMaterial(MObj);
+  MObj.setMaterial(108,"36AlHolder",
+    " 13027"+ext+"  6.0261E-02 ",
+ 		     "",MLib);
+
+  DBObj.resetMaterial(MObj);
+  MObj.setMaterial(109,"36AlDet",
+  " 13027"+ext+"  6.1308E-02 ",
+ 		     "",MLib);
+  DBObj.resetMaterial(MObj);
+
+    }
+
+
+
+  ///////////////////////  EXPERIMENT 49 /////////////////////////////
+  if(expNum=="49")
+   {
+    MObj.setMaterial(1,"49MildSteel1", 
      " 6000"+ext+"   0.00086921 "
      //GRAPHITE ISOTOPES
      // "  6012"+ext+"  8.5991E-04 "             
@@ -89,7 +421,7 @@ void addSinbadMaterial(std::string& lib)
     " 6000"+ext+"   8.2730E-02 ",
  // "  6012"+ext+"  8.1845E-02 "
  // "  6013"+ext+"  8.8522E-04 " ,
-	       "Graph.00t","");
+	       "grph.20t","");
   // MObj.setDensity(8.2731E-02);
   DBObj.resetMaterial(MObj);
 
@@ -187,7 +519,7 @@ void addSinbadMaterial(std::string& lib)
   // sum of 17 and 18 
   // "  8017"+ext+"  1.2702E-05 "
   // "  8018"+ext+"  6.8526E-05 ",
-             	         "","");
+             	         "lwtr.20t","");
   //  MObj.setDensity(1.0029E-01);
   DBObj.resetMaterial(MObj);
 
@@ -310,10 +642,184 @@ void addSinbadMaterial(std::string& lib)
   //  MObj.setDensity(7.2625E-02);
   // assumed temtative density in matssf = 3 g/cm3
   DBObj.resetMaterial(MObj);
+    }
+
+  ///////////////////////  EXPERIMENT 75 /////////////////////////////
+
+  if(expNum=="75")
+   {
+    MObj.setMaterial(1,"75Graphite",
+    "  1001"+ext+"  6.6857E-02 "
+    "  1002"+ext+"  7.6895E-06 "
+    "  8016"+ext+"  3.3346E-02 "
+     // b71 8018 use models: 8018 added to 8017
+    "  8017"+ext+"  8.1228E-05 ",
+            	        "","");
+    DBObj.resetMaterial(MObj);
+
+
+    MObj.setMaterial(2,"75Aluminium",
+    " 13027"+ext+"  6.0290E-02 ",
+             	         "","");
+    DBObj.resetMaterial(MObj);
+
+
+    MObj.setMaterial(3,"75Fuel",
+    " 13027"+ext+"  5.8180E-02 "
+    " 92235"+ext+"  1.5520E-03 "
+    " 92238"+ext+"  1.1540E-04 ",
+	                  "","");
+    DBObj.resetMaterial(MObj);
+
+    MObj.setMaterial(4,"75H2O",
+    "  1001"+ext+"  6.6857E-02 "
+    "  1002"+ext+"  7.6895E-06 "
+    "  8016"+ext+"  3.3346E-02 "
+    // 8018 added to 8017
+    "  8017"+ext+"  8.1228E-05 ",
+            	        "","");
+    DBObj.resetMaterial(MObj);
 
 
 
-  // };
+  MObj.setMaterial(5,"75StainlessSteel",
+     "  6000"+ext+"  6.7168E-05 "
+     " 14028"+ext+"  6.8568E-04 " 
+     " 14029"+ext+"  3.4817E-05 " 
+     " 14030"+ext+"  2.2952E-05 " 
+     // copiato da compilazione sinbad
+     " 15031"+ext+"  3.8320E-05 "
+     " 16032"+ext+"  8.4295E-06 "
+     " 16033"+ext+"  6.7486E-08 "
+     " 16034"+ext+"  3.8094E-07 "
+     " 16036"+ext+"  1.7759E-09 "
+     " 22046"+ext+"  7.3610E-07 "
+     " 22047"+ext+"  6.6383E-07 "
+     " 22048"+ext+"  6.5776E-06 "
+     " 22049"+ext+"  4.8270E-07 "
+     " 22050"+ext+"  4.6218E-07 "
+     " 24050"+ext+"  7.2965E-04 "
+     " 24052"+ext+"  1.4071E-02 "
+     " 24053"+ext+"  1.5955E-03 "
+     " 24054"+ext+"  3.9715E-04 "
+     " 25055"+ext+"  1.3561E-03 "
+     " 26054"+ext+"  3.4524E-03 "
+     " 26056"+ext+"  5.4195E-02 "
+     " 26057"+ext+"  1.2516E-03 "
+     " 26058"+ext+"  1.6656E-04 "
+     " 28058"+ext+"  5.1739E-03 "
+     " 28060"+ext+"  1.9930E-03 "
+     " 28061"+ext+"  8.6633E-05 "
+     " 28062"+ext+"  2.7622E-04 "
+     " 28064"+ext+"  7.0346E-05 ",
+                   	    "","");
+     DBObj.resetMaterial(MObj);
+
+
+     MObj.setMaterial(6,"75MildSteel",
+     "  6000"+ext+"  8.6426E-04 "
+     // "  6012.  8.5501E-04 " 
+     // "  6013.  9.2476E-06 "
+     " 15031"+ext+"  1.5233E-05 "
+     " 16032"+ext+"  4.4700E-05 "
+     " 16033"+ext+"  3.5787E-07 "
+     " 16034"+ext+"  2.0201E-06 "
+     " 16036"+ext+"  9.4176E-09 "
+     " 25055"+ext+"  9.3615E-04 "
+     " 26054"+ext+"  4.8717E-03 "
+     " 26056"+ext+"  7.6475E-02 "
+     " 26057"+ext+"  1.7661E-03 "
+     " 26058"+ext+"  2.3504E-04 ",
+                        "","");
+     DBObj.resetMaterial(MObj);
+
+     MObj.setMaterial(7,"75Concrete",
+     "  1001"+ext+"  1.3740E-02 " 
+     "  1002"+ext+"  1.5803E-06 "
+     "  8016"+ext+"  4.5685E-02 "
+     "  8017"+ext+"  1.1129E-04 "
+     " 11023"+ext+"  9.6397E-04 "
+     " 13027"+ext+"  1.7454E-03 "
+     " 14028"+ext+"  1.5328E-02 "
+     " 14029"+ext+"  7.7834E-04 "
+     " 14030"+ext+"  5.1309E-04 "
+     " 19039"+ext+"  5.2860E-04 "
+     " 19040"+ext+"  6.6317E-08 "
+     " 19041"+ext+"  3.8148E-05 "
+     " 20040"+ext+"  1.4741E-03 "
+     " 20042"+ext+"  9.8385E-06 "
+     " 20043"+ext+"  2.0529E-06 "
+     " 20044"+ext+"  3.1720E-05 "
+     " 20046"+ext+"  6.0825E-08 "
+     " 20048"+ext+"  2.8436E-06 "
+     " 26054"+ext+"  2.0296E-05 "
+     " 26056"+ext+"  3.1860E-04 "
+     " 26057"+ext+"  7.3579E-06 "
+     " 26058"+ext+"  9.7920E-07 ",
+                        "","");
+     DBObj.resetMaterial(MObj);
+
+     MObj.setMaterial(101,"75S",
+     " 16032"+ext+"  3.4287E-02 "
+     " 16033"+ext+"  2.7450E-04 "
+     " 16034"+ext+"  1.5495E-03 "
+     " 16036"+ext+"  7.2236E-06 ",
+ 		   "",MLib);
+     DBObj.resetMaterial(MObj);
+
+
+     MObj.setMaterial(102,"75Spressed",
+     " 16032"+ext+"  3.2443E-02 "
+     " 16033"+ext+"  2.5974E-04 "
+     " 16034"+ext+"  1.4661E-03 "
+     " 16036"+ext+"  6.8352E-06 ",
+ 		      "",MLib);
+     DBObj.resetMaterial(MObj);
+
+
+    MObj.setMaterial(103,"75Rh",
+    " 45103"+ext+"  7.2625e-02 ",
+		     "",MLib);
+    DBObj.resetMaterial(MObj);
+
+
+    MObj.setMaterial(104,"75Mn",
+    " 25055"+ext+"  7.9034E-02 ",
+		     "",MLib);
+    DBObj.resetMaterial(MObj);
+
+
+    MObj.setMaterial(105,"75Au",
+    " 79197"+ext+"  5.9009E-02 ",
+		     "",MLib);
+    DBObj.resetMaterial(MObj);
+
+
+    MObj.setMaterial(106,"75Cd",
+     " 48106"+ext+"  5.7925E-04 "  
+     " 48108"+ext+"  4.1243E-04 "
+     " 48110"+ext+"  5.7879E-03 " 
+     " 48111"+ext+"  5.9315E-03 "
+     " 48112"+ext+"  1.1182E-02 "
+     " 48113"+ext+"  5.6628E-03 "  
+     " 48114"+ext+"  1.3314E-02 " 
+     " 48116"+ext+"  3.4709E-03 ",
+         	     "",MLib);
+     DBObj.resetMaterial(MObj);
+
+
+     MObj.setMaterial(107,"75In",
+     " 49113"+ext+"  1.5568E-03 "
+     " 49115"+ext+"  3.4731E-02 ",
+         	     "",MLib);
+     DBObj.resetMaterial(MObj);
+
+
+   }
+
+
+
+
 
 
   return;

@@ -110,6 +110,12 @@ main(int argc,char* argv[])
     // Definitions section  
     SimPtr->resetAll();
 
+    // logs
+    // ELog::EM.setActive(4);
+    // ELog::FM.setActive(4);    
+    // ELog::RN.setActive(0); 
+  ELog::EM<<"pKeyYYYY "<<ELog::endDiag;
+
     const std::string expN=IParam.getValue<std::string>("preName");
     std::string expS;
     if(expN=="34") expS="Winfrith Iron Benchmark Experiment (ASPIS)";
@@ -127,60 +133,28 @@ main(int argc,char* argv[])
 
 
 
-    // logs
-    // ELog::EM.setActive(4);
-    // ELog::FM.setActive(4);    
-    // ELog::RN.setActive(0); 
 
     sinbadSystem::makeSinbad SinbadObj(expN);
     World::createOuterObjects(*SimPtr);
     SinbadObj.build(SimPtr,IParam);
-	  // WeightSystem::simulationImp(*SimPtr,IParam);
-     SDef::sourceSelection(*SimPtr,IParam);
-    //SDef::Source& sourceCard=System.getPC().getSDefCard();
-    // SDef::SinbadSource(Control,sourceCard,expN);
-    // SDef::setSinbadSource(*SimPtr,IParam);
-  // const FuncDataBase& Control=SimPtr->getDataBase();
-  // SDef::Source& sourceCard=SimPtr->getPC()
-  //   // =
-  //  SimPtr->getPC().getSDefCard();
-  //  SDef::SinbadSource(Control,sourceCard,expN);
 
-    SimPtr->removeComplements();
-   //  SimPtr->removeDeadCells();            // Generic
     SimPtr->removeDeadSurfaces(0);         
 
-   //ALB SimPtr->removeOppositeSurfaces();
+    mainSystem::renumberCells(*SimPtr,IParam);   
 
-	  //	  ModelSupport::setDefaultPhysics(*SimPtr,IParam);
-    ModelSupport::setSinbadPhysics(*SimPtr,IParam);
-   //
-   //   sinbadSystem::simulateSinbad ST("");
+    SDef::setSinbadSource(*SimPtr,IParam);
 
-    //  ST.setSinbadTally(*SimPtr,IParam);
-
-   //   const int renumCellWork=tallySelection(*SimPtr,IParam);
-
-   // if (IParam.flag("endf"))
-   // SimPtr->setENDF7();
-
-   // SimProcess::importanceSimSinbad(*SimPtr,IParam);
-    // SimProcess::inputPatternSim(*SimPtr,IParam); // energy cut etc
-
-    // sinbadSystem::writeSinbad A("");
-    // A.setSinbadWeights(*SimPtr,IParam);
+    SimPtr->setSinbadWeights(*SimPtr,IParam);
+    SimPtr->setSinbadTally(*SimPtr,IParam);
+    SimPtr->setSinbadPhysics(*SimPtr,IParam);
 
     std::ostringstream cx;
     int MCIndex(0);
     cx<<Oname<<MCIndex+1<<".x";
-    mainSystem::renumberCells(*SimPtr,IParam);
-    SimPtr->setSinbadWeights(*SimPtr,IParam);
-    SimPtr->setSinbadTally(*SimPtr,IParam);
+
     SimPtr->prepareWrite();
     SimPtr->SinbadWrite(*SimPtr,cx.str());
-    //    mainSystem::renumberCells(*SimPtr,IParam);
 
-    //  ModelSupport::calcVolumes(SimPtr,IParam);
     ModelSupport::objectRegister::Instance().write("ObjectRegister.txt");
    }
   catch (ColErr::ExitAbort& EA)

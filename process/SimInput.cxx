@@ -82,9 +82,6 @@ importanceSim(Simulation& System,const mainSystem::inputParam& IParam)
   WeightSystem::simulationImp(System,IParam);
   mainSystem::renumberCells(System,IParam);
   WeightSystem::simulationWeights(System,IParam);
-  //ALB
-  //  WeightSystem::sinbadWeights(System,IParam);
-  //ALB
   return;
 }
 

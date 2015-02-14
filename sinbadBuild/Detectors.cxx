@@ -67,12 +67,12 @@
 namespace sinbadSystem
 {
 
-  Detectors::Detectors(const std::string& Key,const size_t ID) :
+  Detectors::Detectors(const std::string& DKey,const std::string& YKey,const std::string& ZKey,const size_t ID) :
     // Detectors::Detectors(const std::string& Key) :
   attachSystem::ContainedComp(),
-  attachSystem::FixedComp(Key+StrFunc::makeString(ID),6),
-  baseName(Key),detID(ID),
-  detIndex(ModelSupport::objectRegister::Instance().cell(keyName)),
+  attachSystem::FixedComp(DKey+YKey+ZKey+StrFunc::makeString(ID),6),
+  keyName(DKey),YName(YKey),ZName(ZKey),detID(ID),
+  detIndex(ModelSupport::objectRegister::Instance().cell(keyName+YName+ZName)),
   cellIndex(detIndex+1),activeY(0),activeZ(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -92,7 +92,8 @@ Detectors::clone() const
 
 Detectors::Detectors(const Detectors& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
-  baseName(A.baseName),detID(A.detID),detIndex(A.detIndex),
+  keyName(A.keyName),YName(A.YName),ZName(A.ZName),baseName(A.baseName),
+  detID(A.detID),detIndex(A.detIndex),
   cellIndex(A.cellIndex),activeY(A.activeY),activeZ(A.activeZ),xStep(A.xStep),
   yStep(A.yStep),zStep(A.zStep),xyAngle(A.xyAngle),
   zAngle(A.zAngle),diameter(A.diameter),length(A.length),
@@ -136,7 +137,9 @@ Detectors::operator=(const Detectors& A)
       VscanY=A.VscanY;
       VscanNZ=A.VscanNZ;
       VscanZ=A.VscanZ;
-    }
+     baseName=A.baseName;
+  
+   }
   return *this;
 }
 
@@ -148,14 +151,14 @@ Detectors::~Detectors()
 {}
 
 
-std::string
-Detectors::getDet(const mainSystem::inputParam& IParam) const
-{
- int t(0);
-     detT==IParam.getValue<std::string>("detType",0);
+// std::string
+// Detectors::getDet(const mainSystem::inputParam& IParam) const
+// {
+//  int t(0);
+//      detT==IParam.getValue<std::string>("detType",0);
  
-  return detT;
-}
+//   return detT;
+// }
 
 void
 Detectors::populate(const FuncDataBase& Control, const std::string& DF)
@@ -169,65 +172,35 @@ Detectors::populate(const FuncDataBase& Control, const std::string& DF)
 
   std::string YIndex("");
   std::string ZIndex("");
-
-
-
-  //  ELog::EM<<" baseNameAAA "<<baseName<<" keyName "<<keyName<<" DDFF "<<DF<<ELog::endDiag; 
- 
-
-  for(size_t i=baseName.size()-2;i<baseName.size();i++)
-    {
-      YIndex+=baseName[i-2];     
-      ZIndex+=baseName[i];     
-    }
-
+  YIndex=YName;     
+  ZIndex+=ZName;     
 
   std::string expName(""); 
-   for(size_t i=0;i<2;i++)
-    {
-      expName+=keyName[i];     
-    }
+  for(size_t i=0;i<2;i++)
+   expName+=keyName[i];     
 
-   std::string stop("");
-   std::string str_i("");
+  std::string baseNameV("");
+  baseNameV=keyName;
 
+  baseName=keyName+YName+ZName;
 
-   std::string baseNameV("");
- for(size_t i=0;i<baseName.size()-4;i++)
-    {
-      stop=baseName[i];
-      if(stop!="Y")
-      baseNameV+=baseName[i];
+  // std::stringstream IS1("");
+  // std::stringstream IS2;
 
-    }
- 
-
-  std::stringstream IS1("");
-  std::stringstream IS2;
-
-  // &&Control.EvalVar<size_t>(baseNameV+"VscanNY")==0
   std::string detAny(expName+"Det");
-  //  if(Control.EvalVar<size_t>(expName+"DetNY")!=0)
+
   if(DF=="Axial")
 
     {
-     std::string YIndex("Y"); 
-     for(size_t i=baseName.size();i<keyName.size();i++)
-      {
-       YIndex+=keyName[i];
-      }
-
      xStep=Control.EvalPair<double>(detAny,baseName,"StepX");
      yStep=Control.EvalPair<double>(expName,baseName,"Step"+YIndex);
      zStep=Control.EvalPair<double>(detAny,baseName,"StepZ");
-//  ELog::EM<< " baseNameV "<<baseNameV<<"YIndex"<<YIndex<<ELog::endDiag;     
-
      activeY=Control.EvalVar<int>(baseNameV+"Active"+YIndex);
     }
   else if(DF=="Vertical")
     {
      xStep=Control.EvalPair<double>(detAny,baseName,"StepX");
-     zStep=Control.EvalPair<double>(expName,baseName,"Step"+ZIndex);      
+     zStep=Control.EvalPair<double>(expName,baseNameV,"Step"+ZIndex);      
      yStep=Control.EvalVar<double>(baseNameV+"Vscan"+YIndex);
 
      activeZ=Control.EvalVar<int>(baseNameV+YIndex+"Active"+ZIndex);
@@ -242,10 +215,18 @@ Detectors::populate(const FuncDataBase& Control, const std::string& DF)
   yOffset=Control.EvalDefVar<double>(baseName+"OffSetY",0.0);
   zOffset=Control.EvalDefVar<double>(baseName+"OffSetZ",0.0);
 
+
   length=Control.EvalPair<double>(baseName,baseNameV,"Thick");
   diameter=Control.EvalPair<double>(keyName,baseNameV,"Diam");
   mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat",baseNameV+"Mat");
 
+  // first is S monitor
+  if(DF=="Axial" && YIndex=="Y0" && keyName=="35S")
+   {
+    length=Control.EvalPair<double>(baseName,baseNameV,"ThickM");
+    diameter=Control.EvalPair<double>(keyName,baseNameV,"DiamM");
+    mat=ModelSupport::EvalMat<int>(Control,keyName+"MatM",baseNameV+"MatM");
+   }
   return;
 }
 

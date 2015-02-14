@@ -58,25 +58,94 @@
 // #include "KCode.h"
 // #include "Source.h"
 // #include "SrcItem.h"
-// #include "SrcData.h"
-// #include "surfRegister.h"
-// #include "HeadRule.h"
-// #include "LinkUnit.h"
-// #include "FixedComp.h"
-// #include "LinearComp.h"
-// #include "SecondTrack.h"
-// #include "inputParam.h"
-// #include "PhysCard.h"
-// #include "LSwitchCard.h"
-// #include "ModeCard.h"
-// #include "PhysImp.h"
-// #include "PhysicsCards.h"
-// #include "Simulation.h"
-// #include "SourceCreate.h"
-// #include "localRotate.h"
-// #include "masterRotate.h"
-// #include "objectRegister.h"
-// #include "ChipIRSource.h"
+// // #include "SrcData.h"
+// // #include "surfRegister.h"
+// // #include "HeadRule.h"
+// // #include "LinkUnit.h"
+// // #include "FixedComp.h"
+// // #include "LinearComp.h"
+// // #include "SecondTrack.h"
+// // #include "inputParam.h"
+// // #include "PhysCard.h"
+// // #include "LSwitchCard.h"
+// // #include "ModeCard.h"
+// // #include "PhysImp.h"
+// // #include "PhysicsCards.h"
+// // #include "Simulation.h"
+// // #include "SourceCreate.h"
+// // #include "localRotate.h"
+// // #include "masterRotate.h"
+// // #include "objectRegister.h"
+// // #include "ChipIRSource.h"
+
+
+
+#include <fstream>
+#include <iomanip>
+#include <iostream>
+#include <sstream>
+#include <cmath>
+#include <complex>
+#include <list>
+#include <vector>
+#include <set>
+#include <map>
+#include <string>
+#include <algorithm>
+#include <boost/shared_ptr.hpp>
+#include <boost/array.hpp>
+
+#include "Exception.h"
+#include "FileReport.h"
+#include "GTKreport.h"
+#include "NameStack.h"
+#include "RegMethod.h"
+#include "OutputLog.h"
+#include "BaseVisit.h"
+#include "BaseModVisit.h"
+#include "support.h"
+#include "stringCombine.h"
+#include "MatrixBase.h"
+#include "Matrix.h"
+#include "Vec3D.h"
+#include "Quaternion.h"
+#include "doubleErr.h"
+#include "Triple.h"
+#include "NRange.h"
+#include "NList.h"
+#include "varList.h"
+#include "Code.h"
+#include "FuncDataBase.h"
+#include "KCode.h"
+#include "Source.h"
+#include "SrcItem.h"
+#include "SrcData.h"
+#include "surfRegister.h"
+#include "HeadRule.h"
+#include "LinkUnit.h"
+#include "FixedComp.h"
+#include "LinearComp.h"
+#include "SecondTrack.h"
+#include "inputParam.h"
+#include "PhysCard.h"
+#include "LSwitchCard.h"
+#include "ModeCard.h"
+#include "PhysImp.h"
+#include "PhysicsCards.h"
+#include "Simulation.h"
+#include "SourceCreate.h"
+#include "localRotate.h"
+#include "masterRotate.h"
+#include "objectRegister.h"
+#include "ChipIRSource.h"
+
+
+
+
+
+
+
+
 
 
 #include <fstream>
@@ -125,9 +194,9 @@
 #include "ModeCard.h"
 #include "PhysImp.h"
 #include "Simulation.h"
-// #include "PhysicsCards.h"
-// #include "NList.h"
-// #include "NRange.h"
+#include "PhysicsCards.h"
+#include "NList.h"
+#include "NRange.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
@@ -142,26 +211,26 @@
 namespace SDef
 {
 
-// void 
-// setSinbadSource(Simulation& System,
-// 		const mainSystem::inputParam& IParam)
-//   /*!
-//     Build the source based on the input parameter table
-//     \param System :: Simulation to use
-//     \param IParam :: Input parameter
-//   */
-// {
-//   ELog::RegMethod RegA("SourceSelector","sourceSelection");
-//   const FuncDataBase& Control=System.getDataBase();
-//   SDef::Source& sourceCard=System.getPC().getSDefCard();
-//   const masterRotate& MR = masterRotate::Instance();
-//   ModelSupport::objectRegister& OR=
-//     ModelSupport::objectRegister::Instance();
+void 
+setSinbadSource(Simulation& System,
+		const mainSystem::inputParam& IParam)
+  /*!
+    Build the source based on the input parameter table
+    \param System :: Simulation to use
+    \param IParam :: Input parameter
+  */
+{
+  ELog::RegMethod RegA("SourceSelector","sourceSelection");
+  const FuncDataBase& Control=System.getDataBase();
+  SDef::Source& sourceCard=System.getPC().getSDefCard();
+  //  const masterRotate& MR = masterRotate::Instance();
+  // ModelSupport::objectRegister& OR=
+  //   ModelSupport::objectRegister::Instance();
 
-//     const std::string expN=IParam.getValue<std::string>("preName");
-//    SDef::SinbadSource(Control,sourceCard,expN);
-//   return;
-// }
+    const std::string expN=IParam.getValue<std::string>("preName");
+   SDef::SinbadSource(Control,sourceCard,expN);
+  return;
+}
 
 
 
@@ -198,10 +267,11 @@ SinbadSource(const FuncDataBase& Control,Source& sourceCard,const std::string& e
       Zpt.push_back(PT);
     }
 
+
   for(size_t ix=0;ix<NX-1;ix++)
     {
      std::vector<double> YPtsRow;
-     std::string SX=StrFunc::makeString("49SourceX",ix);
+     std::string SX=StrFunc::makeString(expN+"FissionPlateSourceX",ix);
      for(size_t iz=0;iz<NZ-1;iz++)
      {
       std::string SXZ=StrFunc::makeString(SX+"Z",iz);	
@@ -213,97 +283,76 @@ SinbadSource(const FuncDataBase& Control,Source& sourceCard,const std::string& e
 
 // 640 energy group structure
  
-  const double XBase[]=  
-    { 1.000000,  1.100000, 
-      1.200000,   1.300000,  1.400000, 
-      1.500000,   1.600000,  1.700000,   
-      1.800000,   1.900000,  2.000000, 
-      2.100000,   2.200000,  2.300000,
-      2.400000,   2.500000,  2.600000,
-      2.700000,   2.800000,  2.900000,
-      3.000000,   3.100000,  3.200000,
-      3.300000,   3.400000,  3.500000,
-      3.600000,   3.700000,  3.800000,
-      3.900000,   4.000000,  4.100000,   
-      4.200000,   4.300000,  4.400000, 
-      4.500000,   4.600000,  4.700000,
-      4.800000,   4.900000,  5.000000 , 
-      5.100000,   5.200000 , 5.300000 , 
-      5.400000,   5.500000 , 5.600000 , 
-      5.700000,   5.800000 , 5.900000 , 
-      6.000000,   6.100000 , 6.200000 ,   
-      6.300000,   6.400000 , 6.500000 ,
-      6.600000,   6.700000 , 6.800000 , 
-      6.900000,   7.000000 , 7.100000 , 
-      7.200000,   7.300000 , 7.400000 , 
-      7.500000,   7.600000 , 7.700000 , 
-      7.800000,   7.900000 , 8.000000 , 
-      8.100000,   8.200000 , 8.300000 , 
-      8.400000,   8.500000 , 8.600000 , 
-      8.700000,   8.800000 , 8.900000 , 
-      9.000000,   9.100000 , 9.200000 , 
-      9.300000,   9.400000 , 9.500000 , 
-      9.600000,   9.700000 , 9.800000 , 
-      9.900000,   10.0000000};
-
-  const double XTop[]={
-      1.020000E+1 , 
-      1.040000E+1,  1.060000E+1 ,   1.080000E+1 , 
-      1.100000E+1,  1.120000E+1 ,   1.140000E+1 , 
-      1.160000E+1,  1.180000E+1 ,   1.200000E+1 , 
-      1.220000E+1,  1.240000E+1 ,   1.260000E+1 , 
-      1.280000E+1,  1.300000E+1 ,   1.320000E+1 , 
-      1.340000E+1,  1.360000E+1 ,   1.380000E+1 , 
-      1.400000E+1,  1.420000E+1 ,   1.440000E+1 , 
-      1.460000E+1,  1.480000E+1 ,   1.500000E+1 , 
-      1.520000E+1,  1.540000E+1 ,   1.560000E+1 , 
-      1.580000E+1,  1.600000E+1 ,   1.620000E+1 , 
-      1.640000E+1,  1.660000E+1 ,   1.680000E+1 , 
-      1.700000E+1,  1.720000E+1 ,   1.740000E+1 , 
-      1.760000E+1,  1.780000E+1 ,   1.800000E+1 , 
-      1.820000E+1,  1.840000E+1 ,   1.860000E+1 , 
-      1.880000E+1,  1.900000E+1 ,   1.920000E+1 , 
-      1.940000E+1,  1.960000E+1 ,   1.980000E+1 , 
-      2.000000E+1,  2.020000E+1 ,   2.040000E+1 , 
-      2.060000E+1,  2.080000E+1 ,   2.100000E+1 , 
-      2.120000E+1,  2.140000E+1 ,   2.160000E+1 , 
-      2.180000E+1,  2.200000E+1 ,   2.220000E+1 , 
-      2.240000E+1,  2.260000E+1 ,   2.280000E+1 , 
-      2.300000E+1,  2.320000E+1 ,   2.340000E+1 , 
-      2.360000E+1,  2.380000E+1 ,   2.400000E+1 , 
-      2.420000E+1,  2.440000E+1 ,   2.460000E+1 , 
-      2.480000E+1,  2.500000E+1 ,   2.520000E+1 , 
-      2.540000E+1,  2.560000E+1 ,   2.580000E+1 , 
-      2.600000E+1,  2.620000E+1 ,   2.640000E+1 , 
-      2.660000E+1,  2.680000E+1 ,   2.700000E+1 , 
-      2.720000E+1,  2.740000E+1 ,   2.760000E+1 , 
-      2.780000E+1,  2.800000E+1 ,   2.820000E+1 , 
-      2.840000E+1,  2.860000E+1 ,   2.880000E+1 , 
-      2.900000E+1,  2.920000E+1 ,   2.940000E+1 , 
-      2.960000E+1,  2.980000E+1 ,   3.000000E+1 , 
-      3.100000E+1   } ;
-
-  std::vector<double> Xerg7;
-  Xerg7.push_back(0.0);
-  const size_t XBaseSize=sizeof(XBase)/sizeof(double);
-
-  double scaleFactor(1e-5);
-  for(size_t i=0;i<5;i++)
-    {
-      for(size_t j=0;j<XBaseSize;j++)
-	Xerg7.push_back(XBase[j]*scaleFactor);
-      scaleFactor*=10.0;
-    }
-
-
-  const size_t XTopSize=sizeof(XTop)/sizeof(double);
-  for(size_t j=0;j<XTopSize;j++)
-    Xerg7.push_back(XTop[j]);
+   double Xerg7[] =
+{ 1e-05 , 1.1e-05 , 1.2e-05 , 1.3e-05 , 1.4e-05 , 1.5e-05 , 1.6e-05 , 1.7e-05
+ ,        1.8e-05 , 1.9e-05 , 2e-05 , 2.1e-05 , 2.2e-05 , 2.3e-05 , 2.4e-05 , 2.5e-05
+ ,        2.6e-05 , 2.7e-05 , 2.8e-05 , 2.9e-05 , 3e-05 , 3.1e-05 , 3.2e-05 , 3.3e-05
+ ,        3.4e-05 , 3.5e-05 , 3.6e-05 , 3.7e-05 , 3.8e-05 , 3.9e-05 , 4e-05 , 4.1e-05
+ ,        4.2e-05 , 4.3e-05 , 4.4e-05 , 4.5e-05 , 4.6e-05 , 4.7e-05 , 4.8e-05 , 4.9e-05
+ ,        5e-05 , 5.1e-05 , 5.2e-05 , 5.3e-05 , 5.4e-05 , 5.5e-05 , 5.6e-05 , 5.7e-05
+ ,        5.8e-05 , 5.9e-05 , 6e-05 , 6.1e-05 , 6.2e-05 , 6.3e-05 , 6.4e-05 , 6.5e-05
+  ,       6.6e-05 , 6.7e-05 , 6.8e-05 , 6.9e-05 , 7e-05 , 7.1e-05 , 7.2e-05 , 7.3e-05
+ ,        7.4e-05 , 7.5e-05 , 7.6e-05 , 7.7e-05 , 7.8e-05 , 7.9e-05 , 8e-05 , 8.1e-05
+ ,        8.2e-05 , 8.3e-05 , 8.4e-05 , 8.5e-05 , 8.6e-05 , 8.7e-05 , 8.8e-05 , 8.9e-05
+ ,        9e-05 , 9.1e-05 , 9.2e-05 , 9.3e-05 , 9.4e-05 , 9.5e-05 , 9.6e-05 , 9.7e-05
+ ,        9.8e-05 , 9.9e-05 , 0.0001 , 0.00011 , 0.00012 , 0.00013 , 0.00014 , 0.00015
+ ,        0.00016 , 0.00017 , 0.00018 , 0.00019 , 0.0002 , 0.00021 , 0.00022 , 0.00023
+ ,        0.00024 , 0.00025 , 0.00026 , 0.00027 , 0.00028 , 0.00029 , 0.0003 , 0.00031
+ ,        0.00032 , 0.00033 , 0.00034 , 0.00035 , 0.00036 , 0.00037 , 0.00038 , 0.00039
+ ,         0.0004 , 0.00041 , 0.00042 , 0.00043 , 0.00044 , 0.00045 , 0.00046 , 0.00047
+ , 0.00048 , 0.00049 , 0.0005 , 0.00051 , 0.00052 , 0.00053 , 0.00054 , 0.00055
+ , 0.00056 , 0.00057 , 0.00058 , 0.00059 , 0.0006 , 0.00061 , 0.00062 , 0.00063
+ , 0.00064 , 0.00065 , 0.00066 , 0.00067 , 0.00068 , 0.00069 , 0.0007 , 0.00071
+ , 0.00072 , 0.00073 , 0.00074 , 0.00075 , 0.00076 , 0.00077 , 0.00078 , 0.00079
+ , 0.0008 , 0.00081 , 0.00082 , 0.00083 , 0.00084 , 0.00085 , 0.00086 , 0.00087
+ , 0.00088 , 0.00089 , 0.0009 , 0.00091 , 0.00092 , 0.00093 , 0.00094 , 0.00095
+ , 0.00096 , 0.00097 , 0.00098 , 0.00099 , 0.001 , 0.0011 , 0.0012 , 0.0013
+ , 0.0014 , 0.0015 , 0.0016 , 0.0017 , 0.0018 , 0.0019 , 0.002 , 0.0021 , 0.0022
+ , 0.0023 , 0.0024 , 0.0025 , 0.0026 , 0.0027 , 0.0028 , 0.0029 , 0.003 , 0.0031
+ , 0.0032 , 0.0033 , 0.0034 , 0.0035 , 0.0036 , 0.0037 , 0.0038 , 0.0039 , 0.004
+ , 0.0041 , 0.0042 , 0.0043 , 0.0044 , 0.0045 , 0.0046 , 0.0047 , 0.0048 , 0.0049
+ , 0.005 , 0.0051 , 0.0052 , 0.0053 , 0.0054 , 0.0055 , 0.0056 , 0.0057 , 0.0058
+ , 0.0059 , 0.006 , 0.0061 , 0.0062 , 0.0063 , 0.0064 , 0.0065 , 0.0066 , 0.0067
+ , 0.0068 , 0.0069 , 0.007 , 0.0071 , 0.0072 , 0.0073 , 0.0074 , 0.0075 , 0.0076
+ , 0.0077 , 0.0078 , 0.0079 , 0.008 , 0.0081 , 0.0082 , 0.0083 , 0.0084 , 0.0085
+ , 0.0086 , 0.0087 , 0.0088 , 0.0089 , 0.009 , 0.0091 , 0.0092 , 0.0093 , 0.0094
+ , 0.0095 , 0.0096 , 0.0097 , 0.0098 , 0.0099 , 0.01 , 0.011 , 0.012 , 0.013 , 0.014
+ , 0.015 , 0.016 , 0.017 , 0.018 , 0.019 , 0.02 , 0.021 , 0.022 , 0.023 , 0.024
+ , 0.025 , 0.026 , 0.027 , 0.028 , 0.029 , 0.03 , 0.031 , 0.032 , 0.033 , 0.034
+ , 0.035 , 0.036 , 0.037 , 0.038 , 0.039 , 0.04 , 0.041 , 0.042 , 0.043 , 0.044
+ , 0.045 , 0.046 , 0.047 , 0.048 , 0.049 , 0.05 , 0.051 , 0.052 , 0.053 , 0.054
+ , 0.055 , 0.056 , 0.057 , 0.058 , 0.059 , 0.06 , 0.061 , 0.062 , 0.063 , 0.064
+ , 0.065 , 0.066 , 0.067 , 0.068 , 0.069 , 0.07 , 0.071 , 0.072 , 0.073 , 0.074
+ , 0.075 , 0.076 , 0.077 , 0.078 , 0.079 , 0.08 , 0.081 , 0.082 , 0.083 , 0.084
+ , 0.085 , 0.086 , 0.087 , 0.088 , 0.089 , 0.09 , 0.091 , 0.092 , 0.093 , 0.094
+ , 0.095 , 0.096 , 0.097 , 0.098 , 0.099 , 0.1 , 0.11 , 0.12 , 0.13 , 0.14 , 0.15 , 0.16
+ , 0.17 , 0.18 , 0.19 , 0.2 , 0.21 , 0.22 , 0.23 , 0.24 , 0.25 , 0.26 , 0.27 , 0.28 , 0.29
+ , 0.3 , 0.31 , 0.32 , 0.33 , 0.34 , 0.35 , 0.36 , 0.37 , 0.38 , 0.39 , 0.4 , 0.41 , 0.42
+ , 0.43 , 0.44 , 0.45 , 0.46 , 0.47 , 0.48 , 0.49 , 0.5 , 0.51 , 0.52 , 0.53 , 0.54 , 0.55
+ , 0.56 , 0.57 , 0.58 , 0.59 , 0.6 , 0.61 , 0.62 , 0.63 , 0.64 , 0.65 , 0.66 , 0.67 , 0.68
+ , 0.69 , 0.7 , 0.71 , 0.72 , 0.73 , 0.74 , 0.75 , 0.76 , 0.77 , 0.78 , 0.79 , 0.8 , 0.81
+ , 0.82 , 0.83 , 0.84 , 0.85 , 0.86 , 0.87 , 0.88 , 0.89 , 0.9 , 0.91 , 0.92 , 0.93 , 0.94
+ , 0.95 , 0.96 , 0.97 , 0.98 , 0.99 , 1 , 1.1 , 1.2 , 1.3 , 1.4 , 1.5 , 1.6 , 1.7 , 1.8 , 1.9
+ , 2 , 2.1 , 2.2 , 2.3 , 2.4 , 2.5 , 2.6 , 2.7 , 2.8 , 2.9 , 3 , 3.1 , 3.2 , 3.3 , 3.4 , 3.5 , 3.6
+ , 3.7 , 3.8 , 3.9 , 4 , 4.1 , 4.2 , 4.3 , 4.4 , 4.5 , 4.6 , 4.7 , 4.8 , 4.9 , 5 , 5.1 , 5.2 , 5.3
+ , 5.4 , 5.5 , 5.6 , 5.7 , 5.8 , 5.9 , 6 , 6.1 , 6.2 , 6.3 , 6.4 , 6.5 , 6.6 , 6.7 , 6.8 , 6.9 , 7
+ , 7.1 , 7.2 , 7.3 , 7.4 , 7.5 , 7.6 , 7.7 , 7.8 , 7.9 , 8 , 8.1 , 8.2 , 8.3 , 8.4 , 8.5 , 8.6
+ , 8.7 , 8.8 , 8.9 , 9 , 9.1 , 9.2 , 9.3 , 9.4 , 9.5 , 9.6 , 9.7 , 9.8 , 9.9 , 10 , 10.2 , 10.4
+ , 10.6 , 10.8 , 11 , 11.2 , 11.4 , 11.6 , 11.8 , 12 , 12.2 , 12.4 , 12.6 , 12.8 , 13 , 13.2
+ , 13.4 , 13.6 , 13.8 , 14 , 14.2 , 14.4 , 14.6 , 14.8 , 15 , 15.2 , 15.4 , 15.6 , 15.8 , 16
+ , 16.2 , 16.4 , 16.6 , 16.8 , 17 , 17.2 , 17.4 , 17.6 , 17.8 , 18 , 18.2 , 18.4 , 18.6
+ , 18.8 , 19 , 19.2 , 19.4 , 19.6 , 19.8 , 20 , 20.2 , 20.4 , 20.6 , 20.8 , 21 , 21.2 , 21.4
+ , 21.6 , 21.8 , 22 , 22.2 , 22.4 , 22.6 , 22.8 , 23 , 23.2 , 23.4 , 23.6 , 23.8 , 24 , 24.2
+ , 24.4 , 24.6 , 24.8 , 25 , 25.2 , 25.4 , 25.6 , 25.8 , 26 , 26.2 , 26.4 , 26.6 , 26.8 , 27
+ , 27.2 , 27.4 , 27.6 , 27.8 , 28 , 28.2 , 28.4 , 28.6 , 28.8 , 29 , 29.2 , 29.4 , 29.6
+ , 29.8 , 30 , 31};
  
+// std::vector<double> Xerg7;
+
   // U-235 fission spectrum from ENDF/B-VII.1
                    
   double Yerg7[]     =
-       { 0.000000E+0 ,  1.850569E-9 ,  1.940894E-9  ,
+       {  1.850569E-9 ,  1.940894E-9  ,
          2.027196E-9 ,  2.109973E-9 ,  2.189621E-9  ,
          2.266473E-9 ,  2.340803E-9 ,  2.412844E-9  ,
          2.482795E-9 ,  2.550829E-9 ,  2.617094E-9  ,
@@ -516,9 +565,10 @@ SinbadSource(const FuncDataBase& Control,Source& sourceCard,const std::string& e
          6.69858E-16 ,  5.67389E-16 ,  4.80294E-16  ,
          4.06568E-16 ,  3.44159E-16 ,  2.91330E-16  ,
          2.46611E-16 ,  2.08625E-16 ,  1.76491E-16  ,
-	 1.49306E-16 , 1.26309E-16 , 1.06854E-16,  0};
+	  1.49306E-16 , 1.26309E-16 , 1.06854E-16 , 0 };
 
-  const size_t YSize(Xerg7.size());
+  // const size_t YSize(Xerg7.size());
+  const size_t YSize(sizeof(Xerg7)/sizeof(double));
 
   // write source cards
 
@@ -527,7 +577,7 @@ SinbadSource(const FuncDataBase& Control,Source& sourceCard,const std::string& e
   SDef::SrcInfo SI1('A');
   SDef::SrcProb SP1(' ');
 
-   for(size_t ii=1;ii<YSize;ii++) 
+   for(size_t ii=0;ii<YSize;ii++) 
    {  
     SI1.addData(Xerg7[ii]);
     SP1.addData(Yerg7[ii]);
@@ -562,6 +612,7 @@ SinbadSource(const FuncDataBase& Control,Source& sourceCard,const std::string& e
   
 
 
+
   size_t nSlab;
   double Len(0.0);
   int M(0);
@@ -572,7 +623,7 @@ SinbadSource(const FuncDataBase& Control,Source& sourceCard,const std::string& e
     {
      const std::string NStr(StrFunc::makeString(i));
      Len+=Control.EvalVar<double>(expN+"FissionPlateThick"+NStr);
-     if(ModelSupport::EvalMat<int>(Control,expN+"FissionPlateMat"+NStr)==4)
+     if(ModelSupport::EvalMat<std::string>(Control,expN+"FissionPlateMat"+NStr)==expN+"Fuel")
        M=i;
      thick.push_back(Len);   
     }
@@ -619,11 +670,10 @@ SinbadSource(const FuncDataBase& Control,Source& sourceCard,const std::string& e
   //   }  
 
 
-
   // model 1 (old)
 
   SDef::SrcData D4(4);
-  SDef::SrcInfo SI4('A');
+  SDef::SrcInfo SI4('a');
   SDef::SrcProb SP4(' ');
 
   std::vector<int> zeroFlag(NZ,0);
@@ -667,6 +717,8 @@ SinbadSource(const FuncDataBase& Control,Source& sourceCard,const std::string& e
         YptS1.at(ix)=2*Ypt.at(ix-1).at(iz)-YptS1.at(ix-1);
         if(Ypt.at(ix-1).at(iz)==0) 
          YptS1.at(ix)=0;
+	//	ELog::EM<<" PT0 "<<ix<<" "<<YptS1.size()<<" "<< YptS1.at(ix) <<ELog::endDiag;
+
        }
  
 //  from center to lowest x coord
@@ -686,8 +738,11 @@ SinbadSource(const FuncDataBase& Control,Source& sourceCard,const std::string& e
     for(size_t ix=0;ix<NX;ix++)
       {
 	if(ix!=NX/2)
-	  YptS1R.push_back(YptS1.at(ix));
+	 YptS1R.push_back(YptS1.at(ix));
+	//	ELog::EM<<" ppPT0 "<<ix<<" "<<YptS1R.size()<<" "<< YptS1.at(ix) <<ELog::endDiag;
+
       }
+
     for(size_t ix=0;ix<YptS1R.size();ix++)
      {
       if(ix==0)   
@@ -699,6 +754,9 @@ SinbadSource(const FuncDataBase& Control,Source& sourceCard,const std::string& e
        {
         YptS2[2*ix][iz]=YptS1R.at(ix);
         YptS2[2*ix+1][iz]=0;
+	//	ELog::EM<<" tttPT0 "<<ix<<" "<<2*ix+1<<" "<<YptS2[2*ix][iz]<<ELog::endDiag;
+
+
        }
       else if (YptS1R.at(ix-1)==0 && YptS1R.at(ix)!=0 && ix<YptS1R.size() &&ix>0)
        {   
@@ -724,7 +782,6 @@ SinbadSource(const FuncDataBase& Control,Source& sourceCard,const std::string& e
       for(size_t ix=0;ix<NX-1;ix++)
        hVal1.at(iz)+=Ypt.at(ix).at(NZ/2-1);
       hVal2.at(iz)=hVal1.at(NZ/2-1);
-      ELog::EM<<" AAAA "<<iz<<" "<<hVal2.at(iz)<<ELog::endDiag;
      }
     else if(iz==NZ/2)  
      {
@@ -744,6 +801,8 @@ SinbadSource(const FuncDataBase& Control,Source& sourceCard,const std::string& e
   
 // last line 
   hVal2.at(NZ-1)=2*hVal1.at(NZ-2)-hVal2.at(NZ-2);    
+
+
 
 // lower part of the excel table
   for(size_t iz=0;iz<NZ/2-1;iz++)   
@@ -768,7 +827,6 @@ SinbadSource(const FuncDataBase& Control,Source& sourceCard,const std::string& e
       YptS1.at(NX/2-2-ix)=2*Ypt.at(NX/2-2-ix).at(NZ/2-1-iz-1)-YptS1.at(NX/2-ix-1);
       if(Ypt.at(NX/2-2-ix).at(NZ/2-1-iz-1)==0)
        YptS1.at(NX/2-2-ix)=0; 
-       ELog::EM<<" A02 "<<iz<<" "<<ix<<" "<<YptS1.at(NX/2-2-ix)<<" "<<Ypt.at(NX/2-2-ix).at(NZ/2-1-iz-1)<<" "<<YptS1.at(NX/2-ix-1)<<ELog::endDiag;
      }
 
     // dist rows
@@ -776,7 +834,7 @@ SinbadSource(const FuncDataBase& Control,Source& sourceCard,const std::string& e
 
     for(size_t ix=0;ix<NX;ix++)
       {
-	if(ix!=NX/2)
+      	if(ix!=NX/2)
 	  YptS1S.push_back(YptS1.at(ix));
       }
 
@@ -808,7 +866,7 @@ SinbadSource(const FuncDataBase& Control,Source& sourceCard,const std::string& e
         YptS2[2*ix][NZ/2-2-iz]=YptS1S.at(ix);
         YptS2[2*ix+1][NZ/2-2-iz]=YptS1S.at(ix);
        }
-      ELog::EM<< "XX "<<YptS1S.at(ix)<<" "<<YptS2[2*ix][NZ/2-2-iz]<<"  "<<YptS2[2*ix+1][NZ/2-2-iz]<<ELog::endDiag;
+      //     ELog::EM<< "XX "<<YptS1S.at(ix)<<" "<<YptS2[2*ix][NZ/2-2-iz]<<"  "<<YptS2[2*ix+1][NZ/2-2-iz]<<ELog::endDiag;
 
       }
  
@@ -847,24 +905,34 @@ SinbadSource(const FuncDataBase& Control,Source& sourceCard,const std::string& e
    double x1;
    double x2;
    std::vector<double> Ypt1;
-   for(size_t ix=0;ix<NX-1;ix++)
-     {
-      x1=Xpt[ix]-0.01;
-      x2=Xpt[ix]+0.01;
-      Xpt1.push_back(x1);
-      Xpt1.push_back(x2);
+   for(size_t ix=0;ix<NX;ix++)
+    {
+     if(ix==NX/2-1||ix==NX/2)
+      {
+       x1=Xpt[ix];
+       Xpt1.push_back(x1);
+      }
+     else
+      {
+       x1=Xpt[ix]-0.01;
+       x2=Xpt[ix]+0.01;
+       Xpt1.push_back(x1);
+       Xpt1.push_back(x2);
+      }
      }
 
 
    for(size_t iz=0;iz<NZ-1;iz++)
     {
-     SDef::SrcInfo SIX;
-     SDef::SrcProb SPX;
+      SDef::SrcInfo SIX('a');
+      SDef::SrcProb SPX(' ');
      //     SPX.addData(0.0);
      for(size_t ix=0;ix<Xpt1.size();ix++) 
       {
        SIX.addData(Xpt1[ix]); 
-       SPX.addData(YptS2[ix][iz]);
+       SPX.addData(YptS2[ix][NZ-2-iz]);
+       //    ELog::EM<<" PTTTPP "<<ix<<" "<<Xpt1.size()<<" "<< YptS2[ix][NZ-2-iz] <<ELog::endDiag;
+
       }
       DIZ.addData(iz+6,&SIX,0,&SPX);
     }
