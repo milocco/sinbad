@@ -8,7 +8,7 @@ namespace sinbadSystem
 /*!
   \class LayerPlate
   \version 1.0
-  \author A. Milocco
+  \author A. Milocco (based on S. Ansell starter)
   \date Novenber 2013
   \brief Builds a layered stack object
 \ build of shield array
@@ -30,9 +30,18 @@ class LayerPlate  : public attachSystem::ContainedComp,
   double zAngle;              ///< z angle rotation
 
   bool frontShared;           ///< Front surface shared
-
   double width;               ///< Width of slab
   double height;              ///< Height of block
+   std::vector<double> slotL;
+   std::vector<double> slotT; 
+   std::vector<double> slotA; 
+
+   std::vector<int> slotN; 
+   std::vector<double> slotX;
+   std::vector<double> slotY;
+   std::vector<double> slotZ;
+   std::vector<int> slotM; 
+
 
   size_t nSlab;                ///< number of slabs
 
@@ -40,12 +49,23 @@ class LayerPlate  : public attachSystem::ContainedComp,
   std::vector<int> mat;            ///< Material type
   std::vector<double> matTemp;     ///< Material temperature
 
+
   /// Cut out size
+  std::vector<double> cutX;
+  std::vector<double> cutZ;
+  std::vector<int> cutMat;
+  std::vector<double> thickSlot;
+
   double radiusWindow;
-  //  double bGap;
+  int matWindow;
+
   double cGap;
 
   std::string detT;
+
+  std::string pName; 
+  // std::string keyName; 
+
 
   std::string getFrontSurface(const size_t,const attachSystem::FixedComp&,
 			      const long int) const;

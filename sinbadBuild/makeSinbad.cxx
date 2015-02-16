@@ -54,15 +54,13 @@
 
 
 #include "Cave.h"
-// #include "sinbadShield.h"
 #include "LayerPlate.h"
 #include "FissionPlate.h"
-// #include "sbadDetector.h"
+#include "sinbadCave.h"
 #include "sinbadSource.h"
 #include "sinbadMaterial.h"
 #include "makeSinbad.h"
 #include "MainProcess.h"
-#include "sinbadSource.h"
 #include "Detectors.h"
 
   
@@ -73,7 +71,9 @@ makeSinbad::makeSinbad(const std::string& pKey) :
   preName(pKey),
   nestorSide(new LayerPlate(pKey+"NestorSide")),
   shield(new LayerPlate(pKey+"Shield")),
-  fissionPlate(new FissionPlate(pKey+"FissionPlate"))
+  fissionPlate(new FissionPlate(pKey+"FissionPlate")),
+  room(new LayerPlate(pKey+"Cave"))
+
   /*!
     Constructor
   */
@@ -83,6 +83,8 @@ makeSinbad::makeSinbad(const std::string& pKey) :
   OR.addObject(nestorSide);
   OR.addObject(fissionPlate);
   OR.addObject(shield);
+  OR.addObject(room);
+
 } 
 
 makeSinbad::makeSinbad(const makeSinbad& A) : 
@@ -251,9 +253,8 @@ makeSinbad::buildDetectors(Simulation& System, const mainSystem::inputParam& IPa
 	       if(detArray[detArray.size()-(i-m)*detNY-1]->isActiveY())
 		 // || detArray[detArray.size()-(i-m)*detNY-1]->isActiveZ() )
                detOffset+=DO[m];
-	    ELog::EM<<" DT "<<DT.size()<<" "<<i<<ELog::endDiag;
 	      }
-	    // move boral to accomodate detectors
+	    // move boral of experiment 49 to accomodate detectors
             if(preName=="49" && iy==1 && detFlag=="Axial") 
             detOffset=-boralOffset+detOffset; 
 
@@ -262,7 +263,7 @@ makeSinbad::buildDetectors(Simulation& System, const mainSystem::inputParam& IPa
 
             if (detArray.back()->isActiveY()==1||detArray.back()->isActiveZ()==1)
 	      {
-		ELog::EM<<detKey<<" Insert Detector: "<<DT[i]<<"   Axial Position: "<<YIndex<<"   Vertical Position "<<ZIndex<<"   Scan: "<<DF[i]<<"   Detector Index "<<id<<" "<<detOffset<<ELog::endBasic;
+		ELog::EM<<" Insert Detector: "<<id<<" ->"<<"\n Det type: "<<DT[i]<<"   Axial Position: "<<YIndex<<"   Vertical Position "<<ZIndex<<"   Scan: "<<DF[i]<<ELog::endBasic;
              attachSystem::addToInsertControl(System,*shield,*detPtr,*detPtr);
 	      }
 
@@ -271,6 +272,8 @@ makeSinbad::buildDetectors(Simulation& System, const mainSystem::inputParam& IPa
        } // end ax loop
 
     } // end det stack
+		
+ ELog::EM<<"\n "<<ELog::endBasic;
 
   return;
 }
@@ -291,12 +294,14 @@ makeSinbad::build(Simulation* SimPtr,
   ELog::RegMethod RControl("makeSinbad","build");
 
   std::string ND=IParam.getValue<std::string>("xs");
- std::string expName=IParam.getValue<std::string>("preName");
+  std::string expName=IParam.getValue<std::string>("preName");
   
  ModelSupport::addSinbadMaterial(ND,expName);
 
 
   int voidCell(74123); 
+
+  // include the objects
 
   nestorSide->addInsertCell(voidCell) ;
   nestorSide->createAll(*SimPtr,World::masterOrigin(),0);
@@ -308,8 +313,6 @@ makeSinbad::build(Simulation* SimPtr,
   shield->addInsertCell(voidCell);
   shield->createAllAM(*SimPtr,IParam,*fissionPlate,2);
   
-  ELog::EM<<" CCC "<<ELog::endDiag;
-
   buildDetectors(*SimPtr,IParam);
 
 

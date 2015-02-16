@@ -19,135 +19,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-// #include <fstream>
-// #include <iomanip>
-// #include <iostream>
-// #include <sstream>
-// #include <cmath>
-// #include <complex>
-// #include <list>
-// #include <vector>
-// #include <set>
-// #include <map>
-// #include <string>
-// #include <algorithm>
-// #include <boost/shared_ptr.hpp>
-// #include <boost/array.hpp>
-
-// #include "Exception.h"
-// #include "FileReport.h"
-// #include "GTKreport.h"
-// #include "NameStack.h"
-// #include "RegMethod.h"
-// #include "OutputLog.h"
-// #include "BaseVisit.h"
-// #include "BaseModVisit.h"
-// #include "support.h"
-// #include "stringCombine.h"
-// #include "MatrixBase.h"
-// #include "Matrix.h"
-// #include "Vec3D.h"
-// #include "Quaternion.h"
-// #include "doubleErr.h"
-// #include "Triple.h"
-// #include "NRange.h"
-// #include "NList.h"
-// #include "varList.h"
-// #include "Code.h"
-// #include "FuncDataBase.h"
-// #include "KCode.h"
-// #include "Source.h"
-// #include "SrcItem.h"
-// // #include "SrcData.h"
-// // #include "surfRegister.h"
-// // #include "HeadRule.h"
-// // #include "LinkUnit.h"
-// // #include "FixedComp.h"
-// // #include "LinearComp.h"
-// // #include "SecondTrack.h"
-// // #include "inputParam.h"
-// // #include "PhysCard.h"
-// // #include "LSwitchCard.h"
-// // #include "ModeCard.h"
-// // #include "PhysImp.h"
-// // #include "PhysicsCards.h"
-// // #include "Simulation.h"
-// // #include "SourceCreate.h"
-// // #include "localRotate.h"
-// // #include "masterRotate.h"
-// // #include "objectRegister.h"
-// // #include "ChipIRSource.h"
-
-
-
-#include <fstream>
-#include <iomanip>
-#include <iostream>
-#include <sstream>
-#include <cmath>
-#include <complex>
-#include <list>
-#include <vector>
-#include <set>
-#include <map>
-#include <string>
-#include <algorithm>
-#include <boost/shared_ptr.hpp>
-#include <boost/array.hpp>
-
-#include "Exception.h"
-#include "FileReport.h"
-#include "GTKreport.h"
-#include "NameStack.h"
-#include "RegMethod.h"
-#include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
-#include "support.h"
-#include "stringCombine.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
-#include "Vec3D.h"
-#include "Quaternion.h"
-#include "doubleErr.h"
-#include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
-#include "varList.h"
-#include "Code.h"
-#include "FuncDataBase.h"
-#include "KCode.h"
-#include "Source.h"
-#include "SrcItem.h"
-#include "SrcData.h"
-#include "surfRegister.h"
-#include "HeadRule.h"
-#include "LinkUnit.h"
-#include "FixedComp.h"
-#include "LinearComp.h"
-#include "SecondTrack.h"
-#include "inputParam.h"
-#include "PhysCard.h"
-#include "LSwitchCard.h"
-#include "ModeCard.h"
-#include "PhysImp.h"
-#include "PhysicsCards.h"
-#include "Simulation.h"
-#include "SourceCreate.h"
-#include "localRotate.h"
-#include "masterRotate.h"
-#include "objectRegister.h"
-#include "ChipIRSource.h"
-
-
-
-
-
-
-
-
-
-
 #include <fstream>
 #include <iomanip>
 #include <iostream>
@@ -173,21 +44,38 @@
 #include "OutputLog.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
+#include "support.h"
+#include "stringCombine.h"
 #include "ManagedPtr.h"
 #include "mathSupport.h"
-#include "support.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
+#include "Quaternion.h"
+#include "doubleErr.h"
+#include "Triple.h"
+#include "NRange.h"
+#include "NList.h"
 #include "Code.h"
 #include "varList.h"
 #include "MaterialSupport.h"
-#include "stringCombine.h"
 #include "FuncDataBase.h"
+#include "KCode.h"
+#include "Source.h"
 #include "SrcData.h"
 #include "SrcItem.h"
 #include "DSTerm.h"
 #include "Source.h"
+#include "SourceCreate.h"
+#include "localRotate.h"
+#include "masterRotate.h"
+#include "objectRegister.h"
+#include "surfRegister.h"
+#include "HeadRule.h"
+#include "LinkUnit.h"
+#include "FixedComp.h"
+#include "LinearComp.h"
+#include "SecondTrack.h"
 #include "inputParam.h"
 #include "PhysCard.h"
 #include "LSwitchCard.h"
@@ -195,16 +83,10 @@
 #include "PhysImp.h"
 #include "Simulation.h"
 #include "PhysicsCards.h"
-#include "NList.h"
-#include "NRange.h"
-#include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
 #include "KCode.h"
-
 #include "stringCombine.h"
-
-
 #include "sinbadSource.h"
 
 

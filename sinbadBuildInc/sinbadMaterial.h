@@ -10,9 +10,9 @@
 namespace ModelSupport
 {
   // const std::string lib;
-  void addSinbadMaterial(std::string&);
-
+  void addSinbadMaterial(std::string&,std::string&);
   int setMaterial(const int,std::string&, const std::string&);
+  //  void writeMCNPX(std::ostream& OX) const;
 
 
 

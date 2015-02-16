@@ -51,7 +51,10 @@ namespace ModelSupport
   else  ext=lib;
 
   const std::string MLib="";
-  ELog::EM<<" lib "<<lib<<"  "<<ext<<ELog::endDiag;
+
+  ELog::EM<<" Transport data library: "<<lib<<"  file extention: "<<ext<<ELog::endBasic;
+  ELog::EM<<" Dosimetry file: IRDFF-v1.05    "<<ELog::endBasic;
+ ELog::EM<<"\n "<<ELog::endBasic;
 
   MonteCarlo::Material MObj;
 

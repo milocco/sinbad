@@ -151,14 +151,6 @@ Detectors::~Detectors()
 {}
 
 
-// std::string
-// Detectors::getDet(const mainSystem::inputParam& IParam) const
-// {
-//  int t(0);
-//      detT==IParam.getValue<std::string>("detType",0);
- 
-//   return detT;
-// }
 
 void
 Detectors::populate(const FuncDataBase& Control, const std::string& DF)
@@ -181,11 +173,7 @@ Detectors::populate(const FuncDataBase& Control, const std::string& DF)
 
   std::string baseNameV("");
   baseNameV=keyName;
-
   baseName=keyName+YName+ZName;
-
-  // std::stringstream IS1("");
-  // std::stringstream IS2;
 
   std::string detAny(expName+"Det");
 
@@ -202,7 +190,6 @@ Detectors::populate(const FuncDataBase& Control, const std::string& DF)
      xStep=Control.EvalPair<double>(detAny,baseName,"StepX");
      zStep=Control.EvalPair<double>(expName,baseNameV,"Step"+ZIndex);      
      yStep=Control.EvalVar<double>(baseNameV+"Vscan"+YIndex);
-
      activeZ=Control.EvalVar<int>(baseNameV+YIndex+"Active"+ZIndex);
     }
    else
@@ -257,9 +244,6 @@ Detectors::createUnitVectorAM(const attachSystem::FixedComp& FC, const double& o
 
   FixedComp::createUnitVector(FC);
   applyShift(xOffset+xStep,yOffset+yStep+offSet,zOffset+zStep);
-  // applyShift(xStep,yStep,zStep);
-  // ELog::EM<<" offSet== "<<offSet<<" yStep== "<<yStep<<" yOffset== "<<yOffset<<ELog::endDiag;
-  //  applyAngleRotate(xyAngle,zAngle);
 
   return;
 }
@@ -273,8 +257,6 @@ Detectors::createSurfaces()
 {
   ELog::RegMethod RegA("Detectors","createSurface");
 
-  // ModelSupport::buildPlane(SMap,detIndex+1,Origin-Y*(length/2.0),Y);
-  // ModelSupport::buildPlane(SMap,detIndex+2,Origin+Y*(length/2.0),Y);
   ModelSupport::buildPlane(SMap,detIndex+1,Origin,Y);
   ModelSupport::buildPlane(SMap,detIndex+2,Origin+Y*length,Y);
 
@@ -296,7 +278,6 @@ Detectors::createObjects(Simulation& System)
  
   Out=ModelSupport::getComposite(SMap,detIndex,"1 -2 -7");
 
-  // ELog::EM<< "OUT "<<Out<<" cellIndex "<<cellIndex<<" mat "<<mat<<ELog::endDiag;
   System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out)); 
 
   addOuterSurf(Out);
@@ -378,162 +359,6 @@ Detectors::createAllAM(Simulation& System,const mainSystem::inputParam& IParam,
   return;
 }
 
-
-
-// void
-// Detectors::buildDetectors(Simulation& System, const mainSystem::inputParam& IParam,const attachSystem::FixedComp& Secondary)
-
-//   /*!
-//     Build detector units
-//     \param System :: Simulation
-//   */
-// {
-//   ELog::RegMethod RegA("makeSinbad","buildDetectors");
-
-//   const FuncDataBase& Control=System.getDataBase();  
- 
-//  const std::string preName=IParam.getValue<std::string>("preName");
-//   // support vectors for detector type, scan type and detector offset
-//   std::vector<std::string> DT;
-//   std::vector<std::string> DF;
-//   std::vector<double> DO;
-
-//   size_t t(0);
-//   while(t<10 && IParam.getValue<std::string>("axDet",t).size()!=0)
-//     {
-//      DT.push_back(IParam.getValue<std::string>("axDet",t));
-//      DF.push_back("Axial");
-//      t=t+1;
-//     }
-//   t=0;
-//   while(t<10 && IParam.getValue<std::string>("vertDet",t).size()!=0)
-//     {
-//      DT.push_back(IParam.getValue<std::string>("vertDet",t));
-//      DF.push_back("Vertical");
-//      t=t+1;
-//     }
-
-//   // support vector dor detector pile-up
-//   std::vector<double> CumOffset;  
-
-//   // insert a row/column of detectors
-//   for(size_t i=0;i<DT.size();i++)
-//     {
-//      // detector key (e.g. 49S)
-
-//      const std::string detKey=preName+DT[i];
-//      const std::string detFlag=DF[i];
-
-
-//      // number of axial/vertical detectors
-//      size_t detNY(0);
-//      size_t detNZ(0);
-//      if(detFlag=="Axial")
-//        {
-//         detNY=Control.EvalVar<size_t>(preName+"DetNY");
-//         detNZ=1;
-//        }
-//      if(detFlag=="Vertical")
-//        {
-//         detNY =Control.EvalVar<size_t>(detKey+"VscanNY");
-//         detNZ =Control.EvalVar<size_t>(preName+"DetNZ");
-//        }
-
-//      // detector thickness for pile up 
-//      DO.push_back(Control.EvalVar<double>(detKey+"Thick"));
-//      // detector offset
-//      double detOffset(0.0);
-//      double boralOffset(0.0);
-
- 
-//      // loop along axial positions
-//      std::string YIndex("");
-//      std::string ZIndex("");
-//      for(size_t iy=0;iy<detNY;iy++)
-//        {
-//  	YIndex="Y";  
-//  	std::stringstream IS2("");
-//         IS2<< iy;
-//         std::string s2 = IS2.str();
-//  	YIndex+=s2;     
-//         // loop along vertical positions
-//         for(size_t iz=0;iz<detNZ;iz++)
-//           {
-//  	   ZIndex="Z";  
-//            std::stringstream IS1("");
-//            IS1<< iz;
-//            std::string s1 = IS1.str();
-//            ZIndex+=s1;
-
-//            size_t id(0); 
-//            if(detFlag=="Vertical")
-//              id=iz+iy*(detNY);
-//            if(detFlag=="Axial")
-//  	     id=iy;
-
-//            // activeY=Control.EvalVar<int>(detKey+"Active"+YIndex);
-//            // activeZ=Control.EvalVar<int>(detKey+YIndex+"Active"+ZIndex);
- 
-// 	   ELog::EM<<" AXXXX "<<detKey<<"  "<<id<<YIndex<<"  "<<ZIndex<<"  "<<ELog::endDiag;
-
-//            // create the detector array 
-// 	   boost::shared_ptr<Detectors> detPtr
-// 	   (new Detectors(detKey+YIndex+ZIndex,id));
-
-// 	   detArray.push_back(detPtr);
-
-// 	   // calculate offsets for axial pile-up and boral
-//            size_t dS(0);
-//            size_t dT(0);
-//            for(size_t i1=0;i1<10;i1++)
-//              {
-//               dS = IParam.getValue<std::string>("axDet",i1).size();
-//               if(dS!=0) dT=i1+1;
-//              }
-//             boralOffset=0.0;
-//             if(iy==1&&detFlag=="Axial") 
-//        	     {
-//               for(size_t n=0;n<dT;n++)
-//                 {
-//                  boralOffset+=Control.EvalVar<double>(preName+DT[n]+"Thick");
-//                 }
-//        	     }
-//             detOffset=0.0;
-//             if(i>0)
-//  	      {
-//  	       for(size_t m=0;m<i;m++)
-//  	          {
-//  	           if(detArray[detArray.size()-(i-m)*detNY-1]->isActiveY() )
-//  	              {
-//                        detOffset+=DO[m];
-//                       }
-//  		  }
-//  	      }
-//             else
-//              {
-//               detOffset+=0;
-//  	     }
-
-//             if(iy==1&&detFlag=="Axial") 
-//             detOffset=-boralOffset+detOffset; 
-
-
-// 	    // makeSinbad Secondary;
-
-// 	   detArray.back()->createAllAM(System,IParam,Secondary,detOffset,detFlag);
-
-//             if (detArray.back()->isActiveY()==1||detArray.back()->isActiveZ()==1)
-// 	      {
-// 		ELog::EM<<detKey<<" Insert Detector: "<<DT[i]<<"   Axial Position: "<<YIndex<<"   Vertical Position "<<ZIndex<<"   Scan: "<<DF[i]<<"   Detector Index "<<id<<ELog::endBasic;
-//              attachSystem::addToInsertControl(System,Secondary,*detPtr,*detPtr);
-// 	      }
-//  	   }
-//  	 }
-
-//     }
-
-//   return;
-// }
 
 
 

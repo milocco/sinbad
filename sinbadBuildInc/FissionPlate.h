@@ -9,7 +9,7 @@ namespace sinbadSystem
 /*!
   \class FissionPlate
   \version 2.0
-  \author S. Ansell 
+  \author S. Ansell/ A. Milocco 
   \date February 2014
   \brief Divided slab object specialized to 
 
@@ -35,7 +35,8 @@ class FissionPlate : public LayerPlate
   boost::multi_array<int,3> matIndex;
   /// temperature array [default populated]
   boost::multi_array<double,3> matTemp;
-
+  int indexFPout;
+   
   template<typename T> T getXZ(const FuncDataBase&,const std::string&,
 			       const long int,const long int,
 			       const long int) const;

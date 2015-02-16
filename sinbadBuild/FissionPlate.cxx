@@ -242,7 +242,7 @@ FissionPlate::populate(const FuncDataBase& Control)
   double zStepNC=Control.EvalVar<double>(keyName+"ZNucCentre");
 
 
-  ELog::EM<<" XZSpace "<<nZSpace<<ELog::endWarn;
+  // ELog::EM<<" XZSpace "<<nZSpace<<ELog::endWarn;
   
   if (nXSpace*nZSpace==0)
     {
@@ -410,7 +410,7 @@ FissionPlate::createObjects(Simulation& System,
   for(size_t dLayer=0;dLayer<nDivide;dLayer++)
     {
       const long int DI(static_cast<long int>(dLayer));
-    ELog::EM<<" dLayer "<<dLayer<<" nDivide "<<nDivide<<ELog::endWarn;
+      //    ELog::EM<<" dLayer "<<dLayer<<" nDivide "<<nDivide<<ELog::endWarn;
 
 
       const int CIndex=getCellIndex(DIndex[dLayer]);

@@ -489,12 +489,12 @@ writeSinbad::setSinbadWeights(Simulation& System,
   else if(preName=="36")
    {
      // this should not be changed, slab thicknesses are set already for wr
-    distW[0]=21;
-    distW[1]=41;
-    distW[2]=71;
-    distW[3]=150;
-    distW[4]=190;
-    distW[5]=190;
+    distW[0]=1;
+    distW[1]=30;
+    distW[2]=60;
+    distW[3]=90;
+    distW[4]=170;
+    distW[5]=200;
    }
   else
    {
@@ -526,48 +526,32 @@ writeSinbad::setSinbadWeights(Simulation& System,
          SN=Control.EvalVar<int>(preName+"Shield"+NStr+"SlotN");
          SC=Control.EvalVar<int>(preName+"ShieldCutN"+NStr);
 
-         RF=pow(2,0);
-         WF->rescale(cellOffset+i,cellOffset+i,RF);   
-         cellI1 += boost::lexical_cast<std::string>(1);
-         cellI1 += " ";
-         cellI2 += boost::lexical_cast<std::string>(RF);
-         cellI2 += " ";
-
          for (int n=0;n<SN;n++)
 	  {
             RF=pow(2,0);
-            WF->rescale(cellOffset+i+1+n,cellOffset+i+1+n,RF);   
+            cellOffset++;
+            WF->rescale(cellOffset,cellOffset,RF);   
             cellI1 += boost::lexical_cast<std::string>(1);
             cellI1 += " ";
             cellI2 += boost::lexical_cast<std::string>(RF);
             cellI2 += " ";
 	  }
-
+	 for(size_t m=0;m<SC;m++)
+	   {
           RF=pow(2,0);
-          WF->rescale(cellOffset+i+SN+1,cellOffset+i+SN+1,RF);   
+          cellOffset++;
+          WF->rescale(cellOffset,cellOffset,RF);   
           cellI1 += boost::lexical_cast<std::string>(1);
           cellI1 += " ";
           cellI2 += boost::lexical_cast<std::string>(RF);
           cellI2 += " ";
-
-          RF=pow(2,0);
-          WF->rescale(cellOffset+i+SN+2,cellOffset+i+SN+2,RF);   
-          cellI1 += boost::lexical_cast<std::string>(1);
-          cellI1 += " ";
-          cellI2 += boost::lexical_cast<std::string>(RF);
-          cellI2 += " ";
-
-          RF=pow(2,0);
-          WF->rescale(cellOffset+i+SN+3,cellOffset+i+SN+3,RF);
-          cellI1 += boost::lexical_cast<std::string>(1);
-          cellI1 += " ";
-          cellI2 += boost::lexical_cast<std::string>(RF);
-          cellI2 += " ";
+	   }
 	}
        else
 	{
          RF=pow(2,0);
-         WF->rescale(cellOffset+i,cellOffset+i,RF);   
+            cellOffset++;
+            WF->rescale(cellOffset,cellOffset,RF);   
          cellI1 += boost::lexical_cast<std::string>(1);
          cellI1 += " ";
          cellI2 += boost::lexical_cast<std::string>(RF);
@@ -597,38 +581,43 @@ writeSinbad::setSinbadWeights(Simulation& System,
 	{
          SN=Control.EvalVar<int>(preName+"Shield"+NStr+"SlotN");
          SC=Control.EvalVar<int>(preName+"ShieldCutN"+NStr);
-         RF=pow(2,0);
-         WF->rescale(cellOffset+i,cellOffset+i,RF);   
+         RF=pow(2,1);
+            cellOffset++;
+            WF->rescale(cellOffset,cellOffset,RF);   
          cellI1 += boost::lexical_cast<std::string>(1);
          cellI1 += " ";
          cellI2 += boost::lexical_cast<std::string>(RF);
          cellI2 += " ";
          for (int n=0;n<SN;n++)
 	  {
-            RF=pow(2,0);
-            WF->rescale(cellOffset+i+1,cellOffset+i+1+n,RF);   
+            RF=pow(2,1);
+            cellOffset++;
+            WF->rescale(cellOffset,cellOffset,RF);   
             cellI1 += boost::lexical_cast<std::string>(1);
             cellI1 += " ";
             cellI2 += boost::lexical_cast<std::string>(RF);
             cellI2 += " ";
 	  }
 
-          RF=pow(2,0);
-          WF->rescale(cellOffset+i+SN+1,cellOffset+i+SN+1,RF);   
+          RF=pow(2,1);
+            cellOffset++;
+            WF->rescale(cellOffset,cellOffset,RF);   
           cellI1 += boost::lexical_cast<std::string>(1);
           cellI1 += " ";
           cellI2 += boost::lexical_cast<std::string>(RF);
           cellI2 += " ";
 
           RF=pow(2,1);
-          WF->rescale(cellOffset+i+SN+2,cellOffset+i+SN+2,RF);   
+            cellOffset++;
+            WF->rescale(cellOffset,cellOffset,RF);   
           cellI1 += boost::lexical_cast<std::string>(1);
           cellI1 += " ";
           cellI2 += boost::lexical_cast<std::string>(RF);
           cellI2 += " ";
 
           RF=pow(2,0);
-          WF->rescale(cellOffset+i+SN+3,cellOffset+i+SN+3,RF);
+            cellOffset++;
+            WF->rescale(cellOffset,cellOffset,RF);   
           cellI1 += boost::lexical_cast<std::string>(1);
           cellI1 += " ";
           cellI2 += boost::lexical_cast<std::string>(RF);
@@ -667,38 +656,43 @@ writeSinbad::setSinbadWeights(Simulation& System,
 	{
          SN=Control.EvalVar<int>(preName+"Shield"+NStr+"SlotN");
          SC=Control.EvalVar<int>(preName+"ShieldCutN"+NStr);
-         RF=pow(2,0);
-         WF->rescale(cellOffset+i,cellOffset+i,RF);   
+         RF=pow(2,2);
+            cellOffset++;
+            WF->rescale(cellOffset,cellOffset,RF);   
          cellI1 += boost::lexical_cast<std::string>(1);
          cellI1 += " ";
          cellI2 += boost::lexical_cast<std::string>(RF);
          cellI2 += " ";
          for (int n=0;n<SN;n++)
 	  {
-            RF=pow(2,0);
-            WF->rescale(cellOffset+i+1,cellOffset+i+1+n,RF);   
+            RF=pow(2,2);
+            cellOffset++;
+            WF->rescale(cellOffset,cellOffset,RF);   
             cellI1 += boost::lexical_cast<std::string>(1);
             cellI1 += " ";
             cellI2 += boost::lexical_cast<std::string>(RF);
             cellI2 += " ";
 	  }
 
-          RF=pow(2,0);
-          WF->rescale(cellOffset+i+SN+1,cellOffset+i+SN+1,RF);   
+          RF=pow(2,2);
+            cellOffset++;
+            WF->rescale(cellOffset,cellOffset,RF);   
           cellI1 += boost::lexical_cast<std::string>(1);
           cellI1 += " ";
           cellI2 += boost::lexical_cast<std::string>(RF);
           cellI2 += " ";
 
           RF=pow(2,1);
-          WF->rescale(cellOffset+i+SN+2,cellOffset+i+SN+2,RF);   
+            cellOffset++;
+            WF->rescale(cellOffset,cellOffset,RF);   
           cellI1 += boost::lexical_cast<std::string>(1);
           cellI1 += " ";
           cellI2 += boost::lexical_cast<std::string>(RF);
           cellI2 += " ";
 
           RF=pow(2,0);
-          WF->rescale(cellOffset+i+SN+3,cellOffset+i+SN+3,RF);
+            cellOffset++;
+            WF->rescale(cellOffset,cellOffset,RF);   
           cellI1 += boost::lexical_cast<std::string>(1);
           cellI1 += " ";
           cellI2 += boost::lexical_cast<std::string>(RF);
@@ -736,38 +730,43 @@ writeSinbad::setSinbadWeights(Simulation& System,
 	{
          SN=Control.EvalVar<int>(preName+"Shield"+NStr+"SlotN");
          SC=Control.EvalVar<int>(preName+"ShieldCutN"+NStr);
-         RF=pow(2,0);
-         WF->rescale(cellOffset+i,cellOffset+i,RF);   
+         RF=pow(2,3);
+            cellOffset++;
+            WF->rescale(cellOffset,cellOffset,RF);   
          cellI1 += boost::lexical_cast<std::string>(1);
          cellI1 += " ";
          cellI2 += boost::lexical_cast<std::string>(RF);
          cellI2 += " ";
          for (int n=0;n<SN;n++)
 	  {
-            RF=pow(2,0);
-            WF->rescale(cellOffset+i+1,cellOffset+i+1+n,RF);   
+            RF=pow(2,3);
+            cellOffset++;
+            WF->rescale(cellOffset,cellOffset,RF);   
             cellI1 += boost::lexical_cast<std::string>(1);
             cellI1 += " ";
             cellI2 += boost::lexical_cast<std::string>(RF);
             cellI2 += " ";
 	  }
 
-          RF=pow(2,0);
-          WF->rescale(cellOffset+i+SN+1,cellOffset+i+SN+1,RF);   
+          RF=pow(2,3);
+            cellOffset++;
+            WF->rescale(cellOffset,cellOffset,RF);      
+          cellI1 += boost::lexical_cast<std::string>(1);
+          cellI1 += " ";
+          cellI2 += boost::lexical_cast<std::string>(RF);
+          cellI2 += " ";
+
+          RF=pow(2,2);
+            cellOffset++;
+            WF->rescale(cellOffset,cellOffset,RF);   
           cellI1 += boost::lexical_cast<std::string>(1);
           cellI1 += " ";
           cellI2 += boost::lexical_cast<std::string>(RF);
           cellI2 += " ";
 
           RF=pow(2,1);
-          WF->rescale(cellOffset+i+SN+2,cellOffset+i+SN+2,RF);   
-          cellI1 += boost::lexical_cast<std::string>(1);
-          cellI1 += " ";
-          cellI2 += boost::lexical_cast<std::string>(RF);
-          cellI2 += " ";
-
-          RF=pow(2,0);
-          WF->rescale(cellOffset+i+SN+3,cellOffset+i+SN+3,RF);
+            cellOffset++;
+            WF->rescale(cellOffset,cellOffset,RF);   
           cellI1 += boost::lexical_cast<std::string>(1);
           cellI1 += " ";
           cellI2 += boost::lexical_cast<std::string>(RF);
@@ -806,16 +805,18 @@ writeSinbad::setSinbadWeights(Simulation& System,
 	{
          SN=Control.EvalVar<int>(preName+"Shield"+NStr+"SlotN");
          SC=Control.EvalVar<int>(preName+"ShieldCutN"+NStr);
-         RF=pow(2,0);
-         WF->rescale(cellOffset+i,cellOffset+i,RF);   
+         RF=pow(2,1);
+            cellOffset++;
+            WF->rescale(cellOffset,cellOffset,RF);   
          cellI1 += boost::lexical_cast<std::string>(1);
          cellI1 += " ";
          cellI2 += boost::lexical_cast<std::string>(RF);
          cellI2 += " ";
          for (int n=0;n<SN;n++)
 	  {
-            RF=pow(2,0);
-            WF->rescale(cellOffset+i+1,cellOffset+i+1+n,RF);   
+            RF=pow(2,1);
+            cellOffset++;
+            WF->rescale(cellOffset,cellOffset,RF);   
             cellI1 += boost::lexical_cast<std::string>(1);
             cellI1 += " ";
             cellI2 += boost::lexical_cast<std::string>(RF);
@@ -823,21 +824,24 @@ writeSinbad::setSinbadWeights(Simulation& System,
 	  }
 
           RF=pow(2,0);
-          WF->rescale(cellOffset+i+SN+1,cellOffset+i+SN+1,RF);   
+            cellOffset++;
+            WF->rescale(cellOffset,cellOffset,RF);   
           cellI1 += boost::lexical_cast<std::string>(1);
           cellI1 += " ";
           cellI2 += boost::lexical_cast<std::string>(RF);
           cellI2 += " ";
 
           RF=pow(2,1);
-          WF->rescale(cellOffset+i+SN+2,cellOffset+i+SN+2,RF);   
+            cellOffset++;
+            WF->rescale(cellOffset,cellOffset,RF);   
           cellI1 += boost::lexical_cast<std::string>(1);
           cellI1 += " ";
           cellI2 += boost::lexical_cast<std::string>(RF);
           cellI2 += " ";
 
           RF=pow(2,0);
-          WF->rescale(cellOffset+i+SN+3,cellOffset+i+SN+3,RF);
+            cellOffset++;
+            WF->rescale(cellOffset,cellOffset,RF);   
           cellI1 += boost::lexical_cast<std::string>(1);
           cellI1 += " ";
           cellI2 += boost::lexical_cast<std::string>(RF);
@@ -877,7 +881,8 @@ writeSinbad::setSinbadWeights(Simulation& System,
          SN=Control.EvalVar<int>(preName+"Shield"+NStr+"SlotN");
          SC=Control.EvalVar<int>(preName+"ShieldCutN"+NStr);
          RF=pow(2,0);
-         WF->rescale(cellOffset+i,cellOffset+i,RF);   
+            cellOffset++;
+            WF->rescale(cellOffset,cellOffset,RF);   
          cellI1 += boost::lexical_cast<std::string>(1);
          cellI1 += " ";
          cellI2 += boost::lexical_cast<std::string>(RF);
@@ -885,7 +890,8 @@ writeSinbad::setSinbadWeights(Simulation& System,
          for (int n=0;n<SN;n++)
 	  {
             RF=pow(2,0);
-            WF->rescale(cellOffset+i+1,cellOffset+i+1+n,RF);   
+            cellOffset++;
+            WF->rescale(cellOffset,cellOffset,RF);   
             cellI1 += boost::lexical_cast<std::string>(1);
             cellI1 += " ";
             cellI2 += boost::lexical_cast<std::string>(RF);
@@ -893,21 +899,24 @@ writeSinbad::setSinbadWeights(Simulation& System,
 	  }
 
           RF=pow(2,0);
-          WF->rescale(cellOffset+i+SN+1,cellOffset+i+SN+1,RF);   
-          cellI1 += boost::lexical_cast<std::string>(1);
-          cellI1 += " ";
-          cellI2 += boost::lexical_cast<std::string>(RF);
-          cellI2 += " ";
-
-          RF=pow(2,1);
-          WF->rescale(cellOffset+i+SN+2,cellOffset+i+SN+2,RF);   
+            cellOffset++;
+            WF->rescale(cellOffset,cellOffset,RF);   
           cellI1 += boost::lexical_cast<std::string>(1);
           cellI1 += " ";
           cellI2 += boost::lexical_cast<std::string>(RF);
           cellI2 += " ";
 
           RF=pow(2,0);
-          WF->rescale(cellOffset+i+SN+3,cellOffset+i+SN+3,RF);
+            cellOffset++;
+            WF->rescale(cellOffset,cellOffset,RF);   
+          cellI1 += boost::lexical_cast<std::string>(1);
+          cellI1 += " ";
+          cellI2 += boost::lexical_cast<std::string>(RF);
+          cellI2 += " ";
+
+          RF=pow(2,0);
+            cellOffset++;
+            WF->rescale(cellOffset,cellOffset,RF);   
           cellI1 += boost::lexical_cast<std::string>(1);
           cellI1 += " ";
           cellI2 += boost::lexical_cast<std::string>(RF);
@@ -947,7 +956,8 @@ writeSinbad::setSinbadWeights(Simulation& System,
          SN=Control.EvalVar<int>(preName+"Shield"+NStr+"SlotN");
          SC=Control.EvalVar<int>(preName+"ShieldCutN"+NStr);
          RF=pow(2,0);
-         WF->rescale(cellOffset+i,cellOffset+i,RF);   
+            cellOffset++;
+            WF->rescale(cellOffset,cellOffset,RF);   
          cellI1 += boost::lexical_cast<std::string>(1);
          cellI1 += " ";
          cellI2 += boost::lexical_cast<std::string>(RF);
@@ -955,7 +965,8 @@ writeSinbad::setSinbadWeights(Simulation& System,
          for (int n=0;n<SN;n++)
 	  {
             RF=pow(2,0);
-            WF->rescale(cellOffset+i+1,cellOffset+i+1+n,RF);   
+            cellOffset++;
+            WF->rescale(cellOffset,cellOffset,RF);   
             cellI1 += boost::lexical_cast<std::string>(1);
             cellI1 += " ";
             cellI2 += boost::lexical_cast<std::string>(RF);
@@ -963,21 +974,24 @@ writeSinbad::setSinbadWeights(Simulation& System,
 	  }
 
           RF=pow(2,0);
-          WF->rescale(cellOffset+i+SN+1,cellOffset+i+SN+1,RF);   
-          cellI1 += boost::lexical_cast<std::string>(1);
-          cellI1 += " ";
-          cellI2 += boost::lexical_cast<std::string>(RF);
-          cellI2 += " ";
-
-          RF=pow(2,1);
-          WF->rescale(cellOffset+i+SN+2,cellOffset+i+SN+2,RF);   
+            cellOffset++;
+            WF->rescale(cellOffset,cellOffset,RF);   
           cellI1 += boost::lexical_cast<std::string>(1);
           cellI1 += " ";
           cellI2 += boost::lexical_cast<std::string>(RF);
           cellI2 += " ";
 
           RF=pow(2,0);
-          WF->rescale(cellOffset+i+SN+3,cellOffset+i+SN+3,RF);
+            cellOffset++;
+            WF->rescale(cellOffset,cellOffset,RF);   
+          cellI1 += boost::lexical_cast<std::string>(1);
+          cellI1 += " ";
+          cellI2 += boost::lexical_cast<std::string>(RF);
+          cellI2 += " ";
+
+          RF=pow(2,0);
+            cellOffset++;
+            WF->rescale(cellOffset,cellOffset,RF);   
           cellI1 += boost::lexical_cast<std::string>(1);
           cellI1 += " ";
           cellI2 += boost::lexical_cast<std::string>(RF);
@@ -995,12 +1009,12 @@ writeSinbad::setSinbadWeights(Simulation& System,
      }
   }
 
-
-  cellOffset=3+S+1;
   if(preName=="36")
-   cellOffset=cellOffset+S-1+SN+3;
-  if(preName=="75")
+   cellOffset=cellOffset;
+  else if(preName=="75")
    cellOffset=cellOffset+2*S-1;
+  else
+  cellOffset=3+S+1;
 
   int NS=Control.EvalVar<size_t>(preName+"NestorSideNSlab");
   for(int i=0;i<NS-1;i+=2)
@@ -1038,7 +1052,11 @@ writeSinbad::setSinbadWeights(Simulation& System,
     cellI2 += " ";   
    }
 
- cellOffset=3+NS+S+FPN;
+  if(preName=="36")
+   cellOffset=cellOffset+NS+FPN;
+  else
+    cellOffset=3+NS+S+FPN;
+
 
   std::vector<std::string> DT;
   std::vector<std::string> DF;
@@ -1221,8 +1239,7 @@ writeSinbad::setSinbadWeights(Simulation& System,
  const std::vector<int> CD=System.getCellVector();
  size_t RST(0);
  RST=CD.size()-cellOffset;
- RST=0;
- ELog::EM<<" DDD "<<RST<<" "<<CD.size()<<" "<<cellOffset<<ELog::endDiag;
+ // RST=0;
 
  
 if (RST>0)
@@ -1485,7 +1502,7 @@ writeSinbad::writeSinbadTally(std::ostream& OX) const
     StrFunc::writeMCNPX(" f174:n "+s107+" ",OX);
     OX<<" fq174 e f "<<std::endl;
     OX<<" m207  49115.10y 1. "<<std::endl;
-    OX<<" fm174:n ( 1 "<<207<<" "<<10004<<" )"<<std::endl;
+    OX<<" fm174:n ( 1 "<<207<<" "<<11004<<" )"<<std::endl;
    }
 
  if(s109!=" ")
@@ -1640,9 +1657,6 @@ writeSinbad::SinbadWrite(Simulation& System,const std::string& Fname)
 }
 
 
-
-
-
 }
 
 
@@ -1654,185 +1668,3 @@ writeSinbad::SinbadWrite(Simulation& System,const std::string& Fname)
 
 
 
-
-
- //   const ModelSupport::objectRegister& OR=
- //	  ModelSupport::objectRegister::Instance();
-  //    int cellOff1=OR.getCell("49FissionPlate");
-  //    int cellNum1=OR.getRange("49FissionPlate");
-  //    int cellOff2=OR.getCell("49Shield");
-  //    int cellNum2=OR.getRange("49Shield");
-
-  //    int cellOff3=OR.getCell("49NestorSide");
-  //    int cellNum3=OR.getRange("49NestorSide");
-  // OTYPE::const_iterator vc;  
-  // for(vc=OList.begin();vc!=OList.end();vc++)
-  //   {
-  //     const int cNum=vc->second->getName();
-  //     //      const std::vector<const Geometry::Surface*>& cPt=vc->second->getSurList();
-  // const int cMat=vc->second->getMat();
-  // const int cImp=vc->second->getImp();
-
-
-  //  const ModelSupport::objectRegister& OR=
-  // 	  ModelSupport::objectRegister::Instance();
-  //    int cellOff1=OR.getCell("49FissionPlate");
-  //    int cellNum1=OR.getRange("49FissionPlate");
-  //    int cellOff2=OR.getCell("49Shield");
-  //    int cellNum2=OR.getRange("49Shield");
-
-  //    int cellOff3=OR.getCell("49NestorSide");
-  //    int cellNum3=OR.getRange("49NestorSide");
-  // OTYPE::const_iterator vc;  
-  // for(vc=OList.begin();vc!=OList.end();vc++)
-  //   {
-  //     const int cNum=vc->second->getName();
-  //     //      const std::vector<const Geometry::Surface*>& cPt=vc->second->getSurList();
-  // const int cMat=vc->second->getMat();
-  // const int cImp=vc->second->getImp();
-  //     ELog::EM<<" NNNNN "<<cellOff1<<"  "<<cellOff2<<"  "<<cellOff3<<"  "<<cMat<<"  "<<cImp<<" "<<cNum<<ELog::endBasic;
-
-
-  //   }
-
-
-
-
-
-
-
-
-  // if(s101!=" ")
-  //  {
-
-  //   LL=s101.size(); 
-  //   if(LL<65)
-  //     OX<<" f104:n ("<<s101<<" )"<<std::endl;
-  //   else
-  //     {
-  // 	for(size_t i=0;i<65;i++)
-  // 	  s101a+=s101[i];
-  // 	for(size_t i=65;i<LL;i++)
-  // 	  s101b+=s101[i];
-  //     OX<<"f104:n ("<<s101a<<std::endl;
-  //     OX<<"          "<<s101b<<" )"<<std::endl;
-  //     }
-  //   OX<<" m201  16032. 1 "<<std::endl;
-  //   OX<<" fm104:n ( 1 "<<201<<" "<<103<<" )"<<std::endl;
-  //  }
-
-  // if(s103!=" ")
-  //  {
-  //   LL=s103.size(); 
-  //   if(LL<65)
-  //     OX<<" f114:n ("<<s103<<" )"<<std::endl;
-  //   else
-  //     {
-  // 	for(size_t i=0;i<65;i++)
-  // 	  s103a+=s103[i];
-  // 	for(size_t i=65;i<LL;i++)
-  // 	  s103b+=s103[i];
-  //     OX<<"f114:n ("<<s103a<<std::endl;
-  //     OX<<"          "<<s103b<<" )"<<std::endl;
-  //     }
-  //   OX<<" m203  45103. 1 "<<std::endl;
-  //   OX<<" fm114:n ( 1 "<<203<<" "<<10004<<" )"<<std::endl;
-  //  }
-
-  // if(s104!=" ")
-  //  {
-  //   LL=s104.size(); 
-  //   if(LL<65)
-  //     OX<<" f124:n ("<<s104<<" )"<<std::endl;
-  //   else
-  //     {
-  // 	for(size_t i=0;i<65;i++)
-  // 	  s104a+=s104[i];
-  // 	for(size_t i=65;i<LL;i++)
-  // 	  s104b+=s104[i];
-  //     OX<<"f124:n ("<<s104a<<std::endl;
-  //     OX<<"          "<<s104b<<" )"<<std::endl;
-  //     }
-  //   OX<<" m204  25055. 1 "<<std::endl;
-  //   OX<<" fm124:n ( 1 "<<204<<" "<<102<<" )"<<std::endl;
-  //  }
-
-  // if(s105!=" ")
-  //  {
-  //   LL=s105.size(); 
-  //   if(LL<65)
-  //     OX<<" f134:n ("<<s105<<" )"<<std::endl;
-  //   else
-  //     {
-  // 	for(size_t i=0;i<65;i++)
-  // 	  s105a+=s105[i];
-  // 	for(size_t i=65;i<LL;i++)
-  // 	  s105b+=s105[i];
-  //     OX<<"f134:n ("<<s105a<<std::endl;
-  //     OX<<"          "<<s105b<<" )"<<std::endl;
-  //     }
-  //   OX<<" m205  79197. 1 "<<std::endl;
-  //   OX<<" fm134:n ( 1 "<<105<<" "<<102<<" )"<<std::endl;
-  //  }
-
-  // if(s107!=" ")
-  //  {
-  //   OX<<" f144:n ("<<s107<<" )"<<std::endl;
-  //   //  OX<<" fm144:n ( 1 "<<107<<" "<<"???)"<<std::endl;
-  //  }
-
-
-
-
-
- // if(cellS.size()<65)
- //   OX<<" f4:n ("<<cellS<<")"<<std::endl;
- // else if(cellS.size()>=65&&cellS.size()<130)
- //   {
- //   for(size_t i1=0;i1<65;i1++)
- //     cellS1+=cellS[i1];
- //   OX<<" f4:n ("<<cellS1<<std::endl;
- 
- //   for(size_t i2=60;i2<cellS.size();i2++)
- //     cellS2+=cellS[i2];
- //   OX<<"       "<<cellS2<<" )"<<std::endl;
- //   }
- // else 
- //   {
- //   for(size_t i1=0;i1<65;i1++)
- //     cellS1+=cellS[i1];
- //   OX<<" f4:n ("<<cellS1<<std::endl;
- 
- //   for(size_t i2=60;i2<124;i2++)
- //     cellS2+=cellS[i2];
- //   OX<<"       "<<cellS2<<std::endl;
-
- //   for(size_t i3=124;i3<cellS.size();i3++)
- //     cellS3+=cellS[i3];
- //   OX<<"       "<<cellS3<<" )"<<std::endl;
- //  ELog::EM<<" lots of tally 4 cells. Check if all are present! Only 3 f4 lines allowed"<<ELog::endDiag; 
-
- //   }
-
-
-
-
- // for(size_t i=cellOffset;i<CL.size()+1;i++)
- //   {
- //    IS2<<" ";
- //    IS2<< i;
- //    DT1.push_back(i);
- //    DT2.push_back(System.getCellMaterial(i));
- //   }
- // std::string s2 = IS2.str();
- // cellS=s2;
-
-
-
- // for(size_t i=0;i<S;i+=4)
- //  {   
- //   int SF=pow(4,i/4-4);
- //   int RF=pow(2,i/4); 
- //   if(i>16) RF=pow(2,i/4)/pow(4,i/4-4);
- //   WF->rescale(cellOffset+i,cellOffset+i+3,RF);   
- //  }

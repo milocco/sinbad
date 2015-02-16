@@ -210,7 +210,8 @@ Source::setData(const std::string& Key,const SrcData& DObj)
     throw ColErr::InContainerError<std::string>(Key,"Source::setData");
   if (DObj.isDependent())
     {
-      ELog::EM<<"Setting dependent type "<<DObj.getDep()<<ELog::endWarn;
+      //ALB: I do not like this log
+      //      ELog::EM<<"Setting dependent type "<<DObj.getDep()<<ELog::endWarn;
       SPtr->setDepType(DObj.getDep(),static_cast<int>(DObj.getIndex()));
     }
   else

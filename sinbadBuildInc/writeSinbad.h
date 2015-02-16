@@ -4,7 +4,7 @@
  * File:   include/simulateSinbad.h
  *
  * Copyright (c) 2004-2014 by Stuart Ansell
- *
+ * author A. Milocco
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -26,6 +26,8 @@
 
 class Simulation;
 
+class PhysicsCards; 
+
 
 
 namespace mainSystem
@@ -43,41 +45,38 @@ namespace tallySystem
 
 namespace ModelSupport
  {
-  // std::string cellS;
  }
 
 namespace sinbadSystem
 {
 
   class writeSinbad: public Simulation
-
  {
   protected: 
   std::string preNameX;
   std::string cellS;
+  std::string cellI1;
+  std::string cellI2;
+  int WFlag;
+  double EC;
+  int DN;
   std::vector<int> DT1; 
   std::vector<int> DT2;
-
+  int NP;
 
   public:
 
-  double cellKK;
-
-  const double  retKK(Simulation&,const mainSystem::inputParam&);
-
-  // std::string  
   void setSinbadTally(Simulation&,const mainSystem::inputParam&); 
-  void writeSinbadTally(std::ostream&) const;
-
-  void SinbadWrite(Simulation&,const std::string&);
-  //const;  
-  void writeKK(std::ostream&);
-  void writeSinbadCells(std::ostream&) const;
-  void setSinbadWeights(Simulation&,const mainSystem::inputParam&);
+  void setSinbadPhysics(Simulation&,const mainSystem::inputParam&); 
+  void writeSinbadPhysics(std::ostream&) const;
   void writeSinbadWeights(std::ostream& OX) const;
- //  std::string 
-  // void 
-  // const double 
+  void writeSinbadTally(std::ostream&) const;
+  void writeSinbadMaterial(std::ostream&) const;
+  void SinbadWrite(Simulation&,const std::string&);
+  void writeSinbadCells(std::ostream&) const;
+  void writeSinbadSurfaces(std::ostream&) const;
+  void setSinbadWeights(Simulation&,const mainSystem::inputParam&);
+ 
 
   writeSinbad(const std::string&);
   writeSinbad(const writeSinbad&);
@@ -86,6 +85,8 @@ namespace sinbadSystem
   virtual ~writeSinbad();
   
  };
+
+
 
 }
 

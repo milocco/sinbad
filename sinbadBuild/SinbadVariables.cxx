@@ -509,11 +509,32 @@ SinbadVariables(FuncDataBase& Control)
   Control.addVariable("36ShieldZAngle",0.0);  
   //number of slabs
 
-  Control.addVariable("36ShieldNSlab",1);
+  Control.addVariable("36ShieldNSlab",5);
   //dummy variables, rewritten afterwards
   Control.addVariable("36ShieldWidth",180.34);   
   Control.addVariable("36ShieldHeight",180.34);
   
+
+  // first al slab   
+  // Control.addVariable("36ShieldThick0",1.27);
+  // Control.addVariable("36ShieldCutN0",1);
+  // Control.addVariable("36ShieldCylDiam0",0);
+  // Control.addVariable("36ShieldCylMat0","36Aluminium");
+  // Control.addVariable("36ShieldInnerWidth0",0);
+  // Control.addVariable("36ShieldInnerHeight0",0);
+  // Control.addVariable("36ShieldInnerMat0","36Aluminium");
+  // Control.addVariable("36ShieldMidWidth0",0);
+  // Control.addVariable("36ShieldMidHeight0",0);
+  // Control.addVariable("36ShieldMidMat0","36Aluminium");
+  // Control.addVariable("36ShieldOuterWidth0",180.34);
+  // Control.addVariable("36ShieldOuterHeight0",180.34);
+  // Control.addVariable("36ShieldOuterMat0","36Aluminium");
+
+  // Control.addVariable("36Shield0SlotN",0);
+  // Control.addVariable("36Shield0SlotSide",0.0);
+  // Control.addVariable("36Shield0SlotThick",0.0);
+  // Control.addVariable("36Shield0SlotAngle",0.0);
+
   //special slabs with inner cylinder,outer regions for variance reduction and slots at 20 cm steps
   Control.addVariable("36ShieldThick0",20.25);
   // inner body
@@ -534,6 +555,8 @@ SinbadVariables(FuncDataBase& Control)
 		      //10);
   Control.addVariable("36Shield0SlotSide",3);
   Control.addVariable("36Shield0SlotThick",0.5);
+  Control.addVariable("36Shield0SlotAngle",0.0);
+
   // Y is at slot centre from shield start, they double up (by X/Z split) and are relative to previous slot couple
   Control.addVariable("36Shield0SlotY0",0.25);
   Control.addVariable("36Shield0SlotX0",-4.95);
@@ -577,7 +600,6 @@ SinbadVariables(FuncDataBase& Control)
   Control.addVariable("36Shield0SlotMat9","Void");
   //second chunk
   Control.addVariable("36ShieldThick1",20);
-
   Control.addVariable("36ShieldCutN1",4);
   Control.addVariable("36ShieldCylDiam1",12.90);
   Control.addVariable("36ShieldCylMat1","36Graphite2");
@@ -595,6 +617,7 @@ SinbadVariables(FuncDataBase& Control)
 		      //8);
   Control.addVariable("36Shield1SlotSide",3);
   Control.addVariable("36Shield1SlotThick",0.5);
+  Control.addVariable("36Shield1SlotAngle",0.0);
   // 
   Control.addVariable("36Shield1SlotY0",5);
   Control.addVariable("36Shield1SlotX0",0.0);
@@ -621,12 +644,12 @@ SinbadVariables(FuncDataBase& Control)
   Control.addVariable("36Shield1SlotZ5",4.95);
   Control.addVariable("36Shield1SlotMat5","Void");
   Control.addVariable("36Shield1SlotY6",5.);
-  Control.addVariable("36Shield1SlotX6",0.0);
-  Control.addVariable("36Shield1SlotZ6",-4.95);
+  Control.addVariable("36Shield1SlotX6",-4.95);
+  Control.addVariable("36Shield1SlotZ6",0.0);
   Control.addVariable("36Shield1SlotMat6","Void");
-  Control.addVariable("36Shield1SlotX7",0.0);
+  Control.addVariable("36Shield1SlotX7",4.95);
   Control.addVariable("36Shield1SlotY7",5.);
-  Control.addVariable("36Shield1SlotZ7",4.95);
+  Control.addVariable("36Shield1SlotZ7",0.0);
   Control.addVariable("36Shield1SlotMat7","Void");
 
   //third chunk
@@ -648,6 +671,7 @@ SinbadVariables(FuncDataBase& Control)
 		      //12);
   Control.addVariable("36Shield2SlotSide",3);
   Control.addVariable("36Shield2SlotThick",0.5);
+  Control.addVariable("36Shield2SlotAngle",0.0);
   // 
   Control.addVariable("36Shield2SlotY0",5);
   Control.addVariable("36Shield2SlotX0",0.0);
@@ -674,12 +698,12 @@ SinbadVariables(FuncDataBase& Control)
   Control.addVariable("36Shield2SlotZ5",4.95);
   Control.addVariable("36Shield2SlotMat5","Void");
   Control.addVariable("36Shield2SlotY6",5.);
-  Control.addVariable("36Shield2SlotX6",0.0);
-  Control.addVariable("36Shield2SlotZ6",-4.95);
+  Control.addVariable("36Shield2SlotX6",-4.95);
+  Control.addVariable("36Shield2SlotZ6",0.0);
   Control.addVariable("36Shield2SlotMat6","Void");
-  Control.addVariable("36Shield2SlotX7",0.0);
+  Control.addVariable("36Shield2SlotX7",4.95);
   Control.addVariable("36Shield2SlotY7",5.);
-  Control.addVariable("36Shield2SlotZ7",4.95);
+  Control.addVariable("36Shield2SlotZ7",0.0);
   Control.addVariable("36Shield2SlotMat7","Void");
   Control.addVariable("36Shield2SlotY8",5);
   Control.addVariable("36Shield2SlotX8",0.0);
@@ -717,6 +741,7 @@ SinbadVariables(FuncDataBase& Control)
   Control.addVariable("36Shield3SlotN",0);
   Control.addVariable("36Shield3SlotSide",0.0);
   Control.addVariable("36Shield3SlotThick",0.0);
+  Control.addVariable("36Shield3SlotAngle",0.0);
 
 
 
@@ -738,12 +763,14 @@ SinbadVariables(FuncDataBase& Control)
   Control.addVariable("36Shield4SlotN",0);
   Control.addVariable("36Shield4SlotSide",0.0);
   Control.addVariable("36Shield4SlotThick",0.0);
+  Control.addVariable("36Shield4SlotAngle",0.0);
 
   // nestor side
 
   Control.addVariable("36NestorSideXStep",0);
-  // the Y step is set so that the fission plate centre is at the origin  
-  Control.addVariable("36NestorSideYStep",-21.07);  
+  // the Y step is set so that the fission plate centre is at the origin 
+  // that is:cumulative nestor side+fission plate thickness/2 
+  Control.addVariable("36NestorSideYStep",-20.78);  
   Control.addVariable("36NestorSideZStep",0);  
   Control.addVariable("36NestorSideXYAngle",0.0);  
   Control.addVariable("36NestorSideZAngle",0.0);  
@@ -790,9 +817,9 @@ SinbadVariables(FuncDataBase& Control)
   Control.addVariable("36FissionPlateMat3","Void");   
   Control.addVariable("36FissionPlateThick4",0.4); 
   Control.addVariable("36FissionPlateMat4","36Aluminium");
-  // first al slab included in fission plate   
+
   Control.addVariable("36FissionPlateThick5",1.27); 
-  Control.addVariable("36FissionPlateMat5","36Aluminium");   
+  Control.addVariable("36FissionPlateMat5","36Aluminium");
 
   //fuel plate index
   Control.addVariable("36FissionPlateDivIndex0",2);
@@ -854,6 +881,122 @@ SinbadVariables(FuncDataBase& Control)
   Control.addVariable("36FissionPlateMatL1","36Aluminium");   
   Control.addVariable("36FissionPlateMatTempL1",300.0);   
 
+  // detectors
+
+
+  Control.addVariable("36DetOffsetX",0.0);  
+  Control.addVariable("36DetOffsetZ",0.0);
+  // possible detector positions along Y axis 
+  Control.addVariable("36DetNY",14);    
+
+  Control.addVariable("36DetStepX",4.95);  
+  Control.addVariable("36DetStepZ",0.0);  
+
+  Control.addVariable("36StepY0",0.25);
+  Control.addVariable("36StepY1",5);  
+  Control.addVariable("36StepY2",10);  
+  Control.addVariable("36StepY3",15);
+  Control.addVariable("36StepY4",20);
+  Control.addVariable("36StepY5",25);
+  Control.addVariable("36StepY6",30);  
+  Control.addVariable("36StepY7",35); 
+  Control.addVariable("36StepY8",40);  
+  Control.addVariable("36StepY9",45);
+  Control.addVariable("36StepY10",50);
+  Control.addVariable("36StepY11",55);
+  Control.addVariable("36StepY12",60);  
+  Control.addVariable("36StepY13",65);  
+  Control.addVariable("36StepY14",70);
+
+
+  //Sulphur
+  Control.addVariable("49SMat","49S");  
+  Control.addVariable("49SDiam",5.10);   
+  Control.addVariable("49SThick",0.56); 
+  //
+  Control.addVariable("36SActiveY0",1);   
+  Control.addVariable("36SActiveY1",1);   
+  Control.addVariable("36SActiveY2",1);   
+  Control.addVariable("36SActiveY3",1);   
+  Control.addVariable("36SActiveY4",1);   
+  Control.addVariable("36SActiveY5",0);   
+  Control.addVariable("36SActiveY6",0);   
+  Control.addVariable("36SActiveY7",0);   
+  Control.addVariable("36SActiveY8",0);   
+  Control.addVariable("36SActiveY9",1);   
+  Control.addVariable("36SActiveY10",0);   
+  Control.addVariable("36SActiveY11",0);   
+  Control.addVariable("36SActiveY12",1);   
+  Control.addVariable("36SActiveY13",0);   
+  Control.addVariable("36SActiveY14",0);   
+
+
+  // Rhodium
+  Control.addVariable("36RhMat","36Rh");  
+  Control.addVariable("36RhDiam",1.27);   
+  Control.addVariable("36RhThick",0.0015); 
+  // Rh positions are the nominal ones; in case of detector stack these are arranged consequently
+  // active detector positions along Y axis
+  Control.addVariable("36RhActiveY0",1);   
+  Control.addVariable("36RhActiveY1",0);   
+  Control.addVariable("36RhActiveY2",1);   
+  Control.addVariable("36RhActiveY3",0);   
+  Control.addVariable("36RhActiveY4",1);   
+  Control.addVariable("36RhActiveY5",0);   
+  Control.addVariable("36RhActiveY6",1);   
+  Control.addVariable("36RhActiveY7",0);   
+  Control.addVariable("36RhActiveY8",1);   
+  Control.addVariable("36RhActiveY9",0);   
+  Control.addVariable("36RhActiveY10",1);   
+  Control.addVariable("36RhActiveY11",0);   
+  Control.addVariable("36RhActiveY12",1);   
+  Control.addVariable("36RhActiveY13",0);   
+  Control.addVariable("36RhActiveY14",1);   
+ 
+  //Indium
+  Control.addVariable("36InMat","36In");  
+  Control.addVariable("36InDiam",1.27);   
+  Control.addVariable("36InThick",0.015); 
+  //
+  // active detector positions along Y axis
+  Control.addVariable("36InActiveY0",1);   
+  Control.addVariable("36InActiveY1",0);   
+  Control.addVariable("36InActiveY2",1);   
+  Control.addVariable("36InActiveY3",0);   
+  Control.addVariable("36InActiveY4",1);   
+  Control.addVariable("36InActiveY5",0);   
+  Control.addVariable("36InActiveY6",1);   
+  Control.addVariable("36InActiveY7",0);   
+  Control.addVariable("36InActiveY8",1);   
+  Control.addVariable("36InActiveY9",0);   
+  Control.addVariable("36InActiveY10",1);   
+  Control.addVariable("36InActiveY11",0);   
+  Control.addVariable("36InActiveY12",1);   
+  Control.addVariable("36InActiveY13",0);   
+  Control.addVariable("36InActiveY14",1);   
+
+
+  // Al foil
+  Control.addVariable("36AlMat","36AlDet");  
+  Control.addVariable("36AlDiam",5.0);   
+  Control.addVariable("36AlThick",0.31); 
+  // Al positions are the nominal ones; in case of detector stack these are arranged consequently
+  // active detector positions along Y axis
+  Control.addVariable("36AlActiveY0",0);   
+  Control.addVariable("36AlActiveY1",1);   
+  Control.addVariable("36AlActiveY2",1);   
+  Control.addVariable("36AlActiveY3",1);   
+  Control.addVariable("36AlActiveY4",1);   
+  Control.addVariable("36AlActiveY5",1);   
+  Control.addVariable("36AlActiveY6",0);   
+  Control.addVariable("36AlActiveY7",0);   
+  Control.addVariable("36AlActiveY8",0);   
+  Control.addVariable("36AlActiveY9",0);   
+  Control.addVariable("36AlActiveY10",0);   
+  Control.addVariable("36AlActiveY11",0);   
+  Control.addVariable("36AlActiveY12",0);   
+  Control.addVariable("36AlActiveY13",0);   
+  Control.addVariable("36AlActiveY14",0);   
 
 
 
@@ -2151,8 +2294,7 @@ SinbadVariables(FuncDataBase& Control)
   Control.addVariable("75MnActiveY4",1);   
   Control.addVariable("75MnActiveY5",1);   
   Control.addVariable("75MnActiveY6",0);   
-  Control.addVariable("75MnActiveY7",1); 
-  // deactivate next if performing axial and vertical scan at the same time  
+  Control.addVariable("75MnActiveY7",1);  
   Control.addVariable("75MnActiveY8",1);   
   Control.addVariable("75MnActiveY9",1);   
   Control.addVariable("75MnActiveY10",1);   

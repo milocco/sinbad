@@ -70,7 +70,7 @@ LayerPlate::LayerPlate(const LayerPlate& A) :
   width(A.width),height(A.height),nSlab(A.nSlab),
   thick(A.thick),mat(A.mat),matTemp(A.matTemp),
   radiusWindow(A.radiusWindow),matWindow(A.matWindow),pName(A.pName),
-  cutX(A.cutX),cutZ(A.cutZ),cutMat(A.cutMat),cGap(A.cGap),thickSlot(A.thickSlot),slotL(A.slotL),slotT(A.slotT),slotN(A.slotN),slotX(A.slotX),slotY(A.slotY),slotZ(A.slotZ),slotM(A.slotM)
+  cutX(A.cutX),cutZ(A.cutZ),cutMat(A.cutMat),cGap(A.cGap),thickSlot(A.thickSlot),slotL(A.slotL),slotT(A.slotT),slotA(A.slotA),slotN(A.slotN),slotX(A.slotX),slotY(A.slotY),slotZ(A.slotZ),slotM(A.slotM)
   
   /*!
     Copy constructor
@@ -113,6 +113,7 @@ LayerPlate::operator=(const LayerPlate& A)
       thickSlot=A.thickSlot;
       slotL=A.slotL;
       slotT=A.slotT;
+      slotA=A.slotA;
       slotN=A.slotN;
       slotX=A.slotX;
       slotY=A.slotY;
@@ -256,7 +257,7 @@ LayerPlate::populate(const FuncDataBase& Control)
   double Len,Tmp;
   int M,cutN,SN,SM;
   //cuts
-  double CX,CZ,SL,ST,SX,SY,SZ;
+  double CX,CZ,SL,ST,SA,SX,SY,SZ;
   double R0,CX1,CX2,CX3,CZ1,CZ2,CZ3;
 
   int CM;
@@ -308,9 +309,13 @@ LayerPlate::populate(const FuncDataBase& Control)
         SN=Control.EvalVar<int>(keyName+NStr+"SlotN");
         SL=Control.EvalVar<double>(keyName+NStr+"SlotSide");
         ST=Control.EvalVar<double>(keyName+NStr+"SlotThick");
+        SA=Control.EvalDefVar<double>(keyName+NStr+"SlotAngle",0.0);
+
         slotL.push_back(SL);
         slotN.push_back(SN);
         slotT.push_back(ST);
+        slotA.push_back(SA);
+
         for(size_t n=0;n<SN;n++)
          {
           const std::string SString(StrFunc::makeString(n));
@@ -345,16 +350,14 @@ LayerPlate::populate(const FuncDataBase& Control)
       //  {
       // 	thick[i-1]=thick[i-1]-cGap;
       //   thick[i-2]=cGap;
-      // 	ELog::EM<<" CCCCC  "<<i<<ELog::endDiag;
-
       //  }
 
-       // if(i>0 && mat[i]==0 && mat[i-1]==6 && keyName=="49Shield")
-       // 	 {
-       // 	   // temp fix; assume boral is mat 6 and void is 0
-       // 	   thick[i-2]=thick[i-2]-cGap;
-       //     thick[i]=cGap;
-       // 	 }
+       if(i>0 && mat[i]==0 && mat[i-1]==6 && keyName=="49Shield")
+       	 {
+       	   // temp fix; assume boral is mat 6 and void is 0
+       	   thick[i-2]=thick[i-2]-cGap;
+           thick[i]=cGap;
+       	 }
 
     }
 
@@ -403,39 +406,14 @@ LayerPlate::createSurfaces()
   if (radiusWindow>Geometry::zeroTol)
     ModelSupport::buildCylinder(SMap,slabIndex+7,Origin,Y,radiusWindow);
   
-  // int SI(slabIndex);
-  // int SP(slabIndex);
 
-  // double totalThick(0.0);
-
-
-  // for(size_t i=0;i<=nSlab;i++)
-  //  {
-  //   ModelSupport::buildPlane(SMap,SI+1,Origin+Y*totalThick,Y);
-
-  //   if(keyName=="75Shield")
-  //      {
-  //         ModelSupport::buildPlane(SMap,SI+503,Origin-X*(cutX[i]/2.0),X);
-  //         ModelSupport::buildPlane(SMap,SI+504,Origin+X*(cutX[i]/2.0),X);
-  //         ModelSupport::buildPlane(SMap,SI+505,Origin-Z*(cutZ[i]/2.0),Z);
-  //         ModelSupport::buildPlane(SMap,SI+506,Origin+Z*(cutZ[i]/2.0),Z);
-  //       }
-
-  //    if (i!=nSlab)
-  //      {
-  // 	 totalThick+=thick[i];
-  // 	 SI+=10;
-  //      }
- 
-  //   }
-
-
-  int SM(slabIndex);
-  int SP(slabIndex);
-  for(size_t i=0;i<nSlab;i++)
-   {
-      if(keyName=="36Shield")
-      { 
+   if(keyName=="36Shield")
+    {
+     int SM(slabIndex);
+     int SP(slabIndex);
+     int m (0);
+     for(size_t i=0;i<nSlab;i++)
+      {
        ModelSupport::buildCylinder(SMap,SM+507,Origin,Y,cutX[i*4]);
        ModelSupport::buildPlane(SMap,SM+503,Origin-X*(cutX[i*4+1]/2.0),X);
        ModelSupport::buildPlane(SMap,SM+504,Origin+X*(cutX[i*4+1]/2.0),X);
@@ -452,32 +430,33 @@ LayerPlate::createSurfaces()
        ModelSupport::buildPlane(SMap,SM+705,Origin-Z*(cutZ[i*4+3]/2.0),Z);
        ModelSupport::buildPlane(SMap,SM+706,Origin+Z*(cutZ[i*4+3]/2.0),Z);
 
-      for(size_t n=0;n<slotN[i];n++)
+       SP=SM;
+       for(size_t n=0;n<slotN[i];n++)
         {
-	  SP=SM;
-	  ELog::EM<<"X "<<slotX[i*4+n]-slotL[i]/2.0<<" Y "<<slotY[i*4+n]<<" Z "<<slotZ[i*4+n]-slotL[i]/2.0<<ELog::endDiag;
-         ModelSupport::buildPlane(SMap,SP+1001,Origin+Y*(slotY[i*4+n]-slotT[i]/2.0),Y);
-         ModelSupport::buildPlane(SMap,SP+1002,Origin+Y*(slotY[i*4+n]+slotT[i]/2.0),Y);
-         ModelSupport::buildPlane(SMap,SP+1003,Origin+X*(slotX[i*4+n]-slotL[i]/2.0),X);
-         ModelSupport::buildPlane(SMap,SP+1004,Origin+X*(slotX[i*4+n]+slotL[i]/2.0),X);
-         ModelSupport::buildPlane(SMap,SP+1005,Origin+Z*(slotZ[i*4+n]-slotL[i]/2.0),Z);
-         ModelSupport::buildPlane(SMap,SP+1006,Origin+Z*(slotZ[i*4+n]+slotL[i]/2.0),Z);
-         SP+=10;
+	 ModelSupport::buildPlane(SMap,SP+8001,Origin+Y*(slotY[m]-slotT[i]/2.0),Y);
+         ModelSupport::buildPlane(SMap,SP+8002,Origin+Y*(slotY[m]+slotT[i]/2.0),Y);
+         if(slotA[i]==0.0)
+	   {
+         ModelSupport::buildPlane(SMap,SP+8003,Origin+X*(slotX[m]-slotL[i]/2.0),X);
+         ModelSupport::buildPlane(SMap,SP+8004,Origin+X*(slotX[m]+slotL[i]/2.0),X);
+         ModelSupport::buildPlane(SMap,SP+8005,Origin+Z*(slotZ[m]-slotL[i]/2.0),Z);
+         ModelSupport::buildPlane(SMap,SP+8006,Origin+Z*(slotZ[m]+slotL[i]/2.0),Z);
+	   }
+	 else
+	   {
+         ModelSupport::buildPlane(SMap,SP+8003,Origin+Z*(slotX[m]-slotL[i]/2.0),Z);
+         ModelSupport::buildPlane(SMap,SP+8004,Origin+Z*(slotX[m]+slotL[i]/2.0),Z);
+         ModelSupport::buildPlane(SMap,SP+8005,Origin+X*(slotZ[m]-slotL[i]/2.0),X);
+         ModelSupport::buildPlane(SMap,SP+8006,Origin+X*(slotZ[m]+slotL[i]/2.0),X);
+	   }
+         SP+=100;
+	  m+=1;
+
   	}//end for
+      SM+=10; 
+    }
 
-      } //end if
-         // ModelSupport::buildPlane(SMap,SP+1004,Origin-X*(cutX[0]-slotL[i]/2.0),X);
-         // ModelSupport::buildPlane(SMap,SP+1004,Origin+X*(cutX[0]-slotL[i]/2.0),X);
-         // ModelSupport::buildPlane(SMap,SP+1005,Origin-Z*(cutX[0]-slotL[i]/2.0),Z);
-         // ModelSupport::buildPlane(SMap,SP+1006,Origin+Z*(cutX[0]-slotL[i]/2.0),Z);
-         // ModelSupport::buildPlane(SMap,SP+1004,Origin-X*(slotL[i]/2.0),X);
-         // ModelSupport::buildPlane(SMap,SP+1004,Origin+X*(slotL[i]/2.0),X);
-         // ModelSupport::buildPlane(SMap,SP+1005,Origin-Z*(slotL[i]/2.0),Z);
-         // ModelSupport::buildPlane(SMap,SP+1006,Origin+Z*(slotL[i]/2.0),Z);
-
-
-  	 SM+=10; 
-  }
+  } //end if
 
 
   int SI(slabIndex);
@@ -485,16 +464,19 @@ LayerPlate::createSurfaces()
   for(size_t i=0;i<=nSlab;i++)
    {
      ModelSupport::buildPlane(SMap,SI+1,Origin+Y*totalThick,Y);
+   if(keyName=="75Shield")
+       {
+          ModelSupport::buildPlane(SMap,SI+503,Origin-X*(cutX[i]/2.0),X);
+          ModelSupport::buildPlane(SMap,SI+504,Origin+X*(cutX[i]/2.0),X);
+          ModelSupport::buildPlane(SMap,SI+505,Origin-Z*(cutZ[i]/2.0),Z);
+          ModelSupport::buildPlane(SMap,SI+506,Origin+Z*(cutZ[i]/2.0),Z);
+        }
      if (i!=nSlab)
        {
 	 totalThick+=thick[i];
 	 SI+=10;
        }
    }
-
-
-
-
 
   FixedComp::setConnect(1,Origin+Y*totalThick,Y);
   FixedComp::setLinkSurf(1,SMap.realSurf(SI+1));
@@ -520,227 +502,120 @@ LayerPlate::createObjects(Simulation& System,
 
   const std::string FSurf=getFrontSurface(0,FC,sideIndex);
   std::string Out;
-  ELog::EM<<" NNNN "<<keyName<<" "<<slabIndex<<" "<<FSurf<<ELog::endDiag;
+  std::string Out1;
 
-  // Front one uses FC/sideIndex 
-  // Out=FSurf+ModelSupport::getComposite(SMap,slabIndex," -11 3 -4 5 -6");
-  // System.addCell(MonteCarlo::Qhull(cellIndex++,mat[0],matTemp[0],Out)); 
-
-     if(keyName=="49NestorSide"||keyName=="35NestorSide"||keyName=="75NestorSide"||keyName=="36NestorSide")
-       {
+   if(keyName=="49NestorSide"||keyName=="35NestorSide"||keyName=="75NestorSide"||keyName=="36NestorSide")
+     {
 	// al window-outside
-        Out=FSurf+ModelSupport::getComposite(SMap,slabIndex," -11 3 -4 5 -6 7");
-        System.addCell(MonteCarlo::Qhull(cellIndex++,mat[0],matTemp[0],Out)); 
+      Out=FSurf+ModelSupport::getComposite(SMap,slabIndex," -11 3 -4 5 -6 7");
+      System.addCell(MonteCarlo::Qhull(cellIndex++,mat[0],matTemp[0],Out)); 
 	// al window-inside
-        Out=FSurf+ModelSupport::getComposite(SMap,slabIndex," -11  -7");
-        System.addCell(MonteCarlo::Qhull(cellIndex++,matWindow,matTemp[0],Out));
-       } 
-     else if(keyName=="36Shield")
+      Out=FSurf+ModelSupport::getComposite(SMap,slabIndex," -11  -7");
+      System.addCell(MonteCarlo::Qhull(cellIndex++,matWindow,matTemp[0],Out));
+     } 
+   else if(keyName=="36Shield")
+     {
+      std::string slotOut0("");
+      int SP(slabIndex);
+      for(size_t n=0;n<slotN[0];n++)
        {
-        std::string slotOut0;
-        int SP(slabIndex);
-        for(size_t n=0;n<slotN[0];n++)
-         {
-          Out=ModelSupport::getComposite(SMap,slabIndex,SP,
-                                         "1001M -1002M 1003M -1004M 1005M -1006M -507");
-          System.addCell(MonteCarlo::Qhull(cellIndex++,slotM[0],matTemp[0],Out));
-          slotOut0+=ModelSupport::getComposite(SMap,slabIndex,SP,
-                                             "(-1001M : 1002M : -1003M : 1004M : -1005M : 1006M) ");
-          SP+=10;
-         }
-       Out=FSurf+ModelSupport::getComposite(SMap,slabIndex," -11 -507 ");
-       Out=Out+slotOut0;
-       System.addCell(MonteCarlo::Qhull(cellIndex++,mat[0],0,Out)); 
-
-       Out=FSurf+ModelSupport::getComposite(SMap,slabIndex,
- //                                  "-11 507 (-503 : 504 : -505 : 506)");
-                                     "-11 507 503 -504  505 -506)");
+        Out=ModelSupport::getComposite(SMap,slabIndex,SP,
+                                       "8001M -8002M 8003M -8004M 8005M -8006M -507");
+        System.addCell(MonteCarlo::Qhull(cellIndex++,0,0,Out));
+        slotOut0+=ModelSupport::getComposite(SMap,slabIndex,SP,
+                                           "(-8001M : 8002M : -8003M : 8004M : -8005M : 8006M) ");
+        SP+=100;
+       }
+      Out=FSurf+ModelSupport::getComposite(SMap,slabIndex," -11 -507 ");
+      Out=Out+slotOut0;
+      System.addCell(MonteCarlo::Qhull(cellIndex++,mat[0],0,Out)); 
+      Out=FSurf+ModelSupport::getComposite(SMap,slabIndex,
+                                   "-11 507 503 -504  505 -506");
       System.addCell(MonteCarlo::Qhull(cellIndex++,mat[1],matTemp[0],Out)); 
-
       Out=FSurf+ModelSupport::getComposite(SMap,slabIndex,
- //                                  "-11 513 -514 515 -516 (503 : -504 : 505 : -506)");
-                                     "-11 603 -604 605 -606 (-503 : 504 : -505 : 506)");
-
+                                   "-11 603 -604 605 -606 (-503 : 504 : -505 : 506)");
       System.addCell(MonteCarlo::Qhull(cellIndex++,mat[2],matTemp[0],Out)); 
-
       Out=FSurf+ModelSupport::getComposite(SMap,slabIndex,
-                                     "-11 703 -704 705 -706 (-603M : 604M : -605M : 606M)");
+                                   "-11 703 -704 705 -706 (-603M : 604M : -605M : 606M)");
       System.addCell(MonteCarlo::Qhull(cellIndex++,mat[3],matTemp[0],Out)); 
+      Out1=FSurf+ModelSupport::getComposite(SMap,slabIndex,
+                                   "-11 703 -704 705 -706");
+    //  addOuterSurf(Out1);
 
-      // std::string Out1;
-      // Out1=FSurf+"-11 523 -524 525 -526";
-      //   addOuterSurf(Out1);
+     }
+    else
+     {
+      Out=FSurf+ModelSupport::getComposite(SMap,slabIndex," -11 3 -4 5 -6");
+      System.addCell(MonteCarlo::Qhull(cellIndex++,mat[0],matTemp[0],Out)); 
+     }
 
-      }
-     else
-      {
-       Out=FSurf+ModelSupport::getComposite(SMap,slabIndex," -11 3 -4 5 -6");
-       System.addCell(MonteCarlo::Qhull(cellIndex++,mat[0],matTemp[0],Out)); 
-      }
-
-  // int SI(slabIndex);
-  // for(size_t i=1;i<nSlab;i++)
-  //  {
-  //   if(keyName=="75Shield")
-  //    {
-  //     Out=ModelSupport::getComposite(SMap,slabIndex,SI,"1M -11M 503M -504M 505M -506M");
-  //     System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],matTemp[i],Out)); 
-  //     Out=ModelSupport::getComposite(SMap,slabIndex,SI,"1M -11M 3 -4 5 -6 (-503M : 504M : -505M : 506M)");
-  //     System.addCell(MonteCarlo::Qhull(cellIndex++,cutMat[i],matTemp[i],Out)); 
-  //    }
-  //   else if(keyName=="36Shield")
-  //    {
-
-  //     //  ELog::EM<<" AACC  "<<ELog::endDiag;
-
-  //     //  std::string slotOut;
-  //     // for(size_t n=0;n<slotN[i];n++)
-  //     //  {
-  //     //   Out=ModelSupport::getComposite(SMap,slabIndex,SI,"1001M -1002M 1003M -1004M 1005M -1006M -507M");
-  //     //   System.addCell(MonteCarlo::Qhull(cellIndex++,slotM[4*i+n],matTemp[i],Out));
-
-  //     //  slotOut+=ModelSupport::getComposite(SMap,slabIndex,SI,"( -1001M 1002M -1003M 1004M -1005M )");
-  //     //  }
-
-  //     // Out=ModelSupport::getComposite(SMap,slabIndex,SI,"1M -11M -507M");
-  //     // Out=Out+slotOut;
-  //     // System.addCell(MonteCarlo::Qhull(cellIndex++,cutMat[4*i],matTemp[i],Out)); 
-
-  //     // Out=ModelSupport::getComposite(SMap,slabIndex,SI,
-  //     //                                "1M -11M 507M (-503M : 504M : -505M : 506M)");
-  //     // System.addCell(MonteCarlo::Qhull(cellIndex++,cutMat[4*i+1],matTemp[i],Out)); 
-
-  //     // Out=ModelSupport::getComposite(SMap,slabIndex,SI,
-  //     //                                "1M -11M 503M -504M 505M -506M (-513M : 514M : -515M : 516M)");
-  //     // System.addCell(MonteCarlo::Qhull(cellIndex++,cutMat[4*i+1],matTemp[i],Out)); 
-
-  //     // Out=ModelSupport::getComposite(SMap,slabIndex,SI,
-  //     //                                "1M -11M 513M -514M 515M -516M (-523M : 524M : -525M : 526M)");
-  //     // System.addCell(MonteCarlo::Qhull(cellIndex++,cutMat[4*i+1],matTemp[i],Out)); 
-
-  //    }
-  //  else
-  //    {
-  //     Out=ModelSupport::getComposite(SMap,slabIndex,SI,"1M -11M 3 -4 5 -6");
-  //     System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],matTemp[i],Out)); 
-  //    }
-
-  //   SI+=10;
-
-
-  //  }
-  
-  // Out=ModelSupport::getComposite(SMap,slabIndex,SI," -11M 3 -4 5 -6");
-  // addOuterSurf(FSurf+Out);
-
-
-       std::string Out1;
-       std::string slotOut;
-
+  std::string slotOut;
   int SI(slabIndex);
+  int SP(slabIndex);
+  int SC(slabIndex+10);
+
   for(size_t i=1;i<nSlab;i++)
    {
     if(keyName=="36Shield")
       {
-	// ugly part to insert slots, cuts and sections of shield 36
-        int SP(slabIndex);
-        int SC(slabIndex);
+       // ugly part to insert slots, cuts and sections of shield 36
 
-        // slots
-        for(size_t n=0;n<slotN[i];n++)
-         {
-	  
-          Out=ModelSupport::getComposite(SMap,SI,SP,
-                                         "1001M -1002M 1003M -1004M 1005M -1006M -507");
-          System.addCell(MonteCarlo::Qhull(cellIndex++,slotM[i],matTemp[i],Out));
-          slotOut0+=ModelSupport::getComposite(SMap,slabIndex,SP,
-                                             "(-1001M : 1002M : -1003M : 1004M : -1005M : 1006M) ");
-          SP+=10;
-         }
+       // slots
+       SP=SI+10;             	  
+
+       for(size_t n=0;n<slotN[i];n++)
+        {
+         Out=ModelSupport::getComposite(SMap,SI,SP,
+                                         "8001M -8002M 8003M -8004M 8005M -8006M -507 ");
+         System.addCell(MonteCarlo::Qhull(cellIndex++,slotM[i],matTemp[i],Out));
+         slotOut+=ModelSupport::getComposite(SMap,slabIndex,SP,
+                                             "(-8001M : 8002M : -8003M : 8004M : -8005M : 8006M) ");
+         SP+=100;
+        }
         //inner cut
-	Out=ModelSupport::getComposite(SMap,slabIndex,SI,"1M -11M  -507M ");
-	//    Out=Out+slotOut0;
+       Out=ModelSupport::getComposite(SMap,SC,SI," 1 -11  -507M ");
+       Out=Out+slotOut;
        System.addCell(MonteCarlo::Qhull(cellIndex++,mat[4*i],0,Out)); 
-
-       Out=ModelSupport::getComposite(SMap,slabIndex,SI,
-                                     "1M -11M 507M 503M -504M 505M -506M");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,mat[4*i+1],matTemp[0],Out)); 
-
-      Out=FSurf+ModelSupport::getComposite(SMap,slabIndex,SI,
-                                     "1M -11M 603M -604M 605M -606M (-503M : -504M : 505M : -506M)");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,mat[4*i+1],matTemp[0],Out)); 
-
-      Out=FSurf+ModelSupport::getComposite(SMap,slabIndex,SI,
-                                     "1M -11M 703M -704M 705M -706M (-603M : 604M : -605M : 606M)");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,mat[4*i+1],matTemp[0],Out)); 
-
-
-      Out1=FSurf+ModelSupport::getComposite(SMap,slabIndex,SI,
-                                     " -11M 703M -704M 705M -706M");
-
-  
-
-
-
-      // std::string slotOut;
-      // for(size_t n=0;n<slotN[i];n++)
-      //  {
-      //   Out=ModelSupport::getComposite(SMap,slabIndex,SI,"1001M -1002M 1003M -1004M 1005M -1006M -507M");
-      //   System.addCell(MonteCarlo::Qhull(cellIndex++,slotM[4*i+n],matTemp[i],Out));
-
-      //  slotOut+=ModelSupport::getComposite(SMap,slabIndex,SI,"( -1001M 1002M -1003M 1004M -1005M )");
-      //  }
-
-      // Out=ModelSupport::getComposite(SMap,slabIndex,SI,"1M -11M -507M");
-      // Out=Out+slotOut;
-      // System.addCell(MonteCarlo::Qhull(cellIndex++,cutMat[4*i],matTemp[i],Out)); 
-
-      // Out=ModelSupport::getComposite(SMap,slabIndex,SI,
-      //                                "1M -11M 507M (-503M : 504M : -505M : 506M)");
-      // System.addCell(MonteCarlo::Qhull(cellIndex++,cutMat[4*i+1],matTemp[i],Out)); 
-
-      // Out=ModelSupport::getComposite(SMap,slabIndex,SI,
-      //                                "1M -11M 503M -504M 505M -506M (-513M : 514M : -515M : 516M)");
-      // System.addCell(MonteCarlo::Qhull(cellIndex++,cutMat[4*i+1],matTemp[i],Out)); 
-
-      // Out=ModelSupport::getComposite(SMap,slabIndex,SI,
-      //                                "1M -11M 513M -514M 515M -516M (-523M : 524M : -525M : 526M)");
-      // System.addCell(MonteCarlo::Qhull(cellIndex++,cutMat[4*i+1],matTemp[i],Out)); 
-
- 
-
+       Out=ModelSupport::getComposite(SMap,SC,SI,
+                                     "1 -11 507M 503M -504M 505M -506M");
+       System.addCell(MonteCarlo::Qhull(cellIndex++,mat[4*i+1],matTemp[0],Out)); 
+       Out=ModelSupport::getComposite(SMap,SC,SI,
+                                     "1 -11 603M -604M 605M -606M (-503M : 504M : -505M : 506M)");
+       System.addCell(MonteCarlo::Qhull(cellIndex++,mat[4*i+2],matTemp[0],Out)); 
+       Out=ModelSupport::getComposite(SMap,SC,SI,
+                                     "1 -11 703M -704M 705M -706M (-603M : 604M : -605M : 606M)");
+       System.addCell(MonteCarlo::Qhull(cellIndex++,mat[4*i+3],matTemp[0],Out)); 
+       Out1=FSurf+ModelSupport::getComposite(SMap,SC,SI,
+                                     " -11 703M -704M 705M -706M");
        SI+=10;
-
-        // std::string Out1;
-
-        // Out1=FSurf+"-11 523 -524 525 -526";
- 
-
-       // Out=ModelSupport::getComposite(SMap,slabIndex,SI,"1M -11M 3 -4 5 -6");
-       // System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],matTemp[i],Out)); 
- 
+       SC+=10;
       }
-    else
+     // other special case is the Shield of exp 75 because of the cuts (water outside layer)  
+     else if(keyName=="75Shield")
+      {
+       SI+=10;
+       Out=ModelSupport::getComposite(SMap,slabIndex,SI,"1M -11M 503M -504M 505M -506M");
+       System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],matTemp[i],Out)); 
+       Out=ModelSupport::getComposite(SMap,slabIndex,SI,"1M -11M 3 -4 5 -6 (-503M : 504M : -505M : 506M)");
+       System.addCell(MonteCarlo::Qhull(cellIndex++,cutMat[i],matTemp[i],Out)); 
+      }
+     else
       {
        SI+=10;
        Out=ModelSupport::getComposite(SMap,slabIndex,SI,"1M -11M 3 -4 5 -6");
        System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],matTemp[i],Out)); 
       }
-
-   }
+    }
   
-  Out=ModelSupport::getComposite(SMap,slabIndex,SI," -11M 3 -4 5 -6");
+   Out=ModelSupport::getComposite(SMap,slabIndex,SI," -11M 3 -4 5 -6");
 
- if(keyName=="36Shield")
-   addOuterSurf(Out1);
- else
- addOuterSurf(FSurf+Out);
-
-
-
+   if(keyName=="36Shield")
+    addOuterSurf(Out1);
+   else
+    addOuterSurf(FSurf+Out);
 
   return;
-}
+ }
 
 void
 LayerPlate::createLinks()

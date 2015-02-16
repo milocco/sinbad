@@ -8,7 +8,7 @@ namespace sinbadSystem
 /*!
   \class Detectors
   \version 1.0
-  \author A. Milocco
+  \author A. Milocco/S. Ansel
   \date Novenber 2013
   \brief Builds a layered stack object
 \ build of shield array
@@ -19,7 +19,11 @@ class Detectors  : public attachSystem::ContainedComp,
 {
  private:
   
-  const std::string baseName;     ///< Base name
+  const std::string keyName;     ///< Base name
+  const std::string YName;     ///< Base name
+  const std::string ZName;     ///< Base name
+  std::string baseName;     ///< Base name
+
   const size_t detID;             ///< Index of Detector
   const int detIndex;             ///< Index of surface offset
   int cellIndex;                  ///< Cell index
@@ -57,7 +61,7 @@ class Detectors  : public attachSystem::ContainedComp,
  
  public:
 
-  Detectors(const std::string&,const size_t);
+  Detectors(const std::string&,const std::string&,const std::string&,const size_t);
   /* Detectors(const std::string&); */
 
   Detectors(const Detectors&);
@@ -74,10 +78,7 @@ class Detectors  : public attachSystem::ContainedComp,
   int isActiveY() const { return activeY; }
   int isActiveZ() const { return activeZ; }
 
-  std::string getDet(const mainSystem::inputParam&) const;
-  /* void buildDetectors(Simulation&, const mainSystem::inputParam&,const attachSystem::FixedComp&); */
-  /*   std::vector<boost::shared_ptr<Detectors> > detArray; */
-  /*   std::vector<int> detActive; */
+
 };
 
 }

@@ -94,30 +94,25 @@ main(int argc,char* argv[])
     ELog::EM<<ELog::endBasic; 
     return 0;
    }  
-  IParam.processMainInput(Names);
+
+   IParam.processMainInput(Names);
    sinbadSystem::writeSinbad* SimPtr;
    SimPtr=new sinbadSystem::writeSinbad("");
    SimPtr->setCmdLine(cmdLine.str());        // set full command line
    if (!SimPtr) return -1;
-
    // The big variable setting
    setVariable::SinbadVariables(SimPtr->getDataBase());
 
-
    try
     {
-
     // Definitions section  
     SimPtr->resetAll();
 
-    // logs
-    // ELog::EM.setActive(4);
-    // ELog::FM.setActive(4);    
-    // ELog::RN.setActive(0); 
-  ELog::EM<<"pKeyYYYY "<<ELog::endDiag;
-
     const std::string expN=IParam.getValue<std::string>("preName");
     std::string expS;
+
+     ELog::EM<<"\n "<<ELog::endBasic;
+
     if(expN=="34") expS="Winfrith Iron Benchmark Experiment (ASPIS)";
     if(expN=="35") expS="Winfrith Iron 88 Benchmark (ASPIS)";
     if(expN=="36") expS="Winfrith Graphite Benchmark Experiment (ASPIS)";
@@ -131,8 +126,10 @@ main(int argc,char* argv[])
 
     ELog::EM<<" Experiment Number: "<<expN<<"\n Experiment Name:  "<<expS<<ELog::endBasic;
 
+    ELog::EM<<"\n "<<ELog::endBasic;
 
-
+    if(expN=="37"||expN=="41"||expN=="42"||expN=="44"||expN=="45") expS="Winfrith Water Benchmark Experiment";
+    ELog::EM<<" EXPERIMENT NOT READY YET!!! (sorry for inconvenience...) "<<ELog::endBasic;
 
     sinbadSystem::makeSinbad SinbadObj(expN);
     World::createOuterObjects(*SimPtr);
@@ -141,9 +138,7 @@ main(int argc,char* argv[])
     SimPtr->removeDeadSurfaces(0);         
 
     mainSystem::renumberCells(*SimPtr,IParam);   
-
     SDef::setSinbadSource(*SimPtr,IParam);
-
     SimPtr->setSinbadWeights(*SimPtr,IParam);
     SimPtr->setSinbadTally(*SimPtr,IParam);
     SimPtr->setSinbadPhysics(*SimPtr,IParam);
@@ -154,6 +149,9 @@ main(int argc,char* argv[])
 
     SimPtr->prepareWrite();
     SimPtr->SinbadWrite(*SimPtr,cx.str());
+
+    ELog::EM<<"\n "<<ELog::endBasic;
+    ELog::EM<<" MCNP input file: "<<Oname<<"1.x"<<ELog::endBasic;
 
     ModelSupport::objectRegister::Instance().write("ObjectRegister.txt");
    }
@@ -174,36 +172,4 @@ main(int argc,char* argv[])
   ModelSupport::surfIndex::Instance().reset();
   return exitFlag;
 }
-
-
-
-	  // if (renumCellWork)
-	  //   tallyRenumberWork(*SimPtr,IParam);
-	  // tallyModification(*SimPtr,IParam);
-
-	  // ModelSupport::setSinbadPhysics(*SimPtr,IParam);
-
-	  // Ensure we done loop
-	//   do
-	//     {
-	//       // SimProcess::writeIndexSim(*SimPtr,Oname,MCIndex);
-
-        //       std::ostringstream cx;
-        //       cx<<Oname<<MCIndex+1<<".x";
-
-        //       SimPtr->prepareWrite();
-	//       //   SimPtr->writeCells(cx.str());
-	//       sinbadSystem::simulateSinbad* SimPtrS;
-	//       //=createSinbadSimulation(IParam,Names,Oname);
-	//       // SimPtr->SinbadWrite(cx.str());
-        //       SimPtr->SinbadWrite(*SimPtr,cx.str());
-	//      //  ST.SinbadWrite(*SimPtr,cx.str());
-	//       //  ST.write(cx.str());
-	//       //  SimPtr->SinbadWriteX(cx.str());
-
-	//       //  ST.writeSinbadTally(*SimPtr,IParam);
-	//       MCIndex++;
-	//     }
-	//   while(!iteractive && MCIndex<multi);
-	// }
 

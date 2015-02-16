@@ -17,29 +17,19 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
- *
+ * Author A. Milocco
  ****************************************************************************/
 #ifndef sinbadSource_h
 #define sinbadSource_h
 
 class Simulation;
-//  class PhysicsCards;
-/* namespace physicsSystem */
-/* { */
-/*   class PhysicsCards; */
-/* } */
+class PhysicsCards;
 class Source;
 
 namespace SDef
 {
-
-  //  class PhysicsCards;
-
   void setSinbadSource(Simulation&,const mainSystem::inputParam&);
   void SinbadSource(const FuncDataBase&,Source&,const std::string&);
-  // std::vector<double> *YptS1 = new std::vector<double>;
-  // std::vector<double> YptS1;
-
 }
 
 
