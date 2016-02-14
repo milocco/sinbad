@@ -1,0 +1,41 @@
+file(REMOVE_RECURSE
+  "CMakeFiles/libconstruct.dir/System/construct/tubeUnit.cxx.o"
+  "CMakeFiles/libconstruct.dir/System/construct/DiskChopper.cxx.o"
+  "CMakeFiles/libconstruct.dir/System/construct/VacuumBox.cxx.o"
+  "CMakeFiles/libconstruct.dir/System/construct/TargetBase.cxx.o"
+  "CMakeFiles/libconstruct.dir/System/construct/VacuumPipe.cxx.o"
+  "CMakeFiles/libconstruct.dir/System/construct/HoleShape.cxx.o"
+  "CMakeFiles/libconstruct.dir/System/construct/ChopperHousing.cxx.o"
+  "CMakeFiles/libconstruct.dir/System/construct/BeamWindow.cxx.o"
+  "CMakeFiles/libconstruct.dir/System/construct/Window.cxx.o"
+  "CMakeFiles/libconstruct.dir/System/construct/BasicFlightLine.cxx.o"
+  "CMakeFiles/libconstruct.dir/System/construct/CylMod.cxx.o"
+  "CMakeFiles/libconstruct.dir/System/construct/ProtonVoid.cxx.o"
+  "CMakeFiles/libconstruct.dir/System/construct/targCoolant.cxx.o"
+  "CMakeFiles/libconstruct.dir/System/construct/hexUnit.cxx.o"
+  "CMakeFiles/libconstruct.dir/System/construct/LinkWrapper.cxx.o"
+  "CMakeFiles/libconstruct.dir/System/construct/ModBase.cxx.o"
+  "CMakeFiles/libconstruct.dir/System/construct/insertPlate.cxx.o"
+  "CMakeFiles/libconstruct.dir/System/construct/LWInner.cxx.o"
+  "CMakeFiles/libconstruct.dir/System/construct/shutterVar.cxx.o"
+  "CMakeFiles/libconstruct.dir/System/construct/ConicInfo.cxx.o"
+  "CMakeFiles/libconstruct.dir/System/construct/voidCylVolume.cxx.o"
+  "CMakeFiles/libconstruct.dir/System/construct/ChopperPit.cxx.o"
+  "CMakeFiles/libconstruct.dir/System/construct/GroupOrigin.cxx.o"
+  "CMakeFiles/libconstruct.dir/System/construct/WallCut.cxx.o"
+  "CMakeFiles/libconstruct.dir/System/construct/RotaryCollimator.cxx.o"
+  "CMakeFiles/libconstruct.dir/System/construct/FlightLine.cxx.o"
+  "CMakeFiles/libconstruct.dir/System/construct/LWOuter.cxx.o"
+  "CMakeFiles/libconstruct.dir/System/construct/Jaws.cxx.o"
+  "CMakeFiles/libconstruct.dir/System/construct/SupplyPipe.cxx.o"
+  "CMakeFiles/libconstruct.dir/System/construct/BlockMod.cxx.o"
+  "CMakeFiles/libconstruct.dir/System/construct/WedgeInsert.cxx.o"
+  "CMakeFiles/libconstruct.dir/System/construct/DiskBlades.cxx.o"
+  "lib/liblibconstruct.pdb"
+  "lib/liblibconstruct.so"
+)
+
+# Per-language clean rules from dependency scanning.
+foreach(lang CXX)
+  include(CMakeFiles/libconstruct.dir/cmake_clean_${lang}.cmake OPTIONAL)
+endforeach()

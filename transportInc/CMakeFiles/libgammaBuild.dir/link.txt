@@ -1,0 +1,1 @@
+clang  -fPIC   -shared -Wl,-soname,liblibgammaBuild.so -o lib/liblibgammaBuild.so CMakeFiles/libgammaBuild.dir/Model/gammaBuild/gammaVariables.cxx.o CMakeFiles/libgammaBuild.dir/Model/gammaBuild/makeGamma.cxx.o CMakeFiles/libgammaBuild.dir/Model/gammaBuild/NordBall.cxx.o 

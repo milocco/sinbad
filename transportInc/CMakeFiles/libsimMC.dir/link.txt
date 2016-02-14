@@ -1,0 +1,1 @@
+clang  -fPIC   -shared -Wl,-soname,liblibsimMC.so -o lib/liblibsimMC.so CMakeFiles/libsimMC.dir/System/simMC/SimMonte.cxx.o 

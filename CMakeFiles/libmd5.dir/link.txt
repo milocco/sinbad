@@ -1,0 +1,1 @@
+clang  -fPIC   -shared -Wl,-soname,liblibmd5.so -o lib/liblibmd5.so CMakeFiles/libmd5.dir/System/md5/MD5hash.cxx.o 

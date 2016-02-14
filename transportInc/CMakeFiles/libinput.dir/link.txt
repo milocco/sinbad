@@ -1,0 +1,1 @@
+clang  -fPIC   -shared -Wl,-soname,liblibinput.so -o lib/liblibinput.so CMakeFiles/libinput.dir/System/input/inputParam.cxx.o CMakeFiles/libinput.dir/System/input/IItemBase.cxx.o 

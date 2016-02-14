@@ -1,0 +1,1 @@
+clang  -fPIC   -shared -Wl,-soname,liblibbnctBuild.so -o lib/liblibbnctBuild.so CMakeFiles/libbnctBuild.dir/Model/bnctBuild/makeBNCT.cxx.o CMakeFiles/libbnctBuild.dir/Model/bnctBuild/BNCTVariables.cxx.o CMakeFiles/libbnctBuild.dir/Model/bnctBuild/DiscTarget.cxx.o 

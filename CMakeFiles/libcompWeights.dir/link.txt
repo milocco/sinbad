@@ -1,0 +1,1 @@
+clang  -fPIC   -shared -Wl,-soname,liblibcompWeights.so -o lib/liblibcompWeights.so CMakeFiles/libcompWeights.dir/System/compWeights/Mesh.cxx.o 

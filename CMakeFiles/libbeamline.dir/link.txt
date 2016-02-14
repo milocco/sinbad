@@ -1,0 +1,1 @@
+clang  -fPIC   -shared -Wl,-soname,liblibbeamline.so -o lib/liblibbeamline.so CMakeFiles/libbeamline.dir/beamline/PlateUnit.cxx.o CMakeFiles/libbeamline.dir/beamline/ShapeUnit.cxx.o CMakeFiles/libbeamline.dir/beamline/GuideLine.cxx.o CMakeFiles/libbeamline.dir/beamline/BenderUnit.cxx.o 

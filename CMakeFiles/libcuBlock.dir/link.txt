@@ -1,0 +1,1 @@
+clang  -fPIC   -shared -Wl,-soname,liblibcuBlock.so -o lib/liblibcuBlock.so CMakeFiles/libcuBlock.dir/Model/cuBlock/makeCu.cxx.o CMakeFiles/libcuBlock.dir/Model/cuBlock/CuCollet.cxx.o CMakeFiles/libcuBlock.dir/Model/cuBlock/test.cxx.o CMakeFiles/libcuBlock.dir/Model/cuBlock/cuVariables.cxx.o 

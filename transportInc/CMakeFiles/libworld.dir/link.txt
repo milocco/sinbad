@@ -1,0 +1,1 @@
+clang  -fPIC   -shared -Wl,-soname,liblibworld.so -o lib/liblibworld.so CMakeFiles/libworld.dir/System/world/World.cxx.o 
