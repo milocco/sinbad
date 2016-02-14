@@ -1,0 +1,1 @@
+clang  -fPIC   -shared -Wl,-soname,liblibendf.so -o lib/liblibendf.so CMakeFiles/libendf.dir/System/endf/ENDFmaterial.cxx.o CMakeFiles/libendf.dir/System/endf/ENDFreaction.cxx.o CMakeFiles/libendf.dir/System/endf/SEtable.cxx.o CMakeFiles/libendf.dir/System/endf/SQWtable.cxx.o CMakeFiles/libendf.dir/System/endf/ENDF.cxx.o 

@@ -1,0 +1,1 @@
+clang  -fPIC   -shared -Wl,-soname,liblibwork.so -o lib/liblibwork.so CMakeFiles/libwork.dir/System/work/Boundary.cxx.o CMakeFiles/libwork.dir/System/work/BUnit.cxx.o CMakeFiles/libwork.dir/System/work/BinData.cxx.o CMakeFiles/libwork.dir/System/work/WorkData.cxx.o 

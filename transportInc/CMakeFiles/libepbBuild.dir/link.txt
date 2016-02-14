@@ -1,0 +1,1 @@
+clang  -fPIC   -shared -Wl,-soname,liblibepbBuild.so -o lib/liblibepbBuild.so CMakeFiles/libepbBuild.dir/Model/epbBuild/Magnet.cxx.o CMakeFiles/libepbBuild.dir/Model/epbBuild/Building.cxx.o CMakeFiles/libepbBuild.dir/Model/epbBuild/makeEPB.cxx.o CMakeFiles/libepbBuild.dir/Model/epbBuild/EPBline.cxx.o CMakeFiles/libepbBuild.dir/Model/epbBuild/EPBVariables.cxx.o 

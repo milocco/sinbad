@@ -1,0 +1,1 @@
+clang  -fPIC   -shared -Wl,-soname,liblibpoly.so -o lib/liblibpoly.so CMakeFiles/libpoly.dir/System/poly/PolyFunction.cxx.o CMakeFiles/libpoly.dir/System/poly/PolyVar.cxx.o CMakeFiles/libpoly.dir/System/poly/PolyVarOne.cxx.o CMakeFiles/libpoly.dir/System/poly/solveValues.cxx.o 

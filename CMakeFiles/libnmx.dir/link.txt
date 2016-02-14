@@ -1,0 +1,1 @@
+clang  -fPIC   -shared -Wl,-soname,liblibnmx.so -o lib/liblibnmx.so CMakeFiles/libnmx.dir/Model/ESSBeam/nmx/NMX.cxx.o CMakeFiles/libnmx.dir/Model/ESSBeam/nmx/NMXvariables.cxx.o 

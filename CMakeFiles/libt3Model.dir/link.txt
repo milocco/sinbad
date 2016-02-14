@@ -1,0 +1,1 @@
+clang  -fPIC   -shared -Wl,-soname,liblibt3Model.so -o lib/liblibt3Model.so CMakeFiles/libt3Model.dir/Model/t3Model/makeTS3.cxx.o CMakeFiles/libt3Model.dir/Model/t3Model/ts3Variables.cxx.o 

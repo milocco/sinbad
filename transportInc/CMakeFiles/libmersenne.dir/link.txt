@@ -1,0 +1,1 @@
+clang  -fPIC   -shared -Wl,-soname,liblibmersenne.so -o lib/liblibmersenne.so CMakeFiles/libmersenne.dir/System/mersenne/MersenneTwister.cxx.o 

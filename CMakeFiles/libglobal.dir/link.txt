@@ -1,0 +1,1 @@
+clang  -fPIC   -shared -Wl,-soname,liblibglobal.so -o lib/liblibglobal.so CMakeFiles/libglobal.dir/global/XMLwriteVisitor.cxx.o 

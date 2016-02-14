@@ -1,0 +1,1 @@
+clang  -fPIC   -shared -Wl,-soname,liblibsource.so -o lib/liblibsource.so CMakeFiles/libsource.dir/System/source/LensSource.cxx.o CMakeFiles/libsource.dir/System/source/ChipIRSource.cxx.o CMakeFiles/libsource.dir/System/source/GammaSource.cxx.o CMakeFiles/libsource.dir/System/source/SourceSelector.cxx.o CMakeFiles/libsource.dir/System/source/SourceCreate.cxx.o 

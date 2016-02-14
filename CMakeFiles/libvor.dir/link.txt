@@ -1,0 +1,1 @@
+clang  -fPIC   -shared -Wl,-soname,liblibvor.so -o lib/liblibvor.so CMakeFiles/libvor.dir/Model/ESSBeam/vor/DetectorTank.cxx.o CMakeFiles/libvor.dir/Model/ESSBeam/vor/VOR.cxx.o CMakeFiles/libvor.dir/Model/ESSBeam/vor/DHut.cxx.o CMakeFiles/libvor.dir/Model/ESSBeam/vor/VORvariables.cxx.o 

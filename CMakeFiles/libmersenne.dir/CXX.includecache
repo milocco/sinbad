@@ -1,0 +1,24 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/alberto/nea/aspis/cl/System/mersenne/MersenneTwister.cxx
+cstdio
+-
+climits
+-
+iostream
+-
+cmath
+-
+time.h
+-
+MersenneTwister.h
+/home/alberto/nea/aspis/cl/System/mersenne/MersenneTwister.h
+
+System/mersenneInc/MersenneTwister.h
+

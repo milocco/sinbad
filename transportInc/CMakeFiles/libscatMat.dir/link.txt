@@ -1,0 +1,1 @@
+clang  -fPIC   -shared -Wl,-soname,liblibscatMat.so -o lib/liblibscatMat.so CMakeFiles/libscatMat.dir/scatMat/DBNeutMaterial.cxx.o CMakeFiles/libscatMat.dir/scatMat/SQWmaterial.cxx.o CMakeFiles/libscatMat.dir/scatMat/neutMaterial.cxx.o CMakeFiles/libscatMat.dir/scatMat/CryMat.cxx.o CMakeFiles/libscatMat.dir/scatMat/GlassMaterial.cxx.o 

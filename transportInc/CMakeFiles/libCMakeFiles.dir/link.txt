@@ -1,0 +1,1 @@
+clang  -fPIC   -shared -Wl,-soname,liblibCMakeFiles.so -o lib/liblibCMakeFiles.so CMakeFiles/libCMakeFiles.dir/CMakeFiles/feature_tests.cxx.o 

@@ -1,0 +1,83 @@
+# The set of languages for which implicit dependencies are needed:
+set(CMAKE_DEPENDS_LANGUAGES
+  "CXX"
+  )
+# The set of files for implicit dependencies of each language:
+set(CMAKE_DEPENDS_CHECK_CXX
+  "/home/alberto/nea/aspis/cl/System/log/Debug.cxx" "/home/alberto/nea/aspis/cl/CMakeFiles/liblog.dir/System/log/Debug.cxx.o"
+  "/home/alberto/nea/aspis/cl/System/log/EReport.cxx" "/home/alberto/nea/aspis/cl/CMakeFiles/liblog.dir/System/log/EReport.cxx.o"
+  "/home/alberto/nea/aspis/cl/System/log/FileReport.cxx" "/home/alberto/nea/aspis/cl/CMakeFiles/liblog.dir/System/log/FileReport.cxx.o"
+  "/home/alberto/nea/aspis/cl/System/log/MemStack.cxx" "/home/alberto/nea/aspis/cl/CMakeFiles/liblog.dir/System/log/MemStack.cxx.o"
+  "/home/alberto/nea/aspis/cl/System/log/NameStack.cxx" "/home/alberto/nea/aspis/cl/CMakeFiles/liblog.dir/System/log/NameStack.cxx.o"
+  "/home/alberto/nea/aspis/cl/System/log/OutputLog.cxx" "/home/alberto/nea/aspis/cl/CMakeFiles/liblog.dir/System/log/OutputLog.cxx.o"
+  "/home/alberto/nea/aspis/cl/System/log/RegMethod.cxx" "/home/alberto/nea/aspis/cl/CMakeFiles/liblog.dir/System/log/RegMethod.cxx.o"
+  "/home/alberto/nea/aspis/cl/System/log/debugMethod.cxx" "/home/alberto/nea/aspis/cl/CMakeFiles/liblog.dir/System/log/debugMethod.cxx.o"
+  )
+set(CMAKE_CXX_COMPILER_ID "GNU")
+
+# The include file search paths:
+set(CMAKE_CXX_TARGET_INCLUDE_PATH
+  "include"
+  "beamlineInc"
+  "globalInc"
+  "instrumentInc"
+  "scatMatInc"
+  "specialInc"
+  "transportInc"
+  "testInclude"
+  "System/attachCompInc"
+  "System/compWeightsInc"
+  "System/constructInc"
+  "System/crystalInc"
+  "System/endfInc"
+  "System/funcBaseInc"
+  "System/geomInc"
+  "System/inputInc"
+  "System/logInc"
+  "System/md5Inc"
+  "System/mersenneInc"
+  "System/monteInc"
+  "System/physicsInc"
+  "System/polyInc"
+  "System/processInc"
+  "System/simMCInc"
+  "System/sourceInc"
+  "System/supportInc"
+  "System/tallyInc"
+  "System/visitInc"
+  "System/weightsInc"
+  "System/workInc"
+  "System/worldInc"
+  "System/xmlInc"
+  "Model/bibBuildInc"
+  "Model/bnctBuildInc"
+  "Model/buildInc"
+  "Model/chipInc"
+  "Model/cuBlockInc"
+  "Model/d4cModelInc"
+  "Model/delftInc"
+  "Model/epbBuildInc"
+  "Model/essBuildInc"
+  "Model/gammaBuildInc"
+  "Model/imatInc"
+  "Model/lensModelInc"
+  "Model/moderatorInc"
+  "Model/muonInc"
+  "Model/photonInc"
+  "Model/pipeBuildInc"
+  "Model/sinbadBuildInc"
+  "Model/snsBuildInc"
+  "Model/t1BuildInc"
+  "Model/t1EngineerInc"
+  "Model/t1UpgradeInc"
+  "Model/t3ModelInc"
+  "Model/zoomInc"
+  "Model/ESSBeam/lokiInc"
+  "Model/ESSBeam/nmxInc"
+  "Model/ESSBeam/odinInc"
+  "Model/ESSBeam/vorInc"
+  )
+
+# Targets to which this target links.
+set(CMAKE_TARGET_LINKED_INFO_FILES
+  )

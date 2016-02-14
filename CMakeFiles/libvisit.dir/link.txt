@@ -1,0 +1,1 @@
+clang  -fPIC   -shared -Wl,-soname,liblibvisit.so -o lib/liblibvisit.so CMakeFiles/libvisit.dir/System/visit/MD5sum.cxx.o CMakeFiles/libvisit.dir/System/visit/Visit.cxx.o CMakeFiles/libvisit.dir/System/visit/MatMD5.cxx.o 
